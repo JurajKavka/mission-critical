@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#02040b" />
+    <title>Neon Asteroids</title>
+  </head>
+  <body>
+    <canvas id="game" aria-label="Neon Asteroids game field"></canvas>
+
+    <div class="hud">
+      <div class="hud-top">
+        <div class="brand">NEON // ASTEROIDS</div>
+        <div class="stats">
+          <div>Score<strong id="score">000000</strong></div>
+          <div>Wave<strong id="wave">01</strong></div>
+          <div>
+            Combo<strong id="combo">-- ×1</strong>
+            <div class="combo-meter">
+              <div class="combo-fill" id="comboFill"></div>
+            </div>
+          </div>
+          <div>Velocity<strong id="velocity">000</strong></div>
+        </div>
+      </div>
+      <div class="lives">
+        Reserve ships
+        <div class="ships" id="ships"></div>
+      </div>
+      <div class="bonus-status" id="bonusStatus"></div>
+      <div class="hint">
+        A/D rotate · W thrust · S brake · Space/click fire · Shift hyperspace
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay">
+      <div class="card">
+        <div class="eyebrow" id="eyebrow">Deep-space relay online</div>
+        <h1 id="title">NEON<br />ASTEROIDS</h1>
+        <p class="subtitle" id="subtitle">
+          Break the incoming field into fragments and survive.<br />No drag:
+          every impulse persists. Chain hits before the combo meter drains.
+        </p>
+        <button id="start" type="button">Launch</button>
+        <div class="controls">
+          <div><span>A / D</span> rotate</div>
+          <div><span>W</span> thrust</div>
+          <div><span>S</span> brake</div>
+          <div><span>Space</span> fire</div>
+          <div><span>Shift</span> hyperspace</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="upgrade-overlay hidden" id="upgradeOverlay">
+      <div class="upgrade-panel">
+        <div class="eyebrow">Mission sector cleared</div>
+        <h2>SELECT ONE SYSTEM UPGRADE</h2>
+        <p>Permanent for this run</p>
+        <div class="upgrade-options">
+          <button class="upgrade-option" data-upgrade="engine" type="button">
+            <span class="upgrade-icon">»</span>
+            <span class="upgrade-name">Vector engines</span>
+            <span class="upgrade-description"
+              >Increase forward thrust and braking force by 15%.</span
+            >
+          </button>
+          <button class="upgrade-option" data-upgrade="weapon" type="button">
+            <span class="upgrade-icon">✦</span>
+            <span class="upgrade-name">Weapon capacitors</span>
+            <span class="upgrade-description"
+              >Reduce the delay between every shot by 12%.</span
+            >
+          </button>
+          <button class="upgrade-option" data-upgrade="hull" type="button">
+            <span class="upgrade-icon">△</span>
+            <span class="upgrade-name">Reserve hull</span>
+            <span class="upgrade-description"
+              >Add one reserve ship and restore the spawn shield.</span
+            >
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
