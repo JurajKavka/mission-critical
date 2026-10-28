@@ -142,6 +142,8 @@ const drawBackground = (state: GameState, time: number): void => {
   context.fillStyle = gradient;
   context.fillRect(0, 0, state.width, state.height);
 
+  context.drawImage(state.galaxyCanvas, 0, 0, state.width, state.height);
+
   for (const star of state.stars) {
     const x =
       (star.x - state.ship.x * 0.012 * star.layer + state.width) % state.width;

@@ -6,6 +6,7 @@ export const createGameState = ({
 }: Pick<GameDom, 'canvas' | 'context'>): GameState => ({
   canvas,
   context,
+  galaxyCanvas: document.createElement('canvas'),
   width: innerWidth,
   height: innerHeight,
   running: false,
