@@ -1,0 +1,89 @@
+---
+import GameCard from '../components/GameCard.astro';
+import GameLaunchBar from '../components/GameLaunchBar.astro';
+import { games } from '../data/games';
+import Layout from '../layouts/Layout.astro';
+
+const missionCount = String(games.length).padStart(2, '0');
+---
+
+<Layout
+  title="Mission Critical — Neon browser arcade"
+  description="A growing collection of neon arcade games. Choose a mission and play instantly in your browser."
+>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="eyebrow"><span></span>Deep-space arcade relay</p>
+      <h1 id="hero-title">
+        Choose your
+        <br />
+        <em>vector.</em>
+      </h1>
+      <p class="hero-description">
+        Quick missions. Sharp controls. Zero installation. Select an active
+        signal and launch directly in your browser.
+      </p>
+      <GameLaunchBar games={games} />
+    </div>
+
+    <aside class="system-readout" aria-label="Arcade network status">
+      <div class="system-readout-frame">
+        <div class="readout-header">
+          <span>System readout</span>
+          <span class="readout-code">MC/NAV</span>
+        </div>
+        <div class="radar" aria-hidden="true">
+          <span class="radar-sweep"></span>
+          <span class="radar-core"></span>
+          <span class="radar-contact radar-contact--one"></span>
+          <span class="radar-contact radar-contact--two"></span>
+          <span class="radar-contact radar-contact--three"></span>
+        </div>
+        <dl class="readout-data">
+          <div>
+            <dt>Network</dt>
+            <dd>Stable</dd>
+          </div>
+          <div>
+            <dt>Active titles</dt>
+            <dd>{missionCount}</dd>
+          </div>
+          <div>
+            <dt>Access</dt>
+            <dd>Open</dd>
+          </div>
+        </dl>
+      </div>
+    </aside>
+  </section>
+
+  <section class="missions" id="missions" aria-labelledby="missions-title">
+    <header class="section-header">
+      <div>
+        <p class="section-index">01 / Arcade directory</p>
+        <h2 id="missions-title">Active missions</h2>
+      </div>
+      <p class="mission-count"><strong>{missionCount}</strong> signal online</p>
+    </header>
+
+    <div class="game-list">
+      {games.map((game, index) => (
+        <GameCard game={game} index={index} />
+      ))}
+    </div>
+  </section>
+
+  <section class="incoming" aria-labelledby="incoming-title">
+    <div>
+      <p class="section-index">02 / Relay queue</p>
+      <h2 id="incoming-title">More signals incoming.</h2>
+    </div>
+    <p>
+      New arcade missions will join the network as soon as they clear final
+      systems checks.
+    </p>
+    <div class="signal-line" aria-hidden="true">
+      <span></span>
+    </div>
+  </section>
+</Layout>

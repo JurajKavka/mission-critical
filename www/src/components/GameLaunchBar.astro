@@ -1,0 +1,36 @@
+---
+import type { Game } from '../data/games';
+import { getGameUrl } from '../lib/url';
+
+interface Props {
+  games: readonly Game[];
+}
+
+const { games } = Astro.props;
+---
+
+<nav class="quick-launch" aria-label="Playable games">
+  <div class="quick-launch-frame">
+    <div class="quick-launch-header">
+      <span>Playable now</span>
+      <span>{String(games.length).padStart(2, '0')} online</span>
+    </div>
+    <div class="quick-launch-list">
+      {games.map((game, index) => <a
+        class="quick-launch-game"
+        href={getGameUrl(game.id)}
+      >
+        <span class="quick-launch-index">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <span class="quick-launch-name">
+          <strong>{game.name}</strong>
+          <small>{game.objective}</small>
+        </span>
+        <span class="quick-launch-action">
+          Launch <i aria-hidden="true">→</i>
+        </span>
+      </a>)}
+    </div>
+  </div>
+</nav>

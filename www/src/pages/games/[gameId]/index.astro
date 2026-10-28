@@ -1,0 +1,40 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import { games } from '../../../data/games';
+
+interface Props {
+  gameId: string;
+}
+
+export const getStaticPaths: GetStaticPaths = () =>
+  games.map((game) => ({
+    params: { gameId: game.id },
+    props: { gameId: game.id },
+  }));
+
+const gameHtmlModules = import.meta.glob<string>(
+  '../../../../../*/dist/index.html',
+  {
+    eager: true,
+    import: 'default',
+    query: '?raw',
+  },
+);
+
+const getGameHtml = (gameId: string): string => {
+  const gamePath = `../../../../../${gameId}/dist/index.html`;
+  const gameHtml = gameHtmlModules[gamePath];
+
+  if (gameHtml) {
+    return gameHtml;
+  } else {
+    throw new Error(`Missing production build for game: ${gameId}`);
+  }
+};
+
+const { gameId } = Astro.props;
+const gameHtml = getGameHtml(gameId);
+---
+
+<Fragment set:html={gameHtml} />
