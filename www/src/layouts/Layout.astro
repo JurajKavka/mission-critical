@@ -1,0 +1,82 @@
+---
+import { asset, home } from '../lib/url';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+
+const getSocialImageBaseUrl = (): URL => {
+  if (import.meta.env.PROD && Astro.site) {
+    return Astro.site;
+  } else {
+    return Astro.url;
+  }
+};
+
+const socialImageUrl = new URL(asset('og-image.png'), getSocialImageBaseUrl())
+  .href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#02040b" />
+    <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Mission Critical neon browser arcade with a wireframe spacecraft and radar display"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <link rel="icon" href={asset('favicon.svg')} type="image/svg+xml" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#missions"> Skip to missions </a>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href={home()} aria-label="Mission Critical home">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span>
+            <span></span>
+          </span>
+          <span> Mission <i>//</i> Critical </span>
+        </a>
+
+        <div class="header-telemetry" aria-label="Network status">
+          <span> <i class="status-light"></i>Relay online </span>
+          <span class="header-sector">Sector 01</span>
+        </div>
+      </header>
+
+      <main>
+        <slot />
+      </main>
+
+      <footer class="site-footer">
+        <p>Mission Critical // Independent browser arcade</p>
+        <a
+          href="https://github.com/JurajKavka/mission-critical"
+          rel="noreferrer"
+          target="_blank"
+        >
+          View source <span aria-hidden="true">↗</span>
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>

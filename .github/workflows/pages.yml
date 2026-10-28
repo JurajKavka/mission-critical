@@ -1,0 +1,67 @@
+# Publishes the Astro catalog and all playable games to GitHub Pages.
+# One-time repository setup: Settings > Pages > Build and deployment > Source:
+# "GitHub Actions".
+name: Deploy website
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            asteroids/package-lock.json
+            www/package-lock.json
+
+      - name: Install Asteroids dependencies
+        run: npm ci --prefix asteroids
+
+      - name: Install website dependencies
+        run: npm ci --prefix www
+
+      - name: Check Asteroids
+        run: npm run check --prefix asteroids
+
+      - name: Check website
+        run: npm run check --prefix www
+
+      - name: Build deployable site
+        run: npm run build --prefix www
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: www/dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
