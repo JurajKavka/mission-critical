@@ -1,14 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-const productionBase = '/mission-critical';
-const command = /** @type {any} */ (globalThis).process?.argv?.[2];
-const base =
-  command === 'build' || command === 'preview' ? productionBase : '/';
+const siteUrl = /** @type {any} */ (globalThis).process?.env?.SITE_URL;
 
 export default defineConfig({
-  site: 'https://jurajkavka.github.io',
-  base,
+  site: siteUrl,
+  base: '/',
   output: 'static',
   build: {
     format: 'directory',
