@@ -51,3 +51,14 @@ export const mountGraphicsCatalogLink = (dom: GameDom): void => {
   graphicsCatalogLink.rel = 'noreferrer';
   dom.overlay.append(graphicsCatalogLink);
 };
+
+export const showMissionEndedMessage = (
+  dom: GameDom,
+  finalScore: number,
+): void => {
+  dom.eyebrow.textContent = 'Fleet signal lost';
+  dom.title.innerHTML = 'MISSION<br>ENDED';
+  dom.subtitle.innerHTML = `Final score: <strong>${finalScore.toLocaleString()}</strong><br>The asteroid field is still transmitting.`;
+  dom.startButton.textContent = 'Launch again';
+  dom.overlay.classList.remove('hidden');
+};

@@ -151,7 +151,11 @@ const drawBackground = (state: GameState, time: number): void => {
     const y =
       (star.y - state.ship.y * 0.012 * star.layer + state.height) %
       state.height;
-    const alpha = 0.2 + Math.sin(time * 0.0016 + star.phase) * 0.13;
+    const alpha = Math.min(
+      1,
+      (0.2 + Math.sin(time * 0.0016 + star.phase) * 0.13) *
+        graphicsConfig.background.starOpacityScale,
+    );
     context.fillStyle = `rgba(170, 231, 255, ${alpha})`;
     context.fillRect(x, y, star.size, star.size);
   }
@@ -231,7 +235,7 @@ const drawShip = (state: GameState): void => {
     ship.shield > 0 && Math.floor(ship.shield * 12) % 2 === 0 ? 0.46 : 1;
   context.globalAlpha = shipAlpha;
   context.strokeStyle = graphicsConfig.ship.color;
-  context.fillStyle = graphicsConfig.ship.backgroundColor;
+  context.fillStyle = graphicsConfig.ship.color;
   context.lineWidth = graphicsConfig.ship.lineWidth;
   context.beginPath();
   context.moveTo(20, 0);
@@ -239,7 +243,9 @@ const drawShip = (state: GameState): void => {
   context.lineTo(-8, 0);
   context.lineTo(-14, 12);
   context.closePath();
+  context.globalAlpha = shipAlpha * graphicsConfig.ship.fillOpacity;
   context.fill();
+  context.globalAlpha = shipAlpha;
   context.stroke();
 
   if (state.keys.has('KeyW') || state.keys.has('ArrowUp')) {
