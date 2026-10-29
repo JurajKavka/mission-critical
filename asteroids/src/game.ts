@@ -14,6 +14,7 @@ import { distanceWrapped, wrap } from './geometry';
 import { updateBonusHud, updateComboHud, updateHud } from './hud';
 import { drawFrame } from './renderer';
 import { createSound } from './sound';
+import { createBackgroundStars, renderGalaxyTexture } from './starfield';
 import { createGameState } from './state';
 import type { GameDom, GameState, PickupType, UpgradeType } from './types';
 
@@ -80,17 +81,12 @@ export const createGame = (dom: GameDom): GameController => {
     state.canvas.height = Math.floor(state.height * pixelRatio);
     state.context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
-    state.stars.length = 0;
-    const count = Math.floor((state.width * state.height) / 7000);
-    for (let index = 0; index < count; index += 1) {
-      state.stars.push({
-        x: Math.random() * state.width,
-        y: Math.random() * state.height,
-        size: Math.random() * 1.5 + 0.25,
-        phase: Math.random() * TAU,
-        layer: 0.3 + Math.random() * 0.7,
-      });
-    }
+    state.stars.splice(
+      0,
+      state.stars.length,
+      ...createBackgroundStars(state.width, state.height),
+    );
+    renderGalaxyTexture(state.galaxyCanvas, state.width, state.height);
   };
 
   const startGame = (): void => {

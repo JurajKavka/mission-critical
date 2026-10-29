@@ -77,6 +77,7 @@ export interface PointerState extends Position {
 export interface GameState {
   readonly canvas: HTMLCanvasElement;
   readonly context: CanvasRenderingContext2D;
+  readonly galaxyCanvas: HTMLCanvasElement;
   width: number;
   height: number;
   running: boolean;
