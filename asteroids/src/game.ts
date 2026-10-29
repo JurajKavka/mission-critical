@@ -10,6 +10,7 @@ import {
   spawnUfo,
   splitAsteroid,
 } from './entities';
+import { showMissionEndedMessage } from './dom';
 import { distanceWrapped, wrap } from './geometry';
 import { updateBonusHud, updateComboHud, updateHud } from './hud';
 import { drawFrame } from './renderer';
@@ -164,11 +165,7 @@ export const createGame = (dom: GameDom): GameController => {
     state.running = false;
     state.choosingUpgrade = false;
     dom.upgradeOverlay.classList.add('hidden');
-    dom.eyebrow.textContent = 'Fleet signal lost';
-    dom.title.innerHTML = 'MISSION<br>ENDED';
-    dom.subtitle.innerHTML = `Final score: <strong>${state.score.toLocaleString()}</strong><br>The asteroid field is still transmitting.`;
-    dom.startButton.textContent = 'Launch again';
-    dom.overlay.classList.remove('hidden');
+    showMissionEndedMessage(dom, state.score);
     sound.tone(120, 0.7, 0.06, 'sawtooth', 38);
   };
 
