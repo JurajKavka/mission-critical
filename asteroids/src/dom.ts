@@ -41,3 +41,13 @@ export const getGameDom = (): GameDom => {
     bonusStatus: getElement<HTMLDivElement>('bonusStatus'),
   };
 };
+
+export const mountGraphicsCatalogLink = (dom: GameDom): void => {
+  const graphicsCatalogLink = document.createElement('a');
+  graphicsCatalogLink.className = 'graphics-catalog-link';
+  graphicsCatalogLink.href = '/graphics/';
+  graphicsCatalogLink.textContent = 'Graphics catalog';
+  graphicsCatalogLink.target = '_blank';
+  graphicsCatalogLink.rel = 'noreferrer';
+  dom.overlay.append(graphicsCatalogLink);
+};

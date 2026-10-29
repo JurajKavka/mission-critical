@@ -1,0 +1,119 @@
+:root {
+  color: #f4feff;
+  background: #02040b;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(rgba(105, 251, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(105, 251, 255, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0%, #0b1830, #02040b 48%);
+  background-size:
+    72px 72px,
+    72px 72px,
+    auto;
+}
+
+.catalog-shell {
+  width: min(1180px, calc(100% - 44px));
+  margin: 0 auto;
+  padding: 64px 0 80px;
+}
+
+.catalog-header {
+  max-width: 680px;
+  margin-bottom: 40px;
+}
+
+.catalog-eyebrow {
+  margin: 0 0 12px;
+  color: #69fbff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.catalog-header h1 {
+  margin: 0;
+  font-size: clamp(38px, 7vw, 68px);
+  letter-spacing: -0.065em;
+  line-height: 0.94;
+  text-transform: uppercase;
+}
+
+.catalog-header > p:last-child {
+  margin: 20px 0 0;
+  color: #9db5c8;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.catalog-header code {
+  color: #69fbff;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.graphic-card {
+  overflow: hidden;
+  border: 1px solid rgba(105, 251, 255, 0.24);
+  background: rgba(4, 10, 23, 0.88);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    12px 100%,
+    0 calc(100% - 12px)
+  );
+}
+
+.graphic-preview {
+  display: block;
+  width: 100%;
+  height: 170px;
+  border-bottom: 1px solid rgba(105, 251, 255, 0.16);
+}
+
+.graphic-details {
+  min-height: 82px;
+  padding: 15px 17px 17px;
+}
+
+.graphic-index {
+  display: block;
+  margin-bottom: 7px;
+  color: #8099ae;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.graphic-name {
+  margin: 0;
+  color: #f4feff;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 560px) {
+  .catalog-shell {
+    width: min(100% - 28px, 1180px);
+    padding-top: 40px;
+  }
+}
