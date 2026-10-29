@@ -9,7 +9,7 @@ interface GalaxyStar {
   alpha: number;
 }
 
-const GALAXY_ANGLE = -Math.PI / 5;
+const GALAXY_ANGLE = (graphicsConfig.galaxy.angleDegrees * Math.PI) / 180;
 
 const getGaussianOffset = (): number => {
   const firstRandomValue = Math.max(Math.random(), Number.EPSILON);
@@ -57,9 +57,14 @@ const getBandSpread = (
 
 const getBaseGalaxyStarAlpha = (isHaloStar: boolean): number => {
   if (isHaloStar) {
-    return 0.03 + Math.random() * 0.095;
+    return (
+      (0.03 + Math.random() * 0.095) *
+      graphicsConfig.galaxy.haloStarOpacityScale
+    );
   } else {
-    return 0.14 + Math.random() * 0.27;
+    return (
+      (0.14 + Math.random() * 0.27) * graphicsConfig.galaxy.armOpacityScale
+    );
   }
 };
 
@@ -142,13 +147,26 @@ const drawGalaxyHaze = (
     0,
     bandThickness,
   );
+  const armHazeOpacity = 0.13 * graphicsConfig.galaxy.armOpacityScale;
   haze.addColorStop(0, 'rgba(228, 240, 255, 0)');
-  haze.addColorStop(0.28, 'rgba(228, 240, 255, 0.014)');
-  haze.addColorStop(0.43, 'rgba(238, 246, 255, 0.055)');
-  haze.addColorStop(0.49, 'rgba(250, 252, 255, 0.13)');
-  haze.addColorStop(0.51, 'rgba(250, 252, 255, 0.13)');
-  haze.addColorStop(0.57, 'rgba(238, 246, 255, 0.055)');
-  haze.addColorStop(0.72, 'rgba(228, 240, 255, 0.014)');
+  haze.addColorStop(
+    0.28,
+    `rgba(228, 240, 255, ${graphicsConfig.galaxy.hazeEdgeOpacity})`,
+  );
+  haze.addColorStop(
+    0.43,
+    `rgba(238, 246, 255, ${graphicsConfig.galaxy.hazeShoulderOpacity})`,
+  );
+  haze.addColorStop(0.49, `rgba(250, 252, 255, ${armHazeOpacity})`);
+  haze.addColorStop(0.51, `rgba(250, 252, 255, ${armHazeOpacity})`);
+  haze.addColorStop(
+    0.57,
+    `rgba(238, 246, 255, ${graphicsConfig.galaxy.hazeShoulderOpacity})`,
+  );
+  haze.addColorStop(
+    0.72,
+    `rgba(228, 240, 255, ${graphicsConfig.galaxy.hazeEdgeOpacity})`,
+  );
   haze.addColorStop(1, 'rgba(228, 240, 255, 0)');
 
   context.fillStyle = haze;
@@ -218,6 +236,28 @@ const drawGalaxyDustLane = (
   context.restore();
 };
 
+const applyGalaxyEdgeFade = (
+  context: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+): void => {
+  const edgeMargin = graphicsConfig.galaxy.edgeMarginRatio;
+  const fadeEnd = edgeMargin + graphicsConfig.galaxy.edgeFadeRatio;
+  const galaxyMask = context.createLinearGradient(0, 0, width, 0);
+  galaxyMask.addColorStop(0, 'rgba(0, 0, 0, 0)');
+  galaxyMask.addColorStop(edgeMargin, 'rgba(0, 0, 0, 0)');
+  galaxyMask.addColorStop(fadeEnd, 'rgba(0, 0, 0, 1)');
+  galaxyMask.addColorStop(1 - fadeEnd, 'rgba(0, 0, 0, 1)');
+  galaxyMask.addColorStop(1 - edgeMargin, 'rgba(0, 0, 0, 0)');
+  galaxyMask.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+  context.save();
+  context.globalCompositeOperation = 'destination-in';
+  context.fillStyle = galaxyMask;
+  context.fillRect(0, 0, width, height);
+  context.restore();
+};
+
 export const renderGalaxyTexture = (
   canvas: HTMLCanvasElement,
   width: number,
@@ -239,4 +279,5 @@ export const renderGalaxyTexture = (
   }
 
   drawGalaxyDustLane(context, width, height);
+  applyGalaxyEdgeFade(context, width, height);
 };
