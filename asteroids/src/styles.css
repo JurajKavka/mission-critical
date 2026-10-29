@@ -337,6 +337,34 @@ button:hover {
   background: rgba(13, 73, 85, 0.92);
 }
 
+.graphics-catalog-link {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  z-index: 1;
+  padding: 12px 15px;
+  border: 1px solid rgba(105, 251, 255, 0.72);
+  background: rgba(5, 35, 48, 0.92);
+  color: #f4feff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  box-shadow: 0 0 22px rgba(99, 248, 255, 0.12);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    color 0.14s ease,
+    background 0.14s ease,
+    transform 0.14s ease;
+}
+
+.graphics-catalog-link:hover,
+.graphics-catalog-link:focus-visible {
+  background: rgba(13, 73, 85, 0.96);
+  outline: none;
+  transform: translateY(-2px);
+}
+
 .controls {
   display: flex;
   flex-wrap: wrap;

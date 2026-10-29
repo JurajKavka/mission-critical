@@ -1,4 +1,5 @@
 import { TAU, WAVES_PER_MISSION } from './constants';
+import { graphicsConfig } from './graphics-config';
 import type { Asteroid, GameState, Pickup, PickupType, Ufo } from './types';
 
 interface PickupDetails {
@@ -8,15 +9,15 @@ interface PickupDetails {
 
 export const getPickupDetails = (pickupType: PickupType): PickupDetails => {
   if (pickupType === 'shield') {
-    return { color: '#67faff', label: 'S' };
+    return { color: graphicsConfig.pickups.shieldColor, label: 'S' };
   } else if (pickupType === 'tri-shot') {
-    return { color: '#ff72db', label: '3' };
+    return { color: graphicsConfig.pickups.triShotColor, label: '3' };
   } else if (pickupType === 'rapid-fire') {
-    return { color: '#ffb35f', label: 'R' };
+    return { color: graphicsConfig.pickups.rapidFireColor, label: 'R' };
   } else if (pickupType === 'overdrive') {
-    return { color: '#ffe65f', label: 'R3' };
+    return { color: graphicsConfig.pickups.overdriveColor, label: 'R3' };
   } else {
-    return { color: '#8eff94', label: '+' };
+    return { color: graphicsConfig.pickups.extraShipColor, label: '+' };
   }
 };
 
@@ -43,13 +44,13 @@ export const drawFrame = (state: GameState, time: number): void => {
     const speed = Math.hypot(bullet.vx, bullet.vy) || 1;
     const directionX = bullet.vx / speed;
     const directionY = bullet.vy / speed;
-    context.strokeStyle = '#ff3b35';
+    context.strokeStyle = graphicsConfig.projectiles.hostileTrailColor;
     context.lineWidth = 4;
     context.beginPath();
     context.moveTo(bullet.x - directionX * 13, bullet.y - directionY * 13);
     context.lineTo(bullet.x, bullet.y);
     context.stroke();
-    context.fillStyle = '#fff08a';
+    context.fillStyle = graphicsConfig.projectiles.hostileTipColor;
     context.beginPath();
     context.arc(bullet.x, bullet.y, 2.5, 0, TAU);
     context.fill();
@@ -64,26 +65,26 @@ export const drawFrame = (state: GameState, time: number): void => {
       const tailX = bullet.x - directionX * trail;
       const tailY = bullet.y - directionY * trail;
 
-      context.strokeStyle = '#ff6a16';
+      context.strokeStyle = graphicsConfig.projectiles.rapidTrailColor;
       context.lineWidth = 7;
       context.beginPath();
       context.moveTo(tailX, tailY);
       context.lineTo(bullet.x, bullet.y);
       context.stroke();
 
-      context.strokeStyle = '#ffe55f';
+      context.strokeStyle = graphicsConfig.projectiles.rapidCoreColor;
       context.lineWidth = 2.5;
       context.beginPath();
       context.moveTo(tailX, tailY);
       context.lineTo(bullet.x, bullet.y);
       context.stroke();
 
-      context.fillStyle = '#fffbd0';
+      context.fillStyle = graphicsConfig.projectiles.rapidTipColor;
       context.beginPath();
       context.arc(bullet.x, bullet.y, 3.4, 0, TAU);
       context.fill();
     } else {
-      context.fillStyle = '#a8ffff';
+      context.fillStyle = graphicsConfig.projectiles.playerColor;
       context.beginPath();
       context.arc(bullet.x, bullet.y, 2.5, 0, TAU);
       context.fill();
@@ -136,9 +137,9 @@ const drawBackground = (state: GameState, time: number): void => {
     state.height * 0.5,
     Math.max(state.width, state.height) * 0.76,
   );
-  gradient.addColorStop(0, '#0b1830');
-  gradient.addColorStop(0.52, '#050b19');
-  gradient.addColorStop(1, '#010309');
+  gradient.addColorStop(0, graphicsConfig.background.centerColor);
+  gradient.addColorStop(0.52, graphicsConfig.background.middleColor);
+  gradient.addColorStop(1, graphicsConfig.background.edgeColor);
   context.fillStyle = gradient;
   context.fillRect(0, 0, state.width, state.height);
 
@@ -155,7 +156,7 @@ const drawBackground = (state: GameState, time: number): void => {
     context.fillRect(x, y, star.size, star.size);
   }
 
-  context.strokeStyle = 'rgba(225, 245, 255, .12)';
+  context.strokeStyle = graphicsConfig.background.gridColor;
   context.lineWidth = 1;
   const grid = 72;
   context.beginPath();
@@ -170,17 +171,22 @@ const drawBackground = (state: GameState, time: number): void => {
   context.stroke();
 };
 
+const getAsteroidGraphics = (asteroidSize: Asteroid['size']) => {
+  if (asteroidSize === 1) {
+    return graphicsConfig.asteroids.small;
+  } else if (asteroidSize === 2) {
+    return graphicsConfig.asteroids.medium;
+  } else {
+    return graphicsConfig.asteroids.large;
+  }
+};
+
 const drawAsteroid = (state: GameState, asteroid: Asteroid): void => {
   const { context } = state;
-  context.strokeStyle =
-    asteroid.size === 1
-      ? '#ff66cd'
-      : asteroid.size === 2
-        ? '#a176ff'
-        : '#7657d9';
-  context.fillStyle =
-    asteroid.size === 1 ? 'rgba(128, 26, 106, .16)' : 'rgba(61, 36, 114, .19)';
-  context.lineWidth = asteroid.size === 1 ? 1.5 : 2;
+  const asteroidGraphics = getAsteroidGraphics(asteroid.size);
+  context.strokeStyle = asteroidGraphics.color;
+  context.fillStyle = asteroidGraphics.color;
+  context.lineWidth = asteroidGraphics.lineWidth;
   context.beginPath();
   for (let index = 0; index < asteroid.shape.length; index += 1) {
     const angle = asteroid.angle + (index / asteroid.shape.length) * TAU;
@@ -194,10 +200,12 @@ const drawAsteroid = (state: GameState, asteroid: Asteroid): void => {
     }
   }
   context.closePath();
+  context.globalAlpha = asteroidGraphics.fillOpacity;
   context.fill();
+  context.globalAlpha = 1;
   context.stroke();
 
-  context.strokeStyle = 'rgba(189, 168, 255, .22)';
+  context.strokeStyle = graphicsConfig.asteroids.detailColor;
   context.beginPath();
   context.arc(
     asteroid.x - asteroid.radius * 0.14,
@@ -219,11 +227,12 @@ const drawShip = (state: GameState): void => {
   context.save();
   context.translate(ship.x, ship.y);
   context.rotate(ship.angle);
-  context.globalAlpha =
+  const shipAlpha =
     ship.shield > 0 && Math.floor(ship.shield * 12) % 2 === 0 ? 0.46 : 1;
-  context.strokeStyle = '#86fcff';
-  context.fillStyle = 'rgba(54, 205, 226, .16)';
-  context.lineWidth = 2;
+  context.globalAlpha = shipAlpha;
+  context.strokeStyle = graphicsConfig.ship.color;
+  context.fillStyle = graphicsConfig.ship.backgroundColor;
+  context.lineWidth = graphicsConfig.ship.lineWidth;
   context.beginPath();
   context.moveTo(20, 0);
   context.lineTo(-14, -12);
@@ -244,7 +253,7 @@ const drawShip = (state: GameState): void => {
   context.restore();
 
   if (ship.shield > 0) {
-    context.strokeStyle = `rgba(113, 246, 255, ${0.18 + ship.shield * 0.08})`;
+    context.strokeStyle = `rgba(${graphicsConfig.ship.shieldRgb}, ${0.18 + ship.shield * 0.08})`;
     context.lineWidth = 1;
     context.beginPath();
     context.arc(
@@ -269,8 +278,8 @@ const drawPickup = (state: GameState, pickup: Pickup, time: number): void => {
   context.translate(pickup.x, pickup.y);
   context.rotate(pickup.angle);
   context.strokeStyle = details.color;
-  context.fillStyle = 'rgba(18, 13, 38, .78)';
-  context.lineWidth = 2;
+  context.fillStyle = details.color;
+  context.lineWidth = graphicsConfig.pickups.lineWidth;
   context.beginPath();
   for (let index = 0; index < 6; index += 1) {
     const angle = (index / 6) * TAU;
@@ -283,7 +292,9 @@ const drawPickup = (state: GameState, pickup: Pickup, time: number): void => {
     }
   }
   context.closePath();
+  context.globalAlpha = alpha * graphicsConfig.pickups.fillOpacity;
   context.fill();
+  context.globalAlpha = alpha;
   context.stroke();
   context.restore();
 
@@ -302,15 +313,15 @@ const drawUfo = (state: GameState, ufo: Ufo, time: number): void => {
   const pulse = 0.65 + Math.sin(time * 0.012 + ufo.phase) * 0.2;
   context.save();
   context.translate(ufo.x, ufo.y);
-  context.fillStyle = 'rgba(255, 46, 118, .2)';
-  context.strokeStyle = '#ff4c91';
+  context.fillStyle = graphicsConfig.ufo.bodyFillColor;
+  context.strokeStyle = graphicsConfig.ufo.bodyStrokeColor;
   context.lineWidth = 2;
   context.beginPath();
   context.ellipse(0, 4, 27, 9, 0, 0, TAU);
   context.fill();
   context.stroke();
-  context.fillStyle = 'rgba(255, 205, 88, .2)';
-  context.strokeStyle = '#ffd35d';
+  context.fillStyle = graphicsConfig.ufo.canopyFillColor;
+  context.strokeStyle = graphicsConfig.ufo.canopyStrokeColor;
   context.beginPath();
   context.arc(0, 2, 11, Math.PI, 0);
   context.lineTo(11, 4);
@@ -318,7 +329,7 @@ const drawUfo = (state: GameState, ufo: Ufo, time: number): void => {
   context.closePath();
   context.fill();
   context.stroke();
-  context.fillStyle = `rgba(255, 224, 91, ${pulse})`;
+  context.fillStyle = `rgba(${graphicsConfig.ufo.lightColor}, ${pulse})`;
   for (let index = -2; index <= 2; index += 1) {
     context.beginPath();
     context.arc(index * 9, 6, 2, 0, TAU);
@@ -327,9 +338,9 @@ const drawUfo = (state: GameState, ufo: Ufo, time: number): void => {
   context.restore();
 
   const healthWidth = 42;
-  context.fillStyle = 'rgba(3, 5, 14, .8)';
+  context.fillStyle = graphicsConfig.ufo.healthTrackColor;
   context.fillRect(ufo.x - healthWidth / 2, ufo.y - 22, healthWidth, 3);
-  context.fillStyle = '#ffcf55';
+  context.fillStyle = graphicsConfig.ufo.healthColor;
   context.fillRect(
     ufo.x - healthWidth / 2,
     ufo.y - 22,

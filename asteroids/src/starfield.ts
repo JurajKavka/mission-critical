@@ -1,4 +1,5 @@
 import { TAU } from './constants';
+import { graphicsConfig } from './graphics-config';
 import type { Star } from './types';
 
 interface GalaxyStar {
@@ -167,9 +168,18 @@ const drawGalaxyHaze = (
   context.rotate(GALAXY_ANGLE);
   context.scale(1, 0.34);
   const bulge = context.createRadialGradient(0, 0, 0, 0, 0, bulgeRadius);
-  bulge.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
-  bulge.addColorStop(0.2, 'rgba(250, 252, 255, 0.2)');
-  bulge.addColorStop(0.48, 'rgba(240, 247, 255, 0.09)');
+  bulge.addColorStop(
+    0,
+    `rgba(255, 255, 255, ${graphicsConfig.galaxy.coreOpacity})`,
+  );
+  bulge.addColorStop(
+    0.2,
+    `rgba(250, 252, 255, ${graphicsConfig.galaxy.innerOpacity})`,
+  );
+  bulge.addColorStop(
+    0.48,
+    `rgba(240, 247, 255, ${graphicsConfig.galaxy.outerOpacity})`,
+  );
   bulge.addColorStop(1, 'rgba(228, 240, 255, 0)');
   context.fillStyle = bulge;
   context.beginPath();

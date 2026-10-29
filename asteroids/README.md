@@ -18,6 +18,11 @@ npm install
 npm run dev
 ```
 
+Development mode adds a **Graphics catalog** link to the game's start screen.
+The link and catalog are not included in the production build. Tune their
+shared colors and rendering values in `src/graphics-config.ts`; both the
+catalog and game use that source file.
+
 ## Production build
 
 ```sh
