@@ -1,7 +1,5 @@
-# Publishes the Astro catalog and all playable games to GitHub Pages.
-# One-time repository setup: Settings > Pages > Build and deployment > Source:
-# "GitHub Actions".
-name: Deploy website
+# Validates the Astro catalog and all playable games.
+name: Check website
 
 on:
   push:
@@ -13,11 +11,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: false
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,27 +39,3 @@ jobs:
 
       - name: Check website
         run: npm run check --prefix www
-
-      - name: Build deployable site
-        run: npm run build --prefix www
-
-      - name: Upload Pages artifact
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: www/dist
-
-  deploy:
-    if: github.event_name != 'pull_request'
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

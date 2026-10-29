@@ -1,7 +1,6 @@
 # Mission Critical website
 
-Static Astro catalog for the games in this repository. The production build is
-published at <https://jurajkavka.github.io/mission-critical/>.
+Static Astro catalog for the games in this repository.
 
 ## Commands
 
@@ -17,9 +16,8 @@ Run these from `www/` after installing dependencies in both `www/` and
 | `npm run build`   | Build the games and complete static catalog |
 | `npm run preview` | Serve the complete production bundle        |
 
-The catalog is configured with the `/mission-critical` base path used by a
-GitHub Pages project site. Development stays on `/`; the production build and
-preview use the repository subpath.
+The catalog is served from the domain root. Set the `SITE_URL` build variable
+to the public site URL to generate absolute social-image URLs.
 
 ## Adding a game
 
@@ -31,7 +29,6 @@ game page reads each self-contained `dist/index.html` and emits it at
 
 ## Publishing
 
-The Pages workflow builds the Astro catalog and Neon Asteroids, validates both,
-and uploads `www/dist`. In GitHub, set **Settings → Pages → Build and
-deployment → Source** to **GitHub Actions**. Pushes to `main` then deploy the
-site automatically.
+The production build emits the static site to `www/dist`. The GitHub Actions
+workflow validates both the catalog and Neon Asteroids but does not publish the
+website.
