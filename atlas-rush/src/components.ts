@@ -17,11 +17,6 @@ export const createMap = (region: Region): SVGSVGElement => {
     path.setAttribute('data-country', country.id);
     path.setAttribute('vector-effect', 'non-scaling-stroke');
     path.classList.add('country');
-    if (import.meta.env.DEV) {
-      const title = document.createElementNS(svgNamespace, 'title');
-      title.textContent = country.name;
-      path.append(title);
-    }
     svg.append(path);
   }
   return svg;
@@ -36,6 +31,15 @@ export const updateMap = (
     const id = path.dataset.country ?? '';
     path.classList.toggle('country--target', id === target);
     path.classList.toggle('country--guessed', guessed.has(id));
+    if (id === target && map.classList.contains('continent-map--learning')) {
+      path.setAttribute('tabindex', '0');
+      path.setAttribute('role', 'button');
+      path.setAttribute('aria-label', 'Reveal the target country name');
+    } else {
+      path.removeAttribute('tabindex');
+      path.removeAttribute('role');
+      path.removeAttribute('aria-label');
+    }
   }
 };
 
