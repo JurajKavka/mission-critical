@@ -23,4 +23,15 @@ export const games: readonly Game[] = [
     accent: 'violet',
     status: 'online',
   },
+  {
+    id: 'atlas-rush',
+    name: 'Atlas Rec',
+    designation: 'MC–002',
+    description:
+      'Identify the countries of Africa before the survey clock runs out.',
+    objective: 'Map the continent',
+    controls: ['Keyboard'],
+    accent: 'violet',
+    status: 'online',
+  },
 ];

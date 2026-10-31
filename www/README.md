@@ -4,8 +4,8 @@ Static Astro catalog for the games in this repository.
 
 ## Commands
 
-Run these from `www/` after installing dependencies in both `www/` and
-`asteroids/`:
+Run these from `www/` after installing dependencies in `www/`,
+`asteroids/`, and `atlas-rush/`:
 
 | Command           | Purpose                                     |
 | ----------------- | ------------------------------------------- |

@@ -26,16 +26,23 @@ jobs:
           cache: npm
           cache-dependency-path: |
             asteroids/package-lock.json
+            atlas-rush/package-lock.json
             www/package-lock.json
 
       - name: Install Asteroids dependencies
         run: npm ci --prefix asteroids
+
+      - name: Install Atlas Rec dependencies
+        run: npm ci --prefix atlas-rush
 
       - name: Install website dependencies
         run: npm ci --prefix www
 
       - name: Check Asteroids
         run: npm run check --prefix asteroids
+
+      - name: Check Atlas Rec
+        run: npm run check --prefix atlas-rush
 
       - name: Check website
         run: npm run check --prefix www

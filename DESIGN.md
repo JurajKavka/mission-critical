@@ -150,8 +150,15 @@ Meters are thin horizontal tracks, usually `2px` high. Use a low-opacity neutral
 - Use a translucent deep-cyan background.
 - Use near-white uppercase monospaced text.
 - Use a minimum width around `190px`.
-- On hover, lift the button by `2px` and brighten its background.
+- On hover, brighten the background without moving the button.
+- On keyboard focus, show a single thicker cyan border rather than a separate outline. Keep the button's size and position stable.
 - Do not use rounded corners unless a game's fiction explicitly requires them.
+
+### Text input
+
+- Use a thin, subdued border and a dark background.
+- On hover or focus, show a single thicker cyan border without changing the input's size or position.
+- Keep focus clearly visible for both keyboard and pointer interaction; avoid a separate outline that creates a double border.
 
 ### Upgrade option
 

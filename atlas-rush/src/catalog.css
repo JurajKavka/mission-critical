@@ -1,0 +1,33 @@
+.catalog {
+  max-width: 1000px;
+  margin: auto;
+  padding: 40px 22px;
+}
+.catalog h1 {
+  margin: 12px 0;
+  font-size: clamp(36px, 6vw, 64px);
+  text-transform: uppercase;
+  letter-spacing: -0.06em;
+}
+.catalog > p {
+  color: #9db5c8;
+  line-height: 1.6;
+}
+.catalog-section {
+  margin-top: 36px;
+  padding: 22px;
+  border: 1px solid rgba(105, 251, 255, 0.25);
+  background: #050b19;
+}
+.catalog-section h2 {
+  color: #69fbff;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+#catalog-map {
+  height: min(70vh, 600px);
+}
+#catalog-results .panel {
+  margin: 24px auto;
+}

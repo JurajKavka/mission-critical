@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Mission Critical arcade catalog.",
   "scripts": {
-    "prepare:games": "npm --prefix ../asteroids run build",
+    "prepare:games": "npm --prefix ../asteroids run build && npm --prefix ../atlas-rush run build",
     "predev": "npm run prepare:games",
     "dev": "astro dev",
     "prestart": "npm run prepare:games",
