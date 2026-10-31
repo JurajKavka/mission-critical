@@ -10,7 +10,7 @@
     "dev": "astro dev",
     "prestart": "npm run prepare:games",
     "start": "astro dev --open",
-    "prebuild": "npm run prepare:games",
+    "prebuild": "npm ci --include=dev --prefix ../asteroids && npm ci --include=dev --prefix ../atlas-rush && npm run prepare:games",
     "build": "astro build",
     "preview": "astro preview",
     "lint": "eslint \"src/**/*.{astro,ts}\" astro.config.mjs eslint.config.js",

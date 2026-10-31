@@ -20,7 +20,7 @@ const shuffleCountries = (countries: readonly Country[]): Country[] => {
 };
 
 export const startGame = (root: HTMLElement): void => {
-  root.innerHTML = `<header class="hud"><div><p class="brand">Mission Critical <span>//</span> Atlas Rec</p><p class="label">Sector 01 / Africa</p></div><div class="hud-stats"><div class="telemetry"><span class="label">Identified</span><strong id="progress">00&nbsp;/&nbsp;00</strong></div><div id="timer-slot"></div></div></header>
+  root.innerHTML = `<header class="hud"><div><p class="brand">Mission Critical <span>//</span> Atlas Rush</p><p class="label">Sector 01 / Africa</p></div><div class="hud-stats"><div class="telemetry"><span class="label">Identified</span><strong id="progress">00&nbsp;/&nbsp;00</strong></div><div id="timer-slot"></div></div></header>
     <main class="playfield"><div class="map-heading"><span>Survey grid / 01</span><span>AFR · 54</span></div><div id="map-slot" class="map-slot"></div><div class="map-key"><span><i class="key-target"></i> Current target</span><span><i class="key-guessed"></i> Identified</span><span>Island nations shown as markers</span></div></main>
     <footer class="command"><div class="command-heading"><div><p class="eyebrow">Target acquired</p><label for="answer">Name the highlighted country</label></div><span class="command-index">01 / 54</span></div><form id="answer-form" autocomplete="off"><input id="answer" name="answer" type="text" placeholder="Enter country name in English" aria-describedby="feedback" required><button class="primary-button" type="submit">Identify<span class="button-arrow" aria-hidden="true">↵</span></button><button class="skip-button" type="button">Skip<span class="button-arrow" aria-hidden="true">→</span></button></form><p id="feedback" class="feedback" aria-live="polite">Type a name, then press Enter. Skip to return to a country later.</p></footer><div class="overlay" id="overlay"></div>`;
   const map = createMap(africa);
@@ -133,7 +133,7 @@ export const startGame = (root: HTMLElement): void => {
   });
   render();
   updateTimer(timer, ROUND_SECONDS);
-  overlay.innerHTML = `<section class="panel start-panel" role="dialog" aria-modal="true" aria-labelledby="start-title"><p class="eyebrow">Mission Critical // Sector 01</p><h1 id="start-title">Atlas <em>Rec</em></h1><p class="panel-copy">Identify the highlighted countries of Africa before the clock runs out.</p><div class="brief"><span>01 / ${africa.countries.length} countries</span><span>02 / ${formatTime(ROUND_SECONDS)} on the clock</span><span>03 / Skip and return later</span></div><button class="primary-button" type="button">Start survey<span class="button-arrow" aria-hidden="true">↗</span></button></section>`;
+  overlay.innerHTML = `<section class="panel start-panel" role="dialog" aria-modal="true" aria-labelledby="start-title"><p class="eyebrow">Mission Critical // Sector 01</p><h1 id="start-title">Atlas <em>Rush</em></h1><p class="panel-copy">Identify the highlighted countries of Africa before the clock runs out.</p><div class="brief"><span>01 / ${africa.countries.length} countries</span><span>02 / ${formatTime(ROUND_SECONDS)} on the clock</span><span>03 / Skip and return later</span></div><button class="primary-button" type="button">Start survey<span class="button-arrow" aria-hidden="true">↗</span></button></section>`;
   if (import.meta.env.DEV) {
     const catalogLink = document.createElement('a');
     catalogLink.className = 'graphics-catalog-link';

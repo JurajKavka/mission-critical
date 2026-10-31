@@ -25,7 +25,7 @@ export const games: readonly Game[] = [
   },
   {
     id: 'atlas-rush',
-    name: 'Atlas Rec',
+    name: 'Atlas Rush',
     designation: 'MC–002',
     description:
       'Identify the countries of Africa before the survey clock runs out.',

@@ -32,7 +32,7 @@ jobs:
       - name: Install Asteroids dependencies
         run: npm ci --prefix asteroids
 
-      - name: Install Atlas Rec dependencies
+      - name: Install Atlas Rush dependencies
         run: npm ci --prefix atlas-rush
 
       - name: Install website dependencies
@@ -41,7 +41,7 @@ jobs:
       - name: Check Asteroids
         run: npm run check --prefix asteroids
 
-      - name: Check Atlas Rec
+      - name: Check Atlas Rush
         run: npm run check --prefix atlas-rush
 
       - name: Check website

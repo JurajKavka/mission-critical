@@ -1,0 +1,7 @@
+{
+  "name": "mission-critical",
+  "private": true,
+  "scripts": {
+    "build": "npm ci --include=dev --prefix www && npm --prefix www run build"
+  }
+}
