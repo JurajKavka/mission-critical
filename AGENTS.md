@@ -14,6 +14,7 @@ These instructions apply to the entire repository.
 - Do not introduce classes when functions, closures, or plain objects are sufficient.
 - Use descriptive names. Avoid vague names such as `type` when a domain-specific name such as `pickupType` is clearer.
 - Use single quotes in TypeScript and JavaScript. Keep Prettier configured with `singleQuote: true`.
+- Do not use `!important` in CSS; resolve precedence through selectors and the cascade.
 - Always use curly braces for `if`, `else`, `for`, `while`, and similar control-flow statements, including one-line bodies.
 - Do not use nested ternary expressions. Extract conditional selection into a clearly named function and use explicit `if / else if / else` returns.
 - Extract calculations or mappings into focused functions when doing so gives the operation a meaningful domain name, such as `getAsteroidRadius`, `getPickupType`, or `getPickupDetails`.
