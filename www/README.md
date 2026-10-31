@@ -29,6 +29,12 @@ game page reads each self-contained `dist/index.html` and emits it at
 
 ## Publishing
 
-The production build emits the static site to `www/dist`. The GitHub Actions
-workflow validates both the catalog and Neon Asteroids but does not publish the
-website.
+For Cloudflare, use this build command from the repository root:
+
+```sh
+npm run build
+```
+
+The command installs the website and game dependencies, then builds all games
+and the catalog. Set the build output directory to `www/dist`. The GitHub Actions workflow validates the catalog and games but
+does not publish the website.

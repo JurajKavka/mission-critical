@@ -1,4 +1,4 @@
-# Atlas Rec
+# Atlas Rush
 
 Identify the countries of Africa against the clock. Start a round, enter the English name of each highlighted country, or skip to return to it later. The timer duration is `ROUND_SECONDS` in `src/regions.ts`. The region data is separate from the game so more regions can be added later.
 
