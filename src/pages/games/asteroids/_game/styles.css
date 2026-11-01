@@ -312,7 +312,7 @@ h1 {
   line-height: 1.7;
 }
 
-button {
+button:not(.action-button) {
   min-width: 190px;
   padding: 13px 24px;
   border: 1px solid #62f7ff;
@@ -332,9 +332,13 @@ button {
     background 0.14s ease;
 }
 
-button:hover {
+button:not(.action-button):hover {
   transform: translateY(-2px);
   background: rgba(13, 73, 85, 0.92);
+}
+
+#start {
+  min-width: 190px;
 }
 
 .graphics-catalog-link {

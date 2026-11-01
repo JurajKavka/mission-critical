@@ -4,10 +4,21 @@ export type Country = {
   readonly path: string;
 };
 
+export type RegionId = 'africa' | 'south-america';
+
 export type Region = {
+  readonly id: RegionId;
+  readonly code: string;
+  readonly hasIslandMarkers: boolean;
   readonly name: string;
   readonly viewBox: string;
   readonly countries: readonly Country[];
+};
+
+export type Level = {
+  readonly id: string;
+  readonly label: string;
+  readonly secondsPerCountry: number;
 };
 
 export type Results = {

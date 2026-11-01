@@ -1,0 +1,50 @@
+---
+import { home } from '../lib/url';
+
+interface Props {
+  gameName: string;
+}
+
+const { gameName } = Astro.props;
+---
+
+<nav class="game-breadcrumb" aria-label="Game location">
+  <a href={home()}>Mission Critical</a>
+  <span class="separator" aria-hidden="true">//</span>
+  <span>{gameName}</span>
+</nav>
+
+<style>
+  .game-breadcrumb {
+    position: absolute;
+    top: 22px;
+    left: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: #69fbff;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+
+  .game-breadcrumb a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .game-breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .game-breadcrumb a:focus-visible {
+    outline: 2px solid #69fbff;
+    outline-offset: 3px;
+  }
+
+  .separator {
+    color: #ff65dc;
+  }
+</style>

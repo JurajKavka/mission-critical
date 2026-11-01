@@ -59,6 +59,9 @@ export const showMissionEndedMessage = (
   dom.eyebrow.textContent = 'Fleet signal lost';
   dom.title.innerHTML = 'MISSION<br>ENDED';
   dom.subtitle.innerHTML = `Final score: <strong>${finalScore.toLocaleString()}</strong><br>The asteroid field is still transmitting.`;
-  dom.startButton.textContent = 'Launch again';
+  const startLabel = dom.startButton.querySelector('[data-action-label]');
+  if (startLabel) {
+    startLabel.textContent = 'Launch again';
+  }
   dom.overlay.classList.remove('hidden');
 };
