@@ -4,13 +4,18 @@ export const createLearningControls = (
   map: SVGSVGElement,
   region: Region,
   answer: HTMLInputElement,
-): { setEnabled: (enabled: boolean) => void; hide: () => void } => {
+): {
+  setEnabled: (enabled: boolean) => void;
+  setRegion: (region: Region) => void;
+  hide: () => void;
+} => {
   const tooltip = document.createElement('div');
   tooltip.className = 'country-tooltip';
   tooltip.setAttribute('role', 'status');
   tooltip.hidden = true;
   document.body.append(tooltip);
   let enabled = false;
+  let currentRegion = region;
 
   const isTarget = (element: EventTarget | null): element is Element =>
     element instanceof Element && element.matches('path.country--target');
@@ -20,7 +25,7 @@ export const createLearningControls = (
   };
 
   const showCountry = (path: Element, x: number, y: number): void => {
-    const country = region.countries.find(
+    const country = currentRegion.countries.find(
       (candidate) => candidate.id === path.getAttribute('data-country'),
     );
     if (!enabled || !isTarget(path) || !country) {
@@ -79,10 +84,15 @@ export const createLearningControls = (
     map.setAttribute(
       'aria-label',
       enabled
-        ? `${region.name} map. Select the highlighted country to reveal its name.`
-        : `${region.name} map. The highlighted country is the current target.`,
+        ? `${currentRegion.name} map. Select the highlighted country to reveal its name.`
+        : `${currentRegion.name} map. The highlighted country is the current target.`,
     );
   };
 
-  return { setEnabled, hide };
+  const setRegion = (nextRegion: Region): void => {
+    currentRegion = nextRegion;
+    setEnabled(enabled);
+  };
+
+  return { setEnabled, setRegion, hide };
 };

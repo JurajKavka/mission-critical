@@ -65,7 +65,7 @@ button {
 .map-heading,
 .map-key,
 .command-index,
-.brief,
+.region-select,
 .ratio {
   text-transform: uppercase;
 }
@@ -343,15 +343,51 @@ input:focus {
   line-height: 1.7;
   font-size: 14px;
 }
-.brief {
+.region-select {
   display: grid;
-  gap: 10px;
-  margin: 25px 0;
-  padding: 18px 0;
+  gap: 12px;
+  min-width: 0;
+  margin: 24px 0 12px;
+  padding: 15px 0;
+  border: 0;
   border-block: 1px solid rgba(105, 251, 255, 0.16);
-  color: #9db5c8;
+}
+.region-select legend {
+  padding: 0 8px 0 0;
+  color: #8099ae;
   font-size: 10px;
   letter-spacing: 0.12em;
+}
+.region-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f4feff;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+.region-option input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #69fbff;
+}
+.change-region {
+  display: block;
+  margin-top: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #9db5c8;
+  font: inherit;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.change-region:hover {
+  color: #69fbff;
 }
 .panel .primary-button,
 .panel .action-button {
