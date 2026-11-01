@@ -247,6 +247,7 @@ button {
   color: #8099ae;
   font-size: 10px;
   white-space: nowrap;
+  text-align: right;
 }
 form {
   display: flex;
