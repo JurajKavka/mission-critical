@@ -1,0 +1,6 @@
+.astro
+.vite-cache
+dist
+package-lock.json
+AGENTS.md
+www
