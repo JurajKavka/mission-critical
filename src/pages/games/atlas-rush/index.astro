@@ -1,6 +1,9 @@
 ---
 import ActionButton from '../../../components/ActionButton.astro';
+import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
 import CancelButton from '../../../components/CancelButton.astro';
+import { home } from '../../../lib/url';
+import { levels } from './_game/config';
 import { regions } from './_game/regions';
 ---
 
@@ -16,7 +19,9 @@ import { regions } from './_game/regions';
     <div id="app">
       <header class="hud">
         <div>
-          <p class="brand">Mission Critical <span>//</span> Atlas Rush</p>
+          <p class="brand">
+            <a href={home()}>Mission Critical</a> <span>//</span> Atlas Rush
+          </p>
           <p class="label" id="region-label">Sector 01 / Africa</p>
         </div>
         <div class="hud-stats">
@@ -29,7 +34,19 @@ import { regions } from './_game/regions';
       </header>
       <main class="playfield">
         <div class="map-heading">
-          <span>Survey grid / 01</span><span id="region-code">AFR · 54</span>
+          <span>Survey grid / 01</span>
+          <div class="map-heading-controls">
+            <span id="region-code">AFR · 54</span>
+            <button
+              class="exit-button"
+              id="exit-game"
+              type="button"
+              aria-label="End game"
+              hidden
+            >
+              ×
+            </button>
+          </div>
         </div>
         <div id="map-slot" class="map-slot"></div>
         <div class="map-key">
@@ -65,14 +82,31 @@ import { regions } from './_game/regions';
           Type a name, then press Enter. Skip to return to a country later.
         </p>
       </footer>
+      <dialog
+        class="panel exit-confirm"
+        id="exit-confirm"
+        aria-labelledby="exit-title"
+        aria-describedby="exit-description"
+      >
+        <p class="eyebrow">Survey paused</p>
+        <h2 id="exit-title">End this game?</h2>
+        <p class="panel-copy" id="exit-description">
+          Your progress in this round will be lost.
+        </p>
+        <div class="exit-actions">
+          <ActionButton id="confirm-exit" label="End game" />
+          <CancelButton id="resume-game" label="Continue" />
+        </div>
+      </dialog>
       <div class="overlay" id="overlay">
+        <GameBreadcrumb gameName="Atlas Rush" />
         <section
           class="panel start-panel"
           role="dialog"
           aria-modal="true"
           aria-labelledby="start-title"
         >
-          <p class="eyebrow">Mission Critical // Sector 01</p>
+          <p class="eyebrow">Sector 01</p>
           <h1 id="start-title">Atlas <em>Rush</em></h1>
           <p class="panel-copy">
             Identify the highlighted countries before the clock runs out.
@@ -87,6 +121,18 @@ import { regions } from './_game/regions';
                 checked={index === 0}
               />
               <span>{region.name}</span>
+            </label>)}
+          </fieldset>
+          <fieldset class="region-select level-select">
+            <legend>Select a level</legend>
+            {levels.map((level, index) => <label class="region-option">
+              <input
+                type="radio"
+                name="level"
+                value={level.id}
+                checked={index === 0}
+              />
+              <span>{level.label}</span>
             </label>)}
           </fieldset>
           <ActionButton label="Start survey" />

@@ -7,7 +7,8 @@ import {
   updateTimer,
 } from './components';
 import { createLearningControls } from './learning';
-import { africa, regions, ROUND_SECONDS } from './regions';
+import { getRoundSeconds, levels } from './config';
+import { africa, regions } from './regions';
 import type { Country } from './types';
 
 const shuffleCountries = (countries: readonly Country[]): Country[] => {
@@ -36,13 +37,21 @@ export const startGame = (root: HTMLElement): void => {
   const regionCode = root.querySelector<HTMLElement>('#region-code')!;
   const islandMarkers = root.querySelector<HTMLElement>('#island-markers')!;
   const startPanel = root.querySelector<HTMLElement>('.start-panel')!;
+  const breadcrumb = overlay.querySelector<HTMLElement>('.game-breadcrumb')!;
+  const exitButton = root.querySelector<HTMLButtonElement>('#exit-game')!;
+  const exitDialog = root.querySelector<HTMLDialogElement>('#exit-confirm')!;
+  const confirmExit = root.querySelector<HTMLButtonElement>('#confirm-exit')!;
+  const resumeGame = root.querySelector<HTMLButtonElement>('#resume-game')!;
   mapSlot.append(map);
   timerSlot.append(timer);
   const learning = createLearningControls(map, africa, answer);
   let selectedRegion = africa;
+  let selectedLevel = levels[0];
+  let roundSeconds = getRoundSeconds(selectedRegion, selectedLevel);
   let remaining = shuffleCountries(selectedRegion.countries);
   let guessed = new Set<string>();
   let startedAt = 0;
+  let pausedAt = 0;
   let interval = 0;
   let active = false;
   let learningMode = false;
@@ -58,13 +67,14 @@ export const startGame = (root: HTMLElement): void => {
   };
   const finish = (completed: boolean): void => {
     active = false;
+    exitButton.hidden = true;
     learning.setEnabled(false);
     window.clearInterval(interval);
     const elapsedSeconds = Math.min(
-      ROUND_SECONDS,
+      roundSeconds,
       (performance.now() - startedAt) / 1000,
     );
-    updateTimer(timer, completed ? ROUND_SECONDS - elapsedSeconds : 0);
+    updateTimer(timer, completed ? roundSeconds - elapsedSeconds : 0);
     render();
     const results = createResults({
       total: selectedRegion.countries.length,
@@ -72,16 +82,16 @@ export const startGame = (root: HTMLElement): void => {
       elapsedSeconds,
       completed,
     });
-    overlay.replaceChildren(results);
+    overlay.replaceChildren(breadcrumb, results);
     overlay.classList.add('overlay--visible');
     const replay = results.querySelector<HTMLButtonElement>('button')!;
     replay.addEventListener('click', begin);
     const changeRegion = document.createElement('button');
     changeRegion.className = 'change-region';
     changeRegion.type = 'button';
-    changeRegion.textContent = 'Change region →';
+    changeRegion.textContent = 'Change settings →';
     changeRegion.addEventListener('click', () => {
-      overlay.replaceChildren(startPanel);
+      overlay.replaceChildren(breadcrumb, startPanel);
       const selectedOption = startPanel.querySelector<HTMLInputElement>(
         'input[name="region"]:checked',
       );
@@ -91,7 +101,7 @@ export const startGame = (root: HTMLElement): void => {
     replay.focus();
   };
   const tick = (): boolean => {
-    const seconds = ROUND_SECONDS - (performance.now() - startedAt) / 1000;
+    const seconds = roundSeconds - (performance.now() - startedAt) / 1000;
     updateTimer(timer, seconds);
     if (seconds <= 0) {
       finish(false);
@@ -100,10 +110,12 @@ export const startGame = (root: HTMLElement): void => {
     return true;
   };
   const begin = (): void => {
+    roundSeconds = getRoundSeconds(selectedRegion, selectedLevel);
     remaining = shuffleCountries(selectedRegion.countries);
     guessed = new Set<string>();
     startedAt = performance.now();
     active = true;
+    exitButton.hidden = false;
     learning.setEnabled(learningMode);
     learningHint.hidden = !learningMode;
     overlay.classList.remove('overlay--visible');
@@ -112,10 +124,49 @@ export const startGame = (root: HTMLElement): void => {
       'Type a name, then press Enter. Skip to return to a country later.';
     feedback.classList.remove('feedback--error');
     render();
-    updateTimer(timer, ROUND_SECONDS);
+    updateTimer(timer, roundSeconds);
     interval = window.setInterval(tick, 200);
     answer.focus();
   };
+  const openExitDialog = (): void => {
+    if (!active || exitDialog.open || !tick()) {
+      return;
+    }
+    pausedAt = performance.now();
+    window.clearInterval(interval);
+    learning.hide();
+    exitDialog.returnValue = '';
+    exitDialog.showModal();
+    resumeGame.focus();
+  };
+  exitButton.addEventListener('click', openExitDialog);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !event.repeat && active && !exitDialog.open) {
+      event.preventDefault();
+      openExitDialog();
+    }
+  });
+  confirmExit.addEventListener('click', () => exitDialog.close('end'));
+  resumeGame.addEventListener('click', () => exitDialog.close('resume'));
+  exitDialog.addEventListener('close', () => {
+    if (exitDialog.returnValue === 'end') {
+      active = false;
+      exitButton.hidden = true;
+      learning.setEnabled(false);
+      learningHint.hidden = true;
+      guessed.clear();
+      answer.value = '';
+      updateTimer(timer, roundSeconds);
+      render();
+      overlay.replaceChildren(breadcrumb, startPanel);
+      overlay.classList.add('overlay--visible');
+      startPanel.querySelector<HTMLButtonElement>('button')?.focus();
+    } else {
+      startedAt += performance.now() - pausedAt;
+      interval = window.setInterval(tick, 200);
+      answer.focus();
+    }
+  });
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!active || !tick()) {
@@ -171,6 +222,8 @@ export const startGame = (root: HTMLElement): void => {
     regionCode.textContent = `${region.code} · ${region.countries.length}`;
     islandMarkers.hidden = !region.hasIslandMarkers;
     guessed.clear();
+    roundSeconds = getRoundSeconds(selectedRegion, selectedLevel);
+    updateTimer(timer, roundSeconds);
     render();
   };
   for (const option of root.querySelectorAll<HTMLInputElement>(
@@ -182,8 +235,20 @@ export const startGame = (root: HTMLElement): void => {
       }
     });
   }
+  for (const option of root.querySelectorAll<HTMLInputElement>(
+    'input[name="level"]',
+  )) {
+    option.addEventListener('change', () => {
+      const level = levels.find((candidate) => candidate.id === option.value);
+      if (option.checked && level) {
+        selectedLevel = level;
+        roundSeconds = getRoundSeconds(selectedRegion, selectedLevel);
+        updateTimer(timer, roundSeconds);
+      }
+    });
+  }
   render();
-  updateTimer(timer, ROUND_SECONDS);
+  updateTimer(timer, roundSeconds);
   if (import.meta.env.DEV) {
     const catalogLink = document.createElement('a');
     catalogLink.className = 'graphics-catalog-link';

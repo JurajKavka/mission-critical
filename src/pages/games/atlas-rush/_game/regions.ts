@@ -21,6 +21,3 @@ export const southAmerica: Region = {
 };
 
 export const regions: readonly Region[] = [africa, southAmerica];
-
-// Change this value to adjust the length of a round.
-export const ROUND_SECONDS = 300;

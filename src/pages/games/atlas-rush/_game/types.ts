@@ -15,6 +15,12 @@ export type Region = {
   readonly countries: readonly Country[];
 };
 
+export type Level = {
+  readonly id: string;
+  readonly label: string;
+  readonly secondsPerCountry: number;
+};
+
 export type Results = {
   readonly total: number;
   readonly guessed: number;

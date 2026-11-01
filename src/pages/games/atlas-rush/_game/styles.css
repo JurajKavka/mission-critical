@@ -76,6 +76,13 @@ button {
   letter-spacing: 0.25em;
   margin: 0 0 9px;
 }
+.brand a {
+  color: inherit;
+  text-decoration: none;
+}
+.brand a:hover {
+  text-decoration: underline;
+}
 .brand span {
   color: #ff65dc;
 }
@@ -88,6 +95,20 @@ button {
 .hud-stats {
   display: flex;
   gap: clamp(25px, 5vw, 70px);
+}
+.exit-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(157, 181, 200, 0.3);
+  background: transparent;
+  color: #9db5c8;
+  font-size: 22px;
+  line-height: 1;
+}
+.exit-button:hover {
+  border-color: #69fbff;
+  color: #f4feff;
 }
 .telemetry strong {
   display: block;
@@ -119,7 +140,16 @@ button {
   padding-bottom: 10px;
   border-bottom: 1px solid rgba(105, 251, 255, 0.18);
 }
-.map-heading span:last-child {
+.map-heading > span {
+  display: flex;
+  align-items: center;
+}
+.map-heading-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#region-code {
   color: #69fbff;
 }
 .map-slot {
@@ -314,10 +344,29 @@ input:focus {
 }
 .panel {
   width: min(540px, 100%);
-  padding: clamp(25px, 5vw, 42px);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  padding: 32px 42px;
   border: 1px solid rgba(105, 251, 255, 0.45);
   background: linear-gradient(135deg, #091a2a, #030713 75%);
   box-shadow: 0 0 60px rgba(22, 104, 139, 0.14);
+}
+.exit-confirm {
+  margin: auto;
+  color: #f4feff;
+}
+.exit-confirm::backdrop {
+  background: rgba(1, 3, 9, 0.86);
+}
+.exit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.exit-actions .action-button {
+  min-width: 0;
+  margin-top: 0;
 }
 .panel h1,
 .panel h2 {
@@ -350,7 +399,10 @@ input:focus {
   margin: 24px 0 12px;
   padding: 15px 0;
   border: 0;
-  border-block: 1px solid rgba(105, 251, 255, 0.16);
+  border-top: 1px solid rgba(105, 251, 255, 0.16);
+}
+.level-select {
+  margin-top: 12px;
 }
 .region-select legend {
   padding: 0 8px 0 0;
@@ -390,7 +442,7 @@ input:focus {
   color: #69fbff;
 }
 .panel .primary-button,
-.panel .action-button {
+.start-panel .action-button {
   min-width: 190px;
   margin-top: 12px;
 }
