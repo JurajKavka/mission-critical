@@ -253,4 +253,4 @@ Sound effects should be quiet by default and triggered only after a user gesture
 - Effects communicate gameplay state instead of adding visual noise.
 - Controls work with keyboard and any pointer interaction the game advertises.
 - Narrow screens retain readable controls and selection panels.
-- Source remains modular even if the final artifact is a single HTML file.
+- Source remains modular.

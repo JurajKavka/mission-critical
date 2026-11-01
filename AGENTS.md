@@ -22,7 +22,7 @@ These instructions apply to the entire repository.
 
 ## Architecture
 
-- Keep source code modular even when the production build must be a single file.
+- Keep source code modular.
 - Separate state, rendering, entity behavior, effects, geometry, DOM access, sound, and application bootstrapping.
 - Keep shared runtime dependencies, including the canvas and rendering context, in `GameState` when they are part of the game runtime.
 - Pass state explicitly to stateless helpers instead of hiding dependencies in classes or module-level mutable variables.
@@ -52,4 +52,4 @@ Do not write deeply nested ternaries or unbraced control flow.
 - Preserve strict TypeScript checking.
 - Run TypeScript, ESLint, and Prettier checks after changes.
 - Keep ESLint's `curly: ['error', 'all']` rule enabled.
-- Verify that the Asteroids production build still emits one self-contained `dist/index.html` with inline JavaScript and CSS.
+- Verify that the Astro production build succeeds.
