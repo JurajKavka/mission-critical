@@ -1,6 +1,6 @@
 # Mission Critical
 
-A collection of neon arcade games built with Astro. See the [design manual](./DESIGN.md) for the shared visual and interaction language and the source notes for [Neon Asteroids](./src/games/asteroids/README.md) and [Atlas Rush](./src/games/atlas-rush/README.md).
+A collection of neon arcade games built with Astro. See the [design manual](./DESIGN.md) for the shared visual and interaction language and the source notes for [Neon Asteroids](./src/pages/games/asteroids/_game/README.md) and [Atlas Rush](./src/pages/games/atlas-rush/_game/README.md).
 
 Install dependencies with `npm ci`, then run commands from the repository root:
 
@@ -14,7 +14,7 @@ Install dependencies with `npm ci`, then run commands from the repository root:
 
 After cleaning, run `npm ci` to reinstall dependencies.
 
-Game routes live in `src/pages/games/`; game logic and styles live in `src/games/`. Astro pages can import shared components from `src/components/`. Add new games to `src/data/games.ts` and create their routes under `src/pages/games/`.
+Game routes live in `src/pages/games/`; each game’s logic and styles live in its `_game/` directory alongside its pages. Astro pages can import shared components from `src/components/`. Add new games to `src/data/games.ts` and create their routes under `src/pages/games/`.
 
 The graphics catalogs are available at `/games/asteroids/graphics/` and `/games/atlas-rush/graphics/`. Set `SITE_URL` to the public site URL to generate absolute social-image URLs.
 
