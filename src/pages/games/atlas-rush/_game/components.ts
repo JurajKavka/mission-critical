@@ -8,7 +8,7 @@ export const createMap = (region: Region): SVGSVGElement => {
   svg.setAttribute('role', 'img');
   svg.setAttribute(
     'aria-label',
-    `${region.name} map. The highlighted country is the current target.`,
+    `${region.name} map. Identify the highlighted ${region.targetName}.`,
   );
   svg.classList.add('continent-map');
   for (const country of region.countries) {
@@ -34,7 +34,7 @@ export const updateMap = (
     if (id === target && map.classList.contains('continent-map--learning')) {
       path.setAttribute('tabindex', '0');
       path.setAttribute('role', 'button');
-      path.setAttribute('aria-label', 'Reveal the target country name');
+      path.setAttribute('aria-label', 'Reveal the name');
     } else {
       path.removeAttribute('tabindex');
       path.removeAttribute('role');
@@ -64,7 +64,10 @@ export const updateTimer = (timer: HTMLElement, seconds: number): void => {
   timer.classList.toggle('timer--urgent', seconds <= 30);
 };
 
-export const createResults = (results: Results): HTMLElement => {
+export const createResults = (
+  results: Results,
+  region: Region,
+): HTMLElement => {
   const section = document.createElement('section');
   section.className = 'panel results';
   section.setAttribute('role', 'dialog');
@@ -73,14 +76,14 @@ export const createResults = (results: Results): HTMLElement => {
   const percentage = Math.round((results.guessed / results.total) * 100);
   section.innerHTML = `<p class="eyebrow">Mission report // ${results.completed ? 'complete' : 'time expired'}</p>
     <h2 id="results-title">${results.completed ? 'Atlas complete' : 'Time is up'}</h2>
-    <p class="panel-copy">${results.completed ? `All countries identified in ${formatTime(results.elapsedSeconds)}.` : 'Your survey is complete.'}</p>
+    <p class="panel-copy">${results.completed ? `All ${region.targetName === 'state' ? 'states' : 'countries'} identified in ${formatTime(results.elapsedSeconds)}.` : 'Your survey is complete.'}</p>
     <dl class="results-grid">
-      <div><dt>Countries</dt><dd>${results.total}</dd></div>
+      <div><dt>${region.targetName === 'state' ? 'States' : 'Countries'}</dt><dd>${results.total}</dd></div>
       <div><dt>Guessed</dt><dd>${results.guessed}</dd></div>
       <div><dt>Not guessed</dt><dd>${results.total - results.guessed}</dd></div>
       <div><dt>Coverage</dt><dd>${percentage}%</dd></div>
     </dl>
-    <p class="ratio">${results.guessed} / ${results.total} countries identified</p>
+    <p class="ratio">${results.guessed} / ${results.total} ${region.targetName === 'state' ? 'states' : 'countries'} identified</p>
     <button class="primary-button" type="button">Play again<span class="button-arrow" aria-hidden="true">↗</span></button>`;
   return section;
 };

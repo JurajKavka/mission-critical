@@ -84,8 +84,8 @@ export const createLearningControls = (
     map.setAttribute(
       'aria-label',
       enabled
-        ? `${currentRegion.name} map. Select the highlighted country to reveal its name.`
-        : `${currentRegion.name} map. The highlighted country is the current target.`,
+        ? `${currentRegion.name} map. Select the highlighted ${currentRegion.targetName} to reveal its name.`
+        : `${currentRegion.name} map. Identify the highlighted ${currentRegion.targetName}.`,
     );
   };
 

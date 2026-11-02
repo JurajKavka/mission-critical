@@ -4,13 +4,14 @@ export type Country = {
   readonly path: string;
 };
 
-export type RegionId = 'africa' | 'south-america';
+export type RegionId = 'africa' | 'south-america' | 'usa';
 
 export type Region = {
   readonly id: RegionId;
   readonly code: string;
   readonly hasIslandMarkers: boolean;
   readonly name: string;
+  readonly targetName: 'country' | 'state';
   readonly viewBox: string;
   readonly countries: readonly Country[];
 };

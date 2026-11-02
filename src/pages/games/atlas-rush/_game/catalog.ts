@@ -16,10 +16,13 @@ const timer = createTimer();
 updateTimer(timer, 163);
 document.querySelector('#catalog-timer')!.append(timer);
 document.querySelector('#catalog-results')!.append(
-  createResults({
-    total: africa.countries.length,
-    guessed: 37,
-    elapsedSeconds: 300,
-    completed: false,
-  }),
+  createResults(
+    {
+      total: africa.countries.length,
+      guessed: 37,
+      elapsedSeconds: 300,
+      completed: false,
+    },
+    africa,
+  ),
 );
