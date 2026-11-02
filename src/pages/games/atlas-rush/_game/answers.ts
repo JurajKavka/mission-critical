@@ -10,6 +10,11 @@ const aliases: Readonly<Record<string, readonly string[]>> = {
   STP: ['Sao Tome', 'Sao Tome and Principe'],
   GMB: ['The Gambia'],
   GNB: ['Guinea-Bissau'],
+  CZE: ['Czech Republic'],
+  GBR: ['UK', 'Great Britain', 'Britain'],
+  MKD: ['Macedonia'],
+  TUR: ['Türkiye'],
+  VAT: ['Vatican', 'Holy See'],
 };
 
 export const normalizeAnswer = (answer: string): string =>

@@ -76,12 +76,15 @@ export const startGame = (root: HTMLElement): void => {
     );
     updateTimer(timer, completed ? roundSeconds - elapsedSeconds : 0);
     render();
-    const results = createResults({
-      total: selectedRegion.countries.length,
-      guessed: guessed.size,
-      elapsedSeconds,
-      completed,
-    });
+    const results = createResults(
+      {
+        total: selectedRegion.countries.length,
+        guessed: guessed.size,
+        elapsedSeconds,
+        completed,
+      },
+      selectedRegion,
+    );
     overlay.replaceChildren(breadcrumb, results);
     overlay.classList.add('overlay--visible');
     const replay = results.querySelector<HTMLButtonElement>('button')!;
@@ -120,8 +123,7 @@ export const startGame = (root: HTMLElement): void => {
     learningHint.hidden = !learningMode;
     overlay.classList.remove('overlay--visible');
     answer.value = '';
-    feedback.textContent =
-      'Type a name, then press Enter. Skip to return to a country later.';
+    feedback.textContent = `Type a name, then press Enter. Skip to return to a ${selectedRegion.targetName} later.`;
     feedback.classList.remove('feedback--error');
     render();
     updateTimer(timer, roundSeconds);
@@ -174,7 +176,7 @@ export const startGame = (root: HTMLElement): void => {
     }
     const country = remaining[0];
     if (!matchesCountry(country, answer.value)) {
-      feedback.textContent = 'Not a match. Try again or skip this target.';
+      feedback.textContent = `Not a match. Try again or skip this ${selectedRegion.targetName}.`;
       feedback.classList.add('feedback--error');
       answer.select();
       return;
@@ -183,7 +185,7 @@ export const startGame = (root: HTMLElement): void => {
     learning.hide();
     remaining.shift();
     answer.value = '';
-    feedback.textContent = `${country.name} identified. Next target acquired.`;
+    feedback.textContent = `${country.name} identified. Next ${selectedRegion.targetName} highlighted.`;
     feedback.classList.remove('feedback--error');
     if (remaining.length === 0) {
       finish(true);
@@ -202,8 +204,7 @@ export const startGame = (root: HTMLElement): void => {
       remaining.push(country);
     }
     answer.value = '';
-    feedback.textContent =
-      'Target deferred. It will return later in the round.';
+    feedback.textContent = `Skipped. This ${selectedRegion.targetName} will return later in the round.`;
     feedback.classList.remove('feedback--error');
     render();
     answer.focus();
@@ -214,6 +215,7 @@ export const startGame = (root: HTMLElement): void => {
       return;
     }
     selectedRegion = region;
+    answer.placeholder = `Enter ${region.targetName} name in English`;
     const regionMap = createMap(region);
     map.setAttribute('viewBox', region.viewBox);
     map.replaceChildren(...regionMap.childNodes);
@@ -221,6 +223,7 @@ export const startGame = (root: HTMLElement): void => {
     regionLabel.textContent = `Sector 01 / ${region.name}`;
     regionCode.textContent = `${region.code} · ${region.countries.length}`;
     islandMarkers.hidden = !region.hasIslandMarkers;
+    islandMarkers.textContent = region.markerNote ?? '';
     guessed.clear();
     roundSeconds = getRoundSeconds(selectedRegion, selectedLevel);
     updateTimer(timer, roundSeconds);
