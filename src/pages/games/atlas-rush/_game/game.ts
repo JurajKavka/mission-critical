@@ -223,6 +223,7 @@ export const startGame = (root: HTMLElement): void => {
     regionLabel.textContent = `Sector 01 / ${region.name}`;
     regionCode.textContent = `${region.code} · ${region.countries.length}`;
     islandMarkers.hidden = !region.hasIslandMarkers;
+    islandMarkers.textContent = region.markerNote ?? '';
     guessed.clear();
     roundSeconds = getRoundSeconds(selectedRegion, selectedLevel);
     updateTimer(timer, roundSeconds);

@@ -28,7 +28,7 @@ export const games: readonly Game[] = [
     name: 'Atlas Rush',
     designation: 'MC–002',
     description:
-      'Identify countries in Africa and South America or states in the USA before the survey clock runs out.',
+      'Identify countries around the world before the survey clock runs out.',
     objective: 'Map the continent',
     controls: ['Keyboard'],
     accent: 'violet',
