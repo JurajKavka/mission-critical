@@ -2,6 +2,10 @@
 
 These instructions apply to the entire repository.
 
+## React and Zustand
+
+- For React components, hooks, state management, and styling, also follow [REACT.md](./REACT.md).
+
 ## Design
 
 - Follow [DESIGN.md](./DESIGN.md) when creating or changing game visuals, interface components, motion, sound cues, responsive behavior, or player-facing copy.
