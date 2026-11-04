@@ -4,7 +4,7 @@ These instructions apply when implementing or modifying React components, hooks,
 
 ## Components and types
 
-- Use functional React components as arrow functions assigned to `const`; avoid class components.
+- Use functional React components as arrow functions assigned to `const`, explicitly typed as `React.FC<ComponentNameProps>`; avoid class components.
 - Prefer named exports over default exports for application components and hooks, unless a framework API requires a default export.
 - Put JSX in `.tsx` files and non-JSX logic in `.ts` files.
 - Define component props with a **type alias**, never an interface. Name it by appending `Props` to the exact component name: `MyComponent` → `MyComponentProps`.
@@ -12,17 +12,19 @@ These instructions apply when implementing or modifying React components, hooks,
 - Prefer explicit, readable prop definitions and preserve strict TypeScript checking; avoid `any` and unnecessary type assertions.
 
 ```tsx
+import type * as React from 'react';
+
 type GameControlsProps = {
   isDisabled: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 };
 
-export const GameControls = ({
+export const GameControls: React.FC<GameControlsProps> = ({
   isDisabled,
   onCancel,
   onConfirm,
-}: GameControlsProps) => (
+}) => (
   <div>
     <button type="button" onClick={onCancel}>
       Cancel
@@ -44,11 +46,13 @@ export const GameControls = ({
 - Preserve meaningful domain action names (`submitGuess`, `pauseGame`) rather than renaming domain operations to `handle...`.
 
 ```tsx
+import type * as React from 'react';
+
 type ConfirmButtonProps = {
   onConfirm: () => void;
 };
 
-export const ConfirmButton = ({ onConfirm }: ConfirmButtonProps) => (
+export const ConfirmButton: React.FC<ConfirmButtonProps> = ({ onConfirm }) => (
   <button type="button" onClick={onConfirm}>
     Confirm
   </button>
