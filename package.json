@@ -17,7 +17,8 @@
     "clean": "rm -rf node_modules dist .astro .vite .vite-cache .cache"
   },
   "dependencies": {
-    "astro": "^5.13.0"
+    "astro": "^5.13.0",
+    "zustand": "5.0.16"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",

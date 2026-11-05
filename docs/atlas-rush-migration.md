@@ -163,7 +163,15 @@ Runner gates are `npm run check`, all available suites, then `npm run build`. `c
 
 High-risk seams: splitting metadata without changing ordered IDs/names; retaining the catalog's legacy imports during UI replacement; SSR-safe per-island initialization and effect cleanup; timeout/submit race and paused clock restoration; reset/new-game writes racing old snapshots; decoding duplicate/malformed query fields; marker focus/touch hit areas; input focus reopening native mobile keyboards; and static fallback behavior being mistaken for a verified production redirect. Address these at their owning stages above rather than broadening every task.
 
-Next is #22: implement/test the per-instance Zustand store using the domain contract above, with an injected clock and selective subscriptions. Preserve the working legacy game, reuse Vitest and its non-watching test command, and defer React/Playwright installation to #23. #20 does not require unresolved production host access to proceed; #25 must carry the stated limitation unless it obtains new read-only evidence.
+Next is #23: integrate the per-instance store with the React island, retaining the legacy catalog and installing the browser tooling described above. #20 does not require unresolved production host access to proceed; #25 must carry the stated limitation unless it obtains new read-only evidence.
+
+### #22 store contract and #23 handoff
+
+- `createAtlasRushStore(config, clock)` creates an independent Zustand vanilla store. `clock.now()` supplies monotonic milliseconds. No timers, browser APIs, input text or persistence are stored. Call `getRemainingSeconds()` for display and `finishGame()` on a scheduled expiry check; neither requires a global tick update.
+- Actions use the domain transitions and checkpoint active time on accepted changes. Wrong answers preserve the running anchor. `startGame` accepts an optional challenge configuration in ready or finished phases; reset retains the current configuration. `submitGuess` returns the domain outcome for transient UI feedback.
+- `restoreGame` rejects malformed or inconsistent session data without changing the store, copies the accepted data, and restores playing sessions paused at their saved elapsed checkpoint. URL and storage schema validation, migrations and durability remain the responsibility of #24 and #26–#27.
+- `selectors.ts` exposes primitive selectors and stable existing arrays for narrowly scoped subscriptions; the region selector can drive geometry loading without observing gameplay changes. Zustand 5.0.16 is installed using its vanilla entry point; React integration and React dependencies remain #23.
+- Validation: `npm run test` passed 94 tests. `npm run check` and `npm run build` passed in an isolated copy of the current source and dependencies, with 66 files checked and five pages built. The workspace commands encountered `EPERM` removing `node_modules/.vite/deps` in this execution environment; the isolated copy avoided the workspace cache. No browser regression is claimed.
 
 ## Validation record
 
