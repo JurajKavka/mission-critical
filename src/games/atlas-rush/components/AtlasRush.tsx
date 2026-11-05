@@ -8,6 +8,14 @@ import { getResults } from '../domain/results';
 import { defaultSeed } from '../domain/shuffle';
 import { formatTime } from '../domain/time';
 import type { ChallengeConfig, RegionId } from '../domain/types';
+import {
+  createRandomSeed,
+  replaceCurrentChallenge,
+} from '../infrastructure/browser-url';
+import {
+  parseChallengeQuery,
+  serializeChallengeQuery,
+} from '../infrastructure/challenge-url';
 import { createAtlasRushStore } from '../state/createAtlasRushStore';
 import { selectPhase } from '../state/selectors';
 import { AnswerInput } from './AnswerInput';
@@ -36,6 +44,7 @@ export const AtlasRush: React.FC = () => {
   const phase = useStore(store, selectPhase);
   const [settings, setSettings] = useState(initialConfig);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [linkMessage, setLinkMessage] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const regionId =
     phase === 'ready'
@@ -45,6 +54,11 @@ export const AtlasRush: React.FC = () => {
   const result =
     phase === 'finished' ? getResults(store.getState().session) : null;
   useEffect(() => {
+    const parsed = parseChallengeQuery('africa', window.location.search);
+    setSettings(parsed.config);
+    if (parsed.corrected) {
+      replaceCurrentChallenge(parsed.config);
+    }
     setIsHydrated(true);
   }, []);
   useEffect(() => {
@@ -61,16 +75,45 @@ export const AtlasRush: React.FC = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [store]);
   const focusInput = () => inputRef.current?.focus();
-  const start = () =>
-    store.getState().startGame({
-      ...settings,
-      seed: Math.random().toString(36).slice(2) || defaultSeed,
-    });
-  const replay = () =>
-    store.getState().startGame({
+  const updateCurrentUrl = (config: ChallengeConfig) => {
+    if (config.regionId === 'africa') {
+      replaceCurrentChallenge(config);
+    } else {
+      window.history.replaceState(
+        window.history.state,
+        '',
+        `${window.location.pathname}${window.location.hash}`,
+      );
+    }
+  };
+  const start = () => {
+    updateCurrentUrl(settings);
+    store.getState().startGame(settings);
+  };
+  const replay = () => {
+    const next = {
       ...store.getState().session.config,
-      seed: Math.random().toString(36).slice(2) || defaultSeed,
-    });
+      seed: createRandomSeed(),
+    };
+    setSettings(next);
+    updateCurrentUrl(next);
+    store.getState().startGame(next);
+  };
+  const createNewChallenge = () => {
+    const next = { ...settings, seed: createRandomSeed() };
+    setSettings(next);
+    updateCurrentUrl(next);
+    setLinkMessage('New challenge created.');
+  };
+  const copyChallenge = async (config: ChallengeConfig) => {
+    const link = `${window.location.origin}${window.location.pathname}${serializeChallengeQuery(config)}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      setLinkMessage('Challenge link copied.');
+    } catch {
+      setLinkMessage('Could not copy the challenge link.');
+    }
+  };
   return (
     <div className={styles.app}>
       <GameHUD
@@ -186,6 +229,35 @@ export const AtlasRush: React.FC = () => {
               />{' '}
               Learning mode
             </label>
+            <div className={styles.actions}>
+              <button
+                className={styles.secondaryButton}
+                type="button"
+                disabled={!isHydrated}
+                onClick={createNewChallenge}
+              >
+                New random challenge
+              </button>
+              {settings.regionId === 'africa' && (
+                <button
+                  className={styles.secondaryButton}
+                  type="button"
+                  disabled={!isHydrated}
+                  onClick={() => {
+                    void copyChallenge(settings);
+                  }}
+                >
+                  Copy challenge link
+                </button>
+              )}
+            </div>
+            {settings.regionId !== 'africa' && (
+              <p>
+                Challenge links for this region will be available with region
+                pages.
+              </p>
+            )}
+            <p aria-live="polite">{linkMessage}</p>
           </section>
         </div>
       )}
@@ -249,7 +321,19 @@ export const AtlasRush: React.FC = () => {
               >
                 Change settings
               </button>
+              {regionId === 'africa' && (
+                <button
+                  className={styles.secondaryButton}
+                  type="button"
+                  onClick={() => {
+                    void copyChallenge(result.config);
+                  }}
+                >
+                  Copy challenge link
+                </button>
+              )}
             </div>
+            <p aria-live="polite">{linkMessage}</p>
           </section>
         </div>
       )}

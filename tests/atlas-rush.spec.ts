@@ -43,3 +43,23 @@ test('plays a survey and preserves map paths during typing and timer updates', a
   ).toBeHidden();
   await page.getByRole('button', { name: 'Skip' }).click();
 });
+
+test('normalizes challenge settings and repeats the same target order on reload', async ({
+  page,
+}) => {
+  await page.goto(
+    '/games/atlas-rush/?level=bad&learning=1&seed=Repeat_42&foo=bar',
+  );
+  await expect(
+    page.getByRole('button', { name: 'Start survey' }),
+  ).toBeEnabled();
+  await expect(page).toHaveURL(/\?learning=1&seed=Repeat_42$/);
+  await expect(page.getByLabel('Learning mode')).toBeChecked();
+  await page.getByRole('button', { name: 'Start survey' }).click();
+  const target = page.locator('path[data-learning-target]');
+  await expect(target).toHaveCount(1);
+  const targetId = await target.getAttribute('data-country');
+  await page.reload();
+  await page.getByRole('button', { name: 'Start survey' }).click();
+  await expect(target).toHaveAttribute('data-country', targetId ?? '');
+});
