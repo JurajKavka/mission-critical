@@ -4,3 +4,6 @@
 **/dist/
 **/.astro/
 **/.vite-cache/
+/test-results/
+/playwright-report/
+*.log

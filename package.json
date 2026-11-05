@@ -9,22 +9,30 @@
     "start": "astro dev --open",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "eslint \"src/**/*.{astro,ts}\" astro.config.mjs eslint.config.js vitest.config.ts",
+    "lint": "eslint \"src/**/*.{astro,ts,tsx}\" astro.config.mjs eslint.config.js vitest.config.ts playwright.config.ts tests",
     "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "npm run lint && npm run format:check && astro check",
-    "clean": "rm -rf node_modules dist .astro .vite .vite-cache .cache"
+    "clean": "rm -rf node_modules dist .astro .vite .vite-cache .cache",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@astrojs/react": "^4.4.2",
     "astro": "^5.13.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "zustand": "5.0.16"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "eslint": "^10.13.0",
     "eslint-plugin-astro": "^1.7.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.2",
     "typescript": "^5.9.2",
