@@ -9,12 +9,13 @@ Install dependencies with `npm ci`, then run commands from the repository root:
 | `npm run clean`   | Remove root dependency, build, and cache directories |
 | `npm run dev`     | Start the website and games locally                  |
 | `npm run check`   | Run ESLint, Prettier, and Astro/TypeScript checks    |
+| `npm run test`    | Run the Vitest unit suite once without watching      |
 | `npm run build`   | Build the static website into `dist/`                |
 | `npm run preview` | Serve the production build                           |
 
 After cleaning, run `npm ci` to reinstall dependencies.
 
-Game routes live in `src/pages/games/`; each game’s logic and styles live in its `_game/` directory alongside its pages. Astro pages can import shared components from `src/components/`. Add new games to `src/data/games.ts` and create their routes under `src/pages/games/`.
+Game routes live in `src/pages/games/`; legacy game runtimes and styles live in their `_game/` directories alongside their pages. Atlas Rush’s extracted gameplay domain and geometry-free metadata live in `src/games/atlas-rush/`. Astro pages can import shared components from `src/components/`. Add new games to `src/data/games.ts` and create their routes under `src/pages/games/`.
 
 The graphics catalogs are available at `/games/asteroids/graphics/` and `/games/atlas-rush/graphics/`. Set `SITE_URL` to the public site URL to generate absolute social-image URLs.
 

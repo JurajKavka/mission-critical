@@ -10,7 +10,7 @@ export default [
   ...tseslint.configs.recommended,
   ...eslintPluginAstro.configs.recommended,
   {
-    files: ['src/**/*.{astro,ts}'],
+    files: ['src/**/*.{astro,ts}', 'vitest.config.ts'],
     rules: {
       curly: ['error', 'all'],
     },
