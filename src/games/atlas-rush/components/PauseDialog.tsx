@@ -3,10 +3,15 @@ import type * as React from 'react';
 import styles from './AtlasRush.module.css';
 import type { AtlasRushStore } from './types';
 
-type PauseDialogProps = { store: AtlasRushStore; isPaused: boolean };
+type PauseDialogProps = {
+  store: AtlasRushStore;
+  isPaused: boolean;
+  onEnd: () => void;
+};
 export const PauseDialog: React.FC<PauseDialogProps> = ({
   store,
   isPaused,
+  onEnd,
 }) => {
   const dialog = useRef<HTMLDialogElement>(null);
   const continueButton = useRef<HTMLButtonElement>(null);
@@ -37,11 +42,7 @@ export const PauseDialog: React.FC<PauseDialogProps> = ({
       <h2 id="pause-title">End this game?</h2>
       <p id="pause-description">Your progress in this round will be lost.</p>
       <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.primaryButton}
-          onClick={store.getState().resetGame}
-        >
+        <button type="button" className={styles.primaryButton} onClick={onEnd}>
           End game
         </button>
         <button

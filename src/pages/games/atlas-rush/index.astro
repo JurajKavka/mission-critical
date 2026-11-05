@@ -1,5 +1,21 @@
 ---
-import { AtlasRush } from '../../../games/atlas-rush/components/AtlasRush';
+import { regionMetadata } from '../../../games/atlas-rush/data/regions';
+import { levels } from '../../../games/atlas-rush/domain/levels';
+const title = 'Atlas Rush Geography Game // Mission Critical';
+const description =
+  'Identify countries and US states against the clock in Atlas Rush. Choose a region, difficulty and learning mode.';
+const canonical = Astro.site
+  ? new URL('/games/atlas-rush/', Astro.site).href
+  : '/games/atlas-rush/';
+const image = Astro.site
+  ? new URL('/og-image.png', Astro.site).href
+  : '/og-image.png';
+const regions = [
+  regionMetadata.africa,
+  regionMetadata['south-america'],
+  regionMetadata.usa,
+  regionMetadata.europe,
+];
 ---
 
 <!doctype html>
@@ -8,9 +24,185 @@ import { AtlasRush } from '../../../games/atlas-rush/components/AtlasRush';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#02040b" />
-    <title>Atlas Rush // Mission Critical</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{title}</title>
   </head>
   <body>
-    <AtlasRush client:load />
+    <main class="landing">
+      <nav aria-label="Game location">
+        <a href="/">Mission Critical</a> <span>//</span> Atlas Rush
+      </nav>
+      <section class="panel" aria-labelledby="title">
+        <p class="eyebrow">Sector 01 / Geography</p>
+        <h1 id="title">Atlas <em>Rush</em></h1>
+        <p>
+          Identify countries and US states before the clock runs out. Select a
+          region and start your survey.
+        </p>
+        <form id="survey-settings">
+          <fieldset>
+            <legend>Select a region</legend>
+            {regions.map((region, index) => <label
+              ><input
+                type="radio"
+                name="region"
+                value={region.id}
+                checked={index === 0}
+              />
+              {region.name}</label
+            >)}
+          </fieldset>
+          <fieldset>
+            <legend>Select a level</legend>
+            {levels.map((level, index) => <label
+              ><input
+                type="radio"
+                name="level"
+                value={level.id}
+                checked={index === 0}
+              />
+              {level.label}</label
+            >)}
+          </fieldset>
+          <label class="learning"
+            ><input type="checkbox" name="learning" /> Learning mode</label
+          >
+          <button id="start-survey" type="submit" disabled>
+            Start survey ↗
+          </button>
+          <noscript><p>Enable JavaScript to start a survey.</p></noscript>
+        </form>
+      </section>
+    </main>
+    <script>
+      import './_scripts/landing';
+    </script>
   </body>
 </html>
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+  :global(body) {
+    margin: 0;
+    background: #02040b;
+    color: #f4feff;
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  .landing {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 70px 18px 30px;
+    background: radial-gradient(
+      ellipse at 50% 44%,
+      #0b1830,
+      #050b19 45%,
+      #010309
+    );
+  }
+  nav {
+    position: absolute;
+    top: 22px;
+    left: 22px;
+    color: #69fbff;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  nav a {
+    color: inherit;
+  }
+  nav span {
+    color: #ff65dc;
+  }
+  .panel {
+    width: min(540px, 100%);
+    padding: 32px 42px;
+    border: 1px solid rgba(105, 251, 255, 0.45);
+    background: linear-gradient(135deg, #091a2a, #030713 75%);
+  }
+  h1 {
+    margin: 12px 0;
+    font-size: clamp(43px, 8vw, 72px);
+    line-height: 0.95;
+    letter-spacing: -0.065em;
+    text-transform: uppercase;
+  }
+  h1 em {
+    color: #69fbff;
+    font-style: normal;
+  }
+  p {
+    color: #9db5c8;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .eyebrow {
+    color: #69fbff;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+  fieldset {
+    display: grid;
+    gap: 12px;
+    margin: 24px 0 12px;
+    padding: 15px 0;
+    border: 0;
+    border-top: 1px solid rgba(105, 251, 255, 0.16);
+  }
+  legend {
+    color: #8099ae;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  label {
+    font-size: 11px;
+    cursor: pointer;
+  }
+  input {
+    accent-color: #69fbff;
+  }
+  .learning {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  button {
+    padding: 12px 16px;
+    border: 1px solid #69fbff;
+    background: rgba(21, 97, 116, 0.2);
+    color: #f4feff;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  button:hover {
+    background: rgba(31, 142, 161, 0.35);
+  }
+  button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+  :focus-visible {
+    outline: 2px solid #69fbff;
+    outline-offset: 3px;
+  }
+  @media (max-width: 600px) {
+    .panel {
+      padding: 26px;
+    }
+  }
+</style>
