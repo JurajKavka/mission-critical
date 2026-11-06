@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "issue_number": { "type": "integer" },
+    "status": { "type": "string", "enum": ["complete", "blocked"] },
+    "summary": { "type": "string" },
+    "blockers": { "type": "array", "items": { "type": "string" } },
+    "tests": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["issue_number", "status", "summary", "blockers", "tests"]
+}

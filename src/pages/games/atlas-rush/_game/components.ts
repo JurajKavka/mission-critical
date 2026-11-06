@@ -1,4 +1,8 @@
+import { getCoverage } from '../../../../games/atlas-rush/domain/results';
+import { formatTime } from '../../../../games/atlas-rush/domain/time';
 import type { Region, Results } from './types';
+
+export { formatTime } from '../../../../games/atlas-rush/domain/time';
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
 
@@ -43,11 +47,6 @@ export const updateMap = (
   }
 };
 
-export const formatTime = (seconds: number): string => {
-  const wholeSeconds = Math.max(0, Math.ceil(seconds));
-  return `${String(Math.floor(wholeSeconds / 60)).padStart(2, '0')}:${String(wholeSeconds % 60).padStart(2, '0')}`;
-};
-
 export const createTimer = (): HTMLElement => {
   const timer = document.createElement('div');
   timer.className = 'telemetry timer';
@@ -73,7 +72,7 @@ export const createResults = (
   section.setAttribute('role', 'dialog');
   section.setAttribute('aria-modal', 'true');
   section.setAttribute('aria-labelledby', 'results-title');
-  const percentage = Math.round((results.guessed / results.total) * 100);
+  const percentage = getCoverage(results.guessed, results.total);
   section.innerHTML = `<p class="eyebrow">Mission report // ${results.completed ? 'complete' : 'time expired'}</p>
     <h2 id="results-title">${results.completed ? 'Atlas complete' : 'Time is up'}</h2>
     <p class="panel-copy">${results.completed ? `All ${region.targetName === 'state' ? 'states' : 'countries'} identified in ${formatTime(results.elapsedSeconds)}.` : 'Your survey is complete.'}</p>

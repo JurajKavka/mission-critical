@@ -4,3 +4,8 @@
 **/dist/
 **/.astro/
 **/.vite-cache/
+/test-results/
+/playwright-report/
+/storybook-static/
+/dist-storybook-check/
+*.log

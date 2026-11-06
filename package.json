@@ -9,23 +9,41 @@
     "start": "astro dev --open",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "eslint \"src/**/*.{astro,ts}\" astro.config.mjs eslint.config.js",
+    "lint": "eslint \"src/**/*.{astro,ts,tsx}\" .storybook astro.config.mjs eslint.config.js vitest.config.ts playwright.config.ts tests",
+    "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "npm run lint && npm run format:check && astro check",
-    "clean": "rm -rf node_modules dist .astro .vite .vite-cache .cache"
+    "clean": "rm -rf node_modules dist .astro .vite .vite-cache .cache",
+    "test:e2e": "playwright test",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
-    "astro": "^5.13.0"
+    "@astrojs/react": "^4.4.2",
+    "astro": "^5.13.0",
+    "idb": "^8.0.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "styled-components": "^6.6.0",
+    "zustand": "5.0.16"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
+    "@storybook/react-vite": "^10.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "eslint": "^10.13.0",
     "eslint-plugin-astro": "^1.7.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "fake-indexeddb": "^6.2.7",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.2",
+    "storybook": "^10.6.6",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.72.1"
+    "typescript-eslint": "^8.72.1",
+    "vitest": "4.1.12"
   }
 }
