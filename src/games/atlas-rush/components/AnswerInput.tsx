@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useStore } from 'zustand';
 import type * as React from 'react';
-import { ActionButton } from '../../../components/ActionButton';
+import { ActionButton, SkipButton } from '../../../react-component-library';
 import { regionTargets } from '../data/targets';
 import { getCommandIndex } from '../domain/session';
 import { AsciiKeyboard } from './AsciiKeyboard';
@@ -180,17 +180,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           type="submit"
           disabled={phase !== 'playing'}
         />
-        <button
-          className={styles.secondaryButton}
-          type="button"
-          onClick={handleSkip}
-          disabled={phase !== 'playing'}
-        >
-          Skip
-          <span className={styles.buttonArrow} aria-hidden="true">
-            →
-          </span>
-        </button>
+        <SkipButton onClick={handleSkip} disabled={phase !== 'playing'} />
       </form>
       {isMobile && !usesNativeKeyboard && (
         <p id="keyboard-help" className={styles.srOnly}>

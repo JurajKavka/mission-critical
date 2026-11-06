@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
+import { Tooltip } from '../../../react-component-library';
 import { regionMetadata } from '../data/regions';
 import type { RegionId } from '../domain/types';
 import { loadGeography } from '../infrastructure/geography';
@@ -154,15 +155,7 @@ export const GameMap: React.FC<GameMapProps> = ({
         canReveal &&
         geography.countries.some(
           (country) => country.id === targetId && country.name === tooltip.name,
-        ) && (
-          <div
-            role="status"
-            className={styles.tooltip}
-            style={{ left: tooltip.x, top: tooltip.y }}
-          >
-            {tooltip.name}
-          </div>
-        )}
+        ) && <Tooltip name={tooltip.name} x={tooltip.x} y={tooltip.y} />}
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
-import { ActionButton } from '../../../components/ActionButton';
+import { ActionButton, ExitButton } from '../../../react-component-library';
 import { regionMetadata } from '../data/regions';
 import { regionTargets } from '../data/targets';
 import { getResults } from '../domain/results';
@@ -100,14 +100,10 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
               {region.code} · {regionTargets[regionId].length}{' '}
             </span>
             {phase === 'playing' && (
-              <button
-                type="button"
-                aria-label="End game"
+              <ExitButton
                 className={styles.exitButton}
                 onClick={store.getState().pauseGame}
-              >
-                ×
-              </button>
+              />
             )}
           </span>
         </div>

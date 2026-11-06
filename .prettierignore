@@ -1,6 +1,7 @@
 .astro
 .vite-cache
 dist
+dist-storybook-check
 package-lock.json
 AGENTS.md
 www

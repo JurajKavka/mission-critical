@@ -11,7 +11,7 @@ export default [
   ...tseslint.configs.recommended,
   ...eslintPluginAstro.configs.recommended,
   {
-    files: ['src/**/*.{ts,tsx}', 'tests/**/*.ts'],
+    files: ['src/**/*.{ts,tsx}', '.storybook/**/*.ts', 'tests/**/*.ts'],
     plugins: { 'react-hooks': reactHooks },
     rules: {
       'react-hooks/rules-of-hooks': 'error',
@@ -21,6 +21,7 @@ export default [
   {
     files: [
       'src/**/*.{astro,ts,tsx}',
+      '.storybook/**/*.ts',
       'vitest.config.ts',
       'playwright.config.ts',
       'tests/**/*.ts',

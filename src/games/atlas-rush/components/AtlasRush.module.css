@@ -189,18 +189,6 @@
 .country:focus-visible {
   stroke: #f4feff;
 }
-.tooltip {
-  position: fixed;
-  z-index: 4;
-  max-width: calc(100vw - 16px);
-  padding: 8px 10px;
-  border: 1px solid rgba(105, 251, 255, 0.7);
-  background: #030d19;
-  color: #f4feff;
-  font-size: 12px;
-  pointer-events: none;
-  text-transform: uppercase;
-}
 .persistenceNotice {
   position: relative;
   margin: 8px 0 0;
@@ -289,54 +277,8 @@
 .mobileAnswerForm button {
   display: none;
 }
-.secondaryButton,
-.exitButton {
-  cursor: pointer;
-  font: inherit;
-}
-.secondaryButton {
-  padding: 12px 16px;
-  color: #f4feff;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transition: background 0.2s;
-}
-.buttonArrow {
-  color: #69fbff;
-  margin-left: 8px;
-}
-.secondaryButton,
-.exitButton {
-  border: 1px solid rgba(157, 181, 200, 0.3);
-  background: transparent;
-  color: #9db5c8;
-}
-.secondaryButton:hover {
-  background: rgba(31, 142, 161, 0.35);
-}
-.secondaryButton:focus-visible {
-  border-color: #69fbff;
-  outline: none;
-  box-shadow: inset 0 0 0 2px #69fbff;
-}
-.exitButton:focus-visible {
-  outline: 2px solid #69fbff;
-  outline-offset: 2px;
-}
 .exitButton {
   margin-left: 12px;
-  width: 32px;
-  height: 32px;
-  font-size: 22px;
-  padding: 0;
-  line-height: 1;
-}
-.exitButton:hover {
-  border-color: #69fbff;
-  color: #f4feff;
 }
 .feedback {
   min-height: 1.3em;

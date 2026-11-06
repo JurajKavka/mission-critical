@@ -11,6 +11,9 @@ import { GraphicsCatalog } from '../../../../games/atlas-rush/components/Graphic
     <title>Atlas Rush // Graphics Catalog</title>
   </head>
   <body>
-    <GraphicsCatalog client:load />
+    <GraphicsCatalog client:only="react">
+      <p slot="fallback" role="status">Loading graphics catalog…</p>
+    </GraphicsCatalog>
+    <noscript>Enable JavaScript to view the graphics catalog.</noscript>
   </body>
 </html>

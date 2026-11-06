@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type * as React from 'react';
-import { ActionButton } from '../../../components/ActionButton';
+import { ActionButton } from '../../../react-component-library';
 import styles from './AtlasRush.module.css';
 import type { AtlasRushStore } from './types';
 

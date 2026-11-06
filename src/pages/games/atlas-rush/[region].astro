@@ -39,6 +39,9 @@ const image = Astro.site
     <title>{title}</title>
   </head>
   <body>
-    <AtlasRush regionId={regionId} client:load />
+    <AtlasRush regionId={regionId} client:only="react">
+      <p slot="fallback" role="status">Loading Atlas Rush…</p>
+    </AtlasRush>
+    <noscript>Enable JavaScript to play Atlas Rush.</noscript>
   </body>
 </html>

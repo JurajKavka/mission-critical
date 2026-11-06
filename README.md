@@ -2,6 +2,8 @@
 
 A collection of neon arcade games built with Astro. See the [design manual](./DESIGN.md) for the shared visual and interaction language and the source notes for [Neon Asteroids](./src/pages/games/asteroids/_game/README.md) and [Atlas Rush](./src/pages/games/atlas-rush/_game/README.md).
 
+Shared React components live in `src/react-component-library/` and are imported through its `index.ts`. Run `npm run storybook` to explore the library, or `npm run build-storybook` to generate a static catalog. Add `*.stories.tsx` files beside components in that folder; Storybook discovers stories only there. Game-specific React components remain with their games.
+
 Install dependencies with `npm ci`, then run commands from the repository root:
 
 | Command            | Purpose                                              |

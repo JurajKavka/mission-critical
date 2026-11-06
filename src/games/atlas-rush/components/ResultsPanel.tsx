@@ -1,5 +1,5 @@
 import type * as React from 'react';
-import { ActionButton } from '../../../components/ActionButton';
+import { ActionButton } from '../../../react-component-library';
 import { regionMetadata } from '../data/regions';
 import { levels } from '../domain/levels';
 import { formatTime } from '../domain/time';
