@@ -1,0 +1,46 @@
+<style is:inline>
+  html {
+    color-scheme: dark;
+    background: #02040b;
+  }
+
+  body {
+    margin: 0;
+    background: #02040b;
+    color: #f4feff;
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+
+  .atlas-loading {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    background: radial-gradient(
+      ellipse at 50% 44%,
+      #0b1830,
+      #050b19 45%,
+      #010309
+    );
+    color: #9db5c8;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 200ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0s;
+    }
+  }
+</style>

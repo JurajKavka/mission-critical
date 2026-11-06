@@ -1,10 +1,7 @@
+import { getRoundSeconds as getDomainRoundSeconds } from '../../../../games/atlas-rush/domain/levels';
 import type { Level, Region } from './types';
 
-export const levels: readonly Level[] = [
-  { id: 'beginner', label: 'Beginner', secondsPerCountry: 10 },
-  { id: 'middle', label: 'Middle', secondsPerCountry: 5 },
-  { id: 'expert', label: 'Expert', secondsPerCountry: 3 },
-];
+export { levels } from '../../../../games/atlas-rush/domain/levels';
 
 export const getRoundSeconds = (region: Region, level: Level): number =>
-  region.countries.length * level.secondsPerCountry;
+  getDomainRoundSeconds(region.countries.length, level.id);
