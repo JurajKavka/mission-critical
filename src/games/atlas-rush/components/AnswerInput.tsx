@@ -2,12 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useStore } from 'zustand';
 import type * as React from 'react';
-import { ActionButton, SkipButton } from '../../../react-component-library';
+import {
+  ActionButton,
+  AnswerTextInput,
+  AsciiKeyboard,
+  SkipButton,
+} from '../../../react-component-library';
+import type { AsciiKey } from '../../../react-component-library';
 import { regionTargets } from '../data/targets';
 import { getCommandIndex } from '../domain/session';
-import { AsciiKeyboard } from './AsciiKeyboard';
 import { editAnswerText } from './answer-edit';
-import type { AsciiKey } from './AsciiKeyboard';
 import styles from './AtlasRush.module.css';
 import type { AtlasRushStore } from './types';
 
@@ -158,22 +162,18 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
         <label className={styles.srOnly} htmlFor="answer">
           {targetName} name
         </label>
-        <input
+        <AnswerTextInput
           ref={inputRef}
           id="answer"
           value={answer}
           onChange={(event) => setAnswer(event.target.value)}
           onKeyDown={handlePhysicalKey}
           placeholder={`Enter ${targetName} name in English`}
-          aria-describedby={
-            isMobile && !usesNativeKeyboard
-              ? 'feedback keyboard-help'
-              : 'feedback'
-          }
+          feedbackId="feedback"
+          keyboardHelpId="keyboard-help"
+          isUsingCustomKeyboard={isMobile && !usesNativeKeyboard}
           required
           disabled={phase !== 'playing'}
-          readOnly={isMobile && !usesNativeKeyboard}
-          inputMode={isMobile && !usesNativeKeyboard ? 'none' : 'text'}
         />
         <ActionButton
           label="Identify"
@@ -189,7 +189,11 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           keyboard.
         </p>
       )}
-      <p id="feedback" className={styles.feedback} aria-live="polite">
+      <p
+        id="feedback"
+        className={`${styles.feedback} ${isMobile ? styles.mobileFeedback : ''}`}
+        aria-live="polite"
+      >
         {feedback ||
           `Type a name, then press Enter. Skip to return to a ${targetName} later.`}
       </p>

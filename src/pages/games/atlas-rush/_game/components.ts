@@ -49,9 +49,9 @@ export const updateMap = (
 
 export const createTimer = (): HTMLElement => {
   const timer = document.createElement('div');
-  timer.className = 'telemetry timer';
+  timer.className = 'hudMetric timer';
   timer.innerHTML =
-    '<span class="label">Time remaining</span><strong class="timer-value">00:00</strong>';
+    '<span class="label">Countdown</span><strong class="timer-value">00:00</strong>';
   return timer;
 };
 

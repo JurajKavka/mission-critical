@@ -1,7 +1,7 @@
+import { rem } from 'polished';
 import { useLayoutEffect, useRef, useState } from 'react';
 import type * as React from 'react';
 import styled from 'styled-components';
-import { pixelsToRem } from '../utils/units';
 import { getTooltipPosition } from './tooltip-position';
 
 const TooltipSurface = styled.div<{
@@ -15,14 +15,14 @@ const TooltipSurface = styled.div<{
   visibility: ${({ $isPositioned }) => ($isPositioned ? 'visible' : 'hidden')};
   z-index: 4;
   width: max-content;
-  max-width: calc(100vw - 16px);
+  max-width: calc(100vw - ${rem(16)});
   box-sizing: border-box;
   overflow-wrap: anywhere;
-  padding: ${pixelsToRem(8)} ${pixelsToRem(12)};
-  border: 1px solid rgba(105, 251, 255, 0.7);
+  padding: ${rem(8)} ${rem(12)};
+  border: ${rem(1)} solid rgba(105, 251, 255, 0.7);
   background: #030d19;
   color: #f4feff;
-  font-size: 12px;
+  font-size: ${rem(12)};
   pointer-events: none;
   text-transform: uppercase;
 `;

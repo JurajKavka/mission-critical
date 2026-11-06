@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { expectIdentifiedCount } from './helpers/atlas-rush';
 
 const waitForSavedCount = async (page: Page, count: number): Promise<void> => {
   await expect
@@ -64,8 +65,10 @@ test('plays a survey and preserves map paths during typing and timer updates', a
       ),
   ).toBe(true);
   await page.getByRole('button', { name: 'Identify' }).click();
-  await expect(page.getByText('01 / 54')).toBeVisible();
-  await expect(page.getByText('02 / 54')).toBeVisible();
+  await expectIdentifiedCount(page, 1, 54);
+  await expect(
+    page.getByRole('contentinfo').getByText('02 / 54', { exact: true }),
+  ).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(
     page.getByRole('dialog', { name: 'End this game?' }),
@@ -151,7 +154,7 @@ test('restores the saved queue and progress on refresh', async ({ page }) => {
   const answer = await page.getByRole('status').last().textContent();
   await page.getByLabel('country name').fill(answer ?? '');
   await page.getByRole('button', { name: 'Identify' }).click();
-  await expect(page.getByText('01 / 12')).toBeVisible();
+  await expectIdentifiedCount(page, 1, 12);
   const nextId = await target.getAttribute('data-country');
   await waitForSavedCount(page, 1);
   await page.reload();
@@ -159,7 +162,7 @@ test('restores the saved queue and progress on refresh', async ({ page }) => {
     page.getByRole('dialog', { name: 'Continue your survey?' }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Continue' }).click();
-  await expect(page.getByText('01 / 12')).toBeVisible();
+  await expectIdentifiedCount(page, 1, 12);
   await expect(target).toHaveAttribute('data-country', nextId ?? '');
 });
 

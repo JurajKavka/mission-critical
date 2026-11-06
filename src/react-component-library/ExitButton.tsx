@@ -1,21 +1,22 @@
+import { rem } from 'polished';
 import type * as React from 'react';
 import styled from 'styled-components';
 
 const Button = styled.button`
   cursor: pointer;
   font: inherit;
-  border: 1px solid rgba(157, 181, 200, 0.3);
+  border: ${rem(1)} solid rgba(157, 181, 200, 0.3);
   background: transparent;
   color: #9db5c8;
-  width: 32px;
-  height: 32px;
-  font-size: 22px;
+  width: ${rem(32)};
+  height: ${rem(32)};
+  font-size: ${rem(22)};
   padding: 0;
   line-height: 1;
 
   &:focus-visible {
-    outline: 2px solid #69fbff;
-    outline-offset: 2px;
+    outline: ${rem(2)} solid #69fbff;
+    outline-offset: ${rem(2)};
   }
 
   &:hover {

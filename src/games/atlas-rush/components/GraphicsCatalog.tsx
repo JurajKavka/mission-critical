@@ -52,22 +52,9 @@ const createCatalogStore = () => {
 
 export const GraphicsCatalog: React.FC = () => {
   const [store] = useState(createCatalogStore);
-  const [message, setMessage] = useState('');
   const openSurvey = () =>
     window.location.assign(getChallengePath(CATALOG_CONFIG));
   const openSettings = () => window.location.assign('/games/atlas-rush/');
-  const copyChallenge = async () => {
-    const link = new URL(
-      getChallengePath(CATALOG_CONFIG),
-      window.location.origin,
-    ).href;
-    try {
-      await navigator.clipboard.writeText(link);
-      setMessage('Challenge link copied.');
-    } catch {
-      setMessage('Could not copy the challenge link.');
-    }
-  };
   const ignoreMapFocus = () => {};
   return (
     <main className={styles.catalog}>
@@ -97,10 +84,6 @@ export const GraphicsCatalog: React.FC = () => {
           result={CATALOG_RESULT}
           onPlayAgain={openSurvey}
           onChangeSettings={openSettings}
-          onCopyChallenge={() => {
-            void copyChallenge();
-          }}
-          linkMessage={message}
         />
       </section>
     </main>

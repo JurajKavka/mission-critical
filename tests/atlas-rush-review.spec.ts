@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { expectIdentifiedCount } from './helpers/atlas-rush';
 
 const expectReadyInput = async (page: Page) => {
   const input = page.getByLabel('country name');
@@ -82,10 +83,10 @@ test('results receive focus and keep keyboard navigation inside the report', asy
   await page.clock.fastForward(37_000);
   const dialog = page.getByRole('dialog', { name: 'Time is up' });
   const replay = dialog.getByRole('button', { name: 'Play again' });
-  const copy = dialog.getByRole('button', { name: 'Copy challenge link' });
+  const settings = dialog.getByRole('button', { name: 'Change settings' });
   await expect(replay).toBeFocused();
   await page.keyboard.press('Shift+Tab');
-  await expect(copy).toBeFocused();
+  await expect(settings).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(replay).toBeFocused();
   await page.keyboard.press('Escape');
@@ -203,7 +204,7 @@ test('an aborted save shows a notice and keeps playing without an unhandled reje
   expect(answer).toBeTruthy();
   await input.fill(answer ?? '');
   await input.press('Enter');
-  await expect(page.getByText('01 / 54')).toBeVisible();
+  await expectIdentifiedCount(page, 1, 54);
   await expect(
     page.getByText('Progress could not be saved. Your game can continue.'),
   ).toBeVisible();

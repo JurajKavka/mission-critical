@@ -110,11 +110,14 @@ button {
   border-color: #69fbff;
   color: #f4feff;
 }
-.telemetry strong {
-  display: block;
+.hudMetric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hudMetric strong {
   font-size: 22px;
   letter-spacing: 0.03em;
-  margin-top: 4px;
   font-variant-numeric: tabular-nums;
 }
 .timer--urgent strong {
@@ -498,7 +501,7 @@ input:focus {
   .hud-stats {
     gap: 16px;
   }
-  .telemetry strong {
+  .hudMetric strong {
     font-size: 16px;
   }
   .label {
