@@ -20,6 +20,7 @@
   "dependencies": {
     "@astrojs/react": "^4.4.2",
     "astro": "^5.13.0",
+    "idb": "^8.0.4",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "zustand": "5.0.16"
@@ -33,6 +34,7 @@
     "eslint": "^10.13.0",
     "eslint-plugin-astro": "^1.7.0",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "fake-indexeddb": "^6.2.7",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.2",
     "typescript": "^5.9.2",

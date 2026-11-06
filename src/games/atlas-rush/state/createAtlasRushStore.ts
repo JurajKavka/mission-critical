@@ -9,7 +9,7 @@ import {
   startGame as startSession,
   submitGuess as submitAnswer,
 } from '../domain/session';
-import { getRemainingSeconds } from '../domain/time';
+import { getElapsedSeconds, getRemainingSeconds } from '../domain/time';
 import type {
   ChallengeConfig,
   GameSession,
@@ -29,6 +29,7 @@ export type AtlasRushState = {
   readonly finishGame: () => void;
   readonly resetGame: () => void;
   readonly restoreGame: (snapshot: unknown) => boolean;
+  readonly checkpointGame: () => void;
   readonly getRemainingSeconds: () => number;
 };
 
@@ -117,6 +118,19 @@ export const createAtlasRushStore = (
         };
         install(get().session, restored, clock.now());
         return true;
+      },
+      checkpointGame: () => {
+        const previous = get().session;
+        if (previous.phase !== 'playing') {
+          return;
+        }
+        const now = clock.now();
+        const elapsed = getElapsedSeconds(previous, elapsedAt(previous, now));
+        if (elapsed >= previous.durationSeconds) {
+          install(previous, finishSession(previous, elapsed), now);
+        } else {
+          install(previous, { ...previous, elapsedSeconds: elapsed }, now);
+        }
       },
       getRemainingSeconds: () => {
         const session = get().session;

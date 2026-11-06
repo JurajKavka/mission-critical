@@ -1,4 +1,38 @@
 import { expect, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
+
+const waitForSavedCount = async (page: Page, count: number): Promise<void> => {
+  await expect
+    .poll(async () =>
+      page.evaluate(async (expectedCount) => {
+        const database = await new Promise<IDBDatabase>((resolve, reject) => {
+          const request = indexedDB.open('atlas-rush');
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        const records = await new Promise<unknown[]>((resolve, reject) => {
+          const request = database
+            .transaction('sessions')
+            .objectStore('sessions')
+            .getAll();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        database.close();
+        return records.some(
+          (record) =>
+            typeof record === 'object' &&
+            record !== null &&
+            'snapshot' in record &&
+            typeof record.snapshot === 'object' &&
+            record.snapshot !== null &&
+            'correctCount' in record.snapshot &&
+            record.snapshot.correctCount === expectedCount,
+        );
+      }, count),
+    )
+    .toBe(true);
+};
 
 test('plays a survey and preserves map paths during typing and timer updates', async ({
   page,
@@ -49,8 +83,30 @@ test('normalizes challenge settings and repeats the same target order on reload'
   const target = page.locator('path[data-learning-target]');
   await expect(target).toHaveCount(1);
   const targetId = await target.getAttribute('data-country');
+  await waitForSavedCount(page, 0);
   await page.reload();
+  await page.getByRole('button', { name: 'Start new' }).click();
   await expect(target).toHaveAttribute('data-country', targetId ?? '');
+});
+
+test('restores the saved queue and progress on refresh', async ({ page }) => {
+  await page.goto('/games/atlas-rush/south-america/?learning=1&seed=Restore_1');
+  const target = page.locator('path[data-learning-target]');
+  await expect(target).toHaveCount(1);
+  await target.focus();
+  const answer = await page.getByRole('status').last().textContent();
+  await page.getByLabel('country name').fill(answer ?? '');
+  await page.getByRole('button', { name: 'Identify' }).click();
+  await expect(page.getByText('01 / 12')).toBeVisible();
+  const nextId = await target.getAttribute('data-country');
+  await waitForSavedCount(page, 1);
+  await page.reload();
+  await expect(
+    page.getByRole('dialog', { name: 'Continue your survey?' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByText('01 / 12')).toBeVisible();
+  await expect(target).toHaveAttribute('data-country', nextId ?? '');
 });
 
 test('landing starts the selected region with a shareable challenge', async ({
@@ -92,4 +148,22 @@ test('region pages have unique query-free canonical metadata', async ({
   }
   expect(new Set(titles).size).toBe(regions.length);
   expect((await page.goto('/games/atlas-rush/graphics/'))?.status()).toBe(200);
+});
+
+test('plays when IndexedDB is unavailable', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'indexedDB', {
+      get: () => {
+        throw new Error('Storage disabled');
+      },
+    });
+  });
+  await page.goto('/games/atlas-rush/africa/?learning=1');
+  await expect(page.locator('path[data-learning-target]')).toHaveCount(1);
+  await expect(
+    page.getByText(
+      'Storage is unavailable. Your game can continue without saving.',
+    ),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Skip' }).click();
 });

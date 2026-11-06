@@ -155,6 +155,18 @@
   font-size: 12px;
   pointer-events: none;
 }
+.persistenceNotice {
+  position: fixed;
+  z-index: 4;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: #030d19;
+  border: 1px solid #ffb35f;
+  color: #f4feff;
+  font-size: 12px;
+}
 .command {
   width: min(740px, 100%);
   margin: 12px auto 0;

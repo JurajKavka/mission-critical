@@ -80,6 +80,21 @@ describe('Atlas Rush store', () => {
     expect(store.getState().session.phase).toBe('finished');
   });
 
+  it('checkpoints active time without changing progress and expires at the deadline', () => {
+    const { store, advance } = createHarness();
+    store.getState().startGame();
+    const queue = store.getState().session.remainingIds;
+    advance(4);
+    store.getState().checkpointGame();
+    expect(store.getState().session.elapsedSeconds).toBe(4);
+    expect(store.getState().session.remainingIds).toBe(queue);
+    advance(3);
+    expect(store.getState().getRemainingSeconds()).toBe(533);
+    advance(533);
+    store.getState().checkpointGame();
+    expect(store.getState().session.finishReason).toBe('timeout');
+  });
+
   it('restores valid active snapshots paused and rejects invalid data without changes', () => {
     const { store, advance } = createHarness();
     store.getState().startGame();

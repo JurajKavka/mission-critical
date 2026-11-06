@@ -7,15 +7,10 @@ import { getResults } from '../domain/results';
 import { defaultSeed } from '../domain/shuffle';
 import { formatTime } from '../domain/time';
 import type { ChallengeConfig, RegionId } from '../domain/types';
-import {
-  createRandomSeed,
-  replaceCurrentChallenge,
-} from '../infrastructure/browser-url';
-import {
-  getChallengePath,
-  parseChallengeQuery,
-} from '../infrastructure/challenge-url';
+import { createRandomSeed } from '../infrastructure/browser-url';
+import { getChallengePath } from '../infrastructure/challenge-url';
 import { rememberLandingSettings } from '../infrastructure/landing-settings';
+import { useSessionPersistence } from '../hooks/useSessionPersistence';
 import { createAtlasRushStore } from '../state/createAtlasRushStore';
 import { selectPhase } from '../state/selectors';
 import { AnswerInput } from './AnswerInput';
@@ -34,20 +29,13 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
     ),
   );
   const phase = useStore(store, selectPhase);
+  const persistence = useSessionPersistence(store, regionId);
   const [linkMessage, setLinkMessage] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const region = regionMetadata[regionId];
   const targetPlural = region.targetName === 'state' ? 'states' : 'countries';
   const result =
     phase === 'finished' ? getResults(store.getState().session) : null;
-
-  useEffect(() => {
-    const parsed = parseChallengeQuery(regionId, window.location.search);
-    if (parsed.corrected) {
-      replaceCurrentChallenge(parsed.config);
-    }
-    store.getState().startGame(parsed.config);
-  }, [regionId, store]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -64,7 +52,10 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
   }, [store]);
 
   const focusInput = () => inputRef.current?.focus();
-  const changeSettings = () => {
+  const changeSettings = async () => {
+    if (!(await persistence.discard())) {
+      return;
+    }
     rememberLandingSettings(store.getState().session.config);
     window.location.assign('/games/atlas-rush/');
   };
@@ -73,8 +64,7 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
       ...store.getState().session.config,
       seed: createRandomSeed(),
     };
-    replaceCurrentChallenge(next);
-    store.getState().startGame(next);
+    window.location.assign(getChallengePath(next));
   };
   const copyChallenge = async (config: ChallengeConfig) => {
     const link = new URL(getChallengePath(config), window.location.origin).href;
@@ -150,14 +140,59 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
       <PauseDialog
         store={store}
         isPaused={phase === 'paused'}
-        onEnd={changeSettings}
+        onEnd={() => {
+          void changeSettings();
+        }}
+        notice={persistence.notice}
       />
-      {phase === 'ready' && (
+      {persistence.initialization === 'loading' && (
         <div className={styles.overlay}>
           <section className={styles.panel} role="status">
             Preparing survey…
           </section>
         </div>
+      )}
+      {persistence.initialization === 'choose' && (
+        <div className={styles.overlay}>
+          <section
+            className={styles.panel}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="restore-title"
+          >
+            <p className={styles.eyebrow}>Survey archive</p>
+            <h2 id="restore-title">Continue your survey?</h2>
+            <p>
+              {persistence.canContinue
+                ? 'Resume saved progress or begin this challenge again.'
+                : 'Start this challenge again.'}
+            </p>
+            <div className={styles.actions}>
+              {persistence.canContinue && (
+                <button
+                  type="button"
+                  className={styles.primaryButton}
+                  onClick={persistence.continueGame}
+                >
+                  Continue
+                </button>
+              )}
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={persistence.startNew}
+              >
+                Start new
+              </button>
+            </div>
+            <p role="status">{persistence.notice}</p>
+          </section>
+        </div>
+      )}
+      {persistence.initialization === 'ready' && persistence.notice && (
+        <p className={styles.persistenceNotice} role="status">
+          {persistence.notice}
+        </p>
       )}
       {result && (
         <div className={styles.overlay}>
@@ -215,7 +250,9 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
               <button
                 className={styles.secondaryButton}
                 type="button"
-                onClick={changeSettings}
+                onClick={() => {
+                  void changeSettings();
+                }}
               >
                 Change settings
               </button>

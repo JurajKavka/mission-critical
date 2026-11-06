@@ -268,3 +268,9 @@ Next is #27: implement and test the snapshot, ownership and clock protocol in th
 ### #26 validation
 
 The persistence contract above is documentation only; no IndexedDB dependency or runtime behavior was added. In an isolated copy, `npm run check` passed with 82 files and no diagnostics, all 109 unit tests passed, and `npm run build` generated nine pages. The user reported passing browser tests for the unchanged #25 implementation before this documentation task; Chromium remains unavailable to the agent's execution environment.
+
+### #27 implementation and validation handoff
+
+- `idb` owns the version-1 session store; `fake-indexeddb` supports the unit tests. Snapshot validation checks canonical identity, domain invariants and redundant timing/score/target fields. Claims and saves use transactional generation/revision checks; the UI queues snapshots in transition order and disables saving if another tab takes ownership.
+- The region island now loads and validates a matching save before starting, offering Continue / Start new for an incomplete session. Storage failures fall back to memory-only play with a notice. Visibility/pagehide pause and checkpoint active time; restored games resume from the last committed checkpoint. Replay navigates to the new challenge identity, and End game conditionally tombstones the owned record. Timer display and typing do not write snapshots.
+- Validation: 118 unit tests pass, including four region ID sets, invalid records, stale revisions, competing owners, tombstones, independent identities and clock checkpoints. `npm run check` and `npm run build` passed in an isolated copy. Playwright coverage was extended for restore and unavailable IndexedDB, but the agent's environment denied Chromium's Mach service registration before any browser test ran. Run the browser suite on the host before treating #27 as complete or advancing to #28.
