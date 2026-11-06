@@ -388,7 +388,8 @@
 }
 .results dd {
   margin: 8px 0;
-  font-size: 22px;
+  font-size: clamp(14px, 2.5vw, 22px);
+  overflow-wrap: anywhere;
 }
 @media (max-width: 600px) {
   .app {

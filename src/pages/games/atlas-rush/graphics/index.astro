@@ -1,3 +1,7 @@
+---
+import { GraphicsCatalog } from '../../../../games/atlas-rush/components/GraphicsCatalog';
+---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -7,29 +11,6 @@
     <title>Atlas Rush // Graphics Catalog</title>
   </head>
   <body>
-    <main class="catalog">
-      <p class="eyebrow">Mission Critical // Development reference</p>
-      <h1>Atlas Rush graphics</h1>
-      <p>Shared components used in the Africa survey.</p>
-      <section class="catalog-section">
-        <h2>Continent map</h2>
-        <div id="catalog-map"></div>
-        <p class="map-key">
-          <span><i class="key-target"></i> Identify</span
-          ><span><i class="key-guessed"></i> Identified</span>
-        </p>
-      </section>
-      <section class="catalog-section">
-        <h2>Countdown timer</h2>
-        <div id="catalog-timer"></div>
-      </section>
-      <section class="catalog-section">
-        <h2>Results modal</h2>
-        <div id="catalog-results"></div>
-      </section>
-    </main>
-    <script>
-      import '../_game/catalog';
-    </script>
+    <GraphicsCatalog client:load />
   </body>
 </html>

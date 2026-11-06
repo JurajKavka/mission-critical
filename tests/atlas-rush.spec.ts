@@ -220,3 +220,54 @@ test('plays when IndexedDB is unavailable', async ({ page }) => {
   ).toBeVisible();
   await page.getByRole('button', { name: 'Skip' }).click();
 });
+
+test('results show timeout data and support replay and settings', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.goto(
+    '/games/atlas-rush/south-america/?level=expert&seed=Results_1',
+  );
+  await expect(page.locator('path[data-country]')).toHaveCount(12);
+  await page.clock.fastForward(37000);
+  const result = page.getByRole('dialog', { name: 'Time is up' });
+  await expect(result).toBeVisible();
+  await expect(result.getByText('South America')).toBeVisible();
+  await expect(result.getByText('Expert')).toBeVisible();
+  await expect(result.getByText('00:36')).toBeVisible();
+  await result.getByRole('button', { name: 'Play again' }).click();
+  await expect(page).toHaveURL(
+    /\/south-america\/\?level=expert&seed=[a-f0-9]+$/,
+  );
+  await expect(page.getByLabel('End game')).toBeVisible();
+  await page.clock.fastForward(37000);
+  await page
+    .getByRole('dialog', { name: 'Time is up' })
+    .getByRole('button', { name: 'Change settings' })
+    .click();
+  await expect(page).toHaveURL(/\/games\/atlas-rush\/$/);
+  await expect(
+    page.getByRole('button', { name: 'Start survey' }),
+  ).toBeEnabled();
+  await expect(page.getByLabel('South America')).toBeChecked();
+  await expect(page.getByLabel('Expert')).toBeChecked();
+});
+
+test('graphics catalog renders the shared map, timer and results fixture', async ({
+  page,
+}) => {
+  await page.goto('/games/atlas-rush/graphics/');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    'content',
+    'noindex, nofollow',
+  );
+  await expect(page.locator('path[data-country]')).toHaveCount(54);
+  await expect(page.getByText('02:43')).toBeVisible();
+  const result = page.getByRole('dialog', { name: 'Time is up' });
+  await expect(result.getByText('Africa')).toBeVisible();
+  await expect(result.getByText('69%')).toBeVisible();
+  await expect(result.getByText('05:00')).toBeVisible();
+  await expect(
+    result.getByRole('button', { name: 'Play again' }),
+  ).toBeVisible();
+});

@@ -5,7 +5,6 @@ import { regionMetadata } from '../data/regions';
 import { regionTargets } from '../data/targets';
 import { getResults } from '../domain/results';
 import { defaultSeed } from '../domain/shuffle';
-import { formatTime } from '../domain/time';
 import type { ChallengeConfig, RegionId } from '../domain/types';
 import { createRandomSeed } from '../infrastructure/browser-url';
 import { getChallengePath } from '../infrastructure/challenge-url';
@@ -17,6 +16,7 @@ import { AnswerInput } from './AnswerInput';
 import { GameHUD } from './GameHUD';
 import { GameMap } from './GameMap';
 import { PauseDialog } from './PauseDialog';
+import { ResultsPanel } from './ResultsPanel';
 import styles from './AtlasRush.module.css';
 
 type AtlasRushProps = { regionId: RegionId };
@@ -33,7 +33,6 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
   const [linkMessage, setLinkMessage] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const region = regionMetadata[regionId];
-  const targetPlural = region.targetName === 'state' ? 'states' : 'countries';
   const result =
     phase === 'finished' ? getResults(store.getState().session) : null;
 
@@ -196,78 +195,17 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
       )}
       {result && (
         <div className={styles.overlay}>
-          <section
-            className={styles.panel}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="results-title"
-          >
-            <p className={styles.eyebrow}>
-              Mission report //{' '}
-              {result.finishReason === 'completed'
-                ? 'complete'
-                : 'time expired'}
-            </p>
-            <h2 id="results-title">
-              {result.finishReason === 'completed'
-                ? 'Atlas complete'
-                : 'Time is up'}
-            </h2>
-            <p>
-              {result.finishReason === 'completed'
-                ? `All ${targetPlural} identified in ${formatTime(result.elapsedSeconds)}.`
-                : 'Your survey is complete.'}
-            </p>
-            <dl className={styles.results}>
-              <div>
-                <dt>Total</dt>
-                <dd>{result.total}</dd>
-              </div>
-              <div>
-                <dt>Guessed</dt>
-                <dd>{result.correct}</dd>
-              </div>
-              <div>
-                <dt>Not guessed</dt>
-                <dd>{result.notGuessed}</dd>
-              </div>
-              <div>
-                <dt>Coverage</dt>
-                <dd>{result.coverage}%</dd>
-              </div>
-            </dl>
-            <p>
-              {result.correct} / {result.total} identified
-            </p>
-            <div className={styles.actions}>
-              <button
-                className={styles.primaryButton}
-                type="button"
-                onClick={replay}
-              >
-                Play again ↗
-              </button>
-              <button
-                className={styles.secondaryButton}
-                type="button"
-                onClick={() => {
-                  void changeSettings();
-                }}
-              >
-                Change settings
-              </button>
-              <button
-                className={styles.secondaryButton}
-                type="button"
-                onClick={() => {
-                  void copyChallenge(result.config);
-                }}
-              >
-                Copy challenge link
-              </button>
-            </div>
-            <p aria-live="polite">{linkMessage}</p>
-          </section>
+          <ResultsPanel
+            result={result}
+            onPlayAgain={replay}
+            onChangeSettings={() => {
+              void changeSettings();
+            }}
+            onCopyChallenge={() => {
+              void copyChallenge(result.config);
+            }}
+            linkMessage={linkMessage}
+          />
         </div>
       )}
     </div>

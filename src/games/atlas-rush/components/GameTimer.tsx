@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
-import { formatTime } from '../domain/time';
 import { selectPhase } from '../state/selectors';
-import styles from './AtlasRush.module.css';
+import { TimerDisplay } from './TimerDisplay';
 import type { AtlasRushStore } from './types';
 
 type GameTimerProps = { store: AtlasRushStore; readySeconds: number };
@@ -30,12 +29,5 @@ export const GameTimer: React.FC<GameTimerProps> = ({
     const interval = window.setInterval(update, 200);
     return () => window.clearInterval(interval);
   }, [phase, store]);
-  return (
-    <div className={styles.telemetry}>
-      <span>Time remaining</span>
-      <strong className={seconds <= 30 ? styles.urgent : undefined}>
-        {formatTime(phase === 'ready' ? readySeconds : seconds)}
-      </strong>
-    </div>
-  );
+  return <TimerDisplay seconds={phase === 'ready' ? readySeconds : seconds} />;
 };
