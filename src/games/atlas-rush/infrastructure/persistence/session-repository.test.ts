@@ -146,6 +146,24 @@ describe('session persistence', () => {
     expect(await repository.load(otherKey)).toMatchObject({
       generation: 'other',
     });
+    expect(
+      getChallengeIdentity({ ...config, learning: !config.learning }),
+    ).not.toBe(key);
+    expect(getChallengeIdentity({ ...config, level: 'expert' })).not.toBe(key);
+  });
+
+  it('does not recreate a removed record or hide a closed database error', async () => {
+    const repository = await createRepository();
+    const snapshot = captureSnapshot(startGame(config));
+    await repository.claim(key, undefined, 'first', null);
+    if (!database) {
+      throw new Error('Database was not opened');
+    }
+    await database.delete('sessions', key);
+    expect(await repository.save(key, 'first', 1, snapshot)).toBe(false);
+    expect(await repository.load(key)).toBeUndefined();
+    database.close();
+    await expect(repository.load(key)).rejects.toThrow();
   });
 
   it('stores exact progression and captured time without geometry', async () => {
