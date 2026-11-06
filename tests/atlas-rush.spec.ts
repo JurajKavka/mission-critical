@@ -264,7 +264,7 @@ test('graphics catalog renders the shared map, timer and results fixture', async
   );
   await expect(page.locator('path[data-country]')).toHaveCount(54);
   await expect(page.getByText('02:43')).toBeVisible();
-  const result = page.getByRole('dialog', { name: 'Time is up' });
+  const result = page.getByRole('region', { name: 'Time is up' });
   await expect(result.getByText('Africa')).toBeVisible();
   await expect(result.getByText('69%')).toBeVisible();
   await expect(result.getByText('05:00')).toBeVisible();

@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { deleteDB } from 'idb';
 import { startGame, submitGuess } from '../../domain/session';
 import { createConfig } from '../../domain/test-fixtures';
@@ -18,6 +18,7 @@ const key = getChallengeIdentity(config);
 let database: SessionDatabase | null = null;
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   database?.close();
   database = null;
   await deleteDB('atlas-rush');
@@ -186,5 +187,55 @@ describe('session persistence', () => {
       );
       expect(JSON.stringify(saved)).not.toContain('path');
     }
+  });
+
+  it.each(['claim', 'save', 'discard'] as const)(
+    'rejects an aborted %s without changing the committed record or leaking a rejection',
+    async (operation) => {
+      const repository = await createRepository();
+      const snapshot = captureSnapshot(startGame(config));
+      await repository.claim(key, undefined, 'first', snapshot);
+      const committed = await repository.load(key);
+      const originalPut = IDBObjectStore.prototype.put;
+      vi.spyOn(IDBObjectStore.prototype, 'put').mockImplementation(function (
+        this: IDBObjectStore,
+        ...args
+      ) {
+        const request = originalPut.apply(this, args);
+        queueMicrotask(() => this.transaction.abort());
+        return request;
+      });
+
+      const attemptUpdate = () => {
+        if (operation === 'claim') {
+          return repository.claim(key, committed, 'second', snapshot);
+        } else if (operation === 'save') {
+          return repository.save(key, 'first', 1, snapshot);
+        }
+        return repository.discard(key, 'first', 'tombstone');
+      };
+      await expect(attemptUpdate()).rejects.toMatchObject({
+        name: 'AbortError',
+      });
+      expect(await repository.load(key)).toEqual(committed);
+    },
+  );
+
+  it('rejects an aborted read without leaking a transaction rejection', async () => {
+    const repository = await createRepository();
+    await repository.claim(key, undefined, 'first', null);
+    const originalGet = IDBObjectStore.prototype.get;
+    const read = vi
+      .spyOn(IDBObjectStore.prototype, 'get')
+      .mockImplementation(function (this: IDBObjectStore, ...args) {
+        const request = originalGet.apply(this, args);
+        queueMicrotask(() => this.transaction.abort());
+        return request;
+      });
+    await expect(repository.load(key)).rejects.toMatchObject({
+      name: 'AbortError',
+    });
+    read.mockRestore();
+    expect(await repository.load(key)).toMatchObject({ generation: 'first' });
   });
 });

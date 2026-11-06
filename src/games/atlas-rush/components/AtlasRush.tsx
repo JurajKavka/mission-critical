@@ -15,6 +15,7 @@ import { selectPhase } from '../state/selectors';
 import { AnswerInput } from './AnswerInput';
 import { GameHUD } from './GameHUD';
 import { GameMap } from './GameMap';
+import { ModalDialog } from './ModalDialog';
 import { PauseDialog } from './PauseDialog';
 import { ResultsPanel } from './ResultsPanel';
 import styles from './AtlasRush.module.css';
@@ -76,11 +77,20 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
   };
   return (
     <div className={styles.app}>
-      <GameHUD
-        store={store}
-        regionId={regionId}
-        readySeconds={store.getState().session.durationSeconds}
-      />
+      <div className={styles.statusBar}>
+        <GameHUD
+          store={store}
+          regionId={regionId}
+          readySeconds={store.getState().session.durationSeconds}
+        />
+        {persistence.initialization === 'ready' &&
+          persistence.notice &&
+          phase !== 'paused' && (
+            <p className={styles.persistenceNotice} role="status">
+              {persistence.notice}
+            </p>
+          )}
+      </div>
       <main className={styles.playfield}>
         <div className={styles.mapHeading}>
           <span>Survey grid / 01</span>
@@ -108,9 +118,11 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
         <div className={styles.mapKey}>
           <span>■ Identify</span>
           <span>■ Identified</span>
-          {region.markerNote && <span>{region.markerNote}</span>}
+          {region.markerNote && (
+            <span className={styles.mapHint}>{region.markerNote}</span>
+          )}
           {phase === 'playing' && store.getState().session.config.learning && (
-            <span>
+            <span className={styles.mapHint}>
               Learning mode / Select the highlighted area to reveal its name
             </span>
           )}
@@ -152,13 +164,8 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
         </div>
       )}
       {persistence.initialization === 'choose' && (
-        <div className={styles.overlay}>
-          <section
-            className={styles.panel}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="restore-title"
-          >
+        <ModalDialog labelledBy="restore-title">
+          <section className={styles.panel}>
             <p className={styles.eyebrow}>Survey archive</p>
             <h2 id="restore-title">Continue your survey?</h2>
             <p>
@@ -186,15 +193,10 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
             </div>
             <p role="status">{persistence.notice}</p>
           </section>
-        </div>
-      )}
-      {persistence.initialization === 'ready' && persistence.notice && (
-        <p className={styles.persistenceNotice} role="status">
-          {persistence.notice}
-        </p>
+        </ModalDialog>
       )}
       {result && (
-        <div className={styles.overlay}>
+        <ModalDialog labelledBy="results-title">
           <ResultsPanel
             result={result}
             onPlayAgain={replay}
@@ -206,7 +208,7 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
             }}
             linkMessage={linkMessage}
           />
-        </div>
+        </ModalDialog>
       )}
     </div>
   );

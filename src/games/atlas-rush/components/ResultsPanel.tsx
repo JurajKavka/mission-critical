@@ -26,12 +26,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
     levels.find((level) => level.id === result.config.level)?.label ??
     result.config.level;
   return (
-    <section
-      className={styles.panel}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="results-title"
-    >
+    <section className={styles.panel} aria-labelledby="results-title">
       <p className={styles.eyebrow}>
         Mission report //{' '}
         {result.finishReason === 'completed' ? 'complete' : 'time expired'}
