@@ -52,6 +52,35 @@ test('keeps map markers and state insets available', async ({ page }) => {
   await expect(page.locator('path[data-country]')).toHaveCount(50);
 });
 
+test('hides the revealed name when pausing and does not reveal it again on resume', async ({
+  page,
+}) => {
+  await page.goto('/games/atlas-rush/africa/?learning=1&seed=Tooltip_1');
+  const target = page.locator('path[data-learning-target]');
+  await expect(target).toHaveCount(1);
+  await target.focus();
+  const tooltip = page.getByRole('status');
+  await expect(tooltip).toBeVisible();
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => 'hidden',
+    });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  const dialog = page.getByRole('dialog', { name: 'End this game?' });
+  await expect(dialog).toBeVisible();
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => 'visible',
+    });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect(dialog).toBeHidden();
+  await expect(tooltip).toHaveCount(0);
+});
+
 test('rejects a corrupt stored snapshot and starts a new game', async ({
   page,
 }) => {
@@ -242,4 +271,57 @@ test('keeps saved progress separate for different challenge seeds', async ({
     .getByRole('button', { name: 'Continue' })
     .click();
   await expect(page.getByText('01 / 12')).toBeVisible();
+});
+
+test('refresh resumes from the saved timer checkpoint without charging time away', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.goto('/games/atlas-rush/south-america/?learning=1&seed=Timer_1');
+  await expect(page.locator('path[data-learning-target]')).toHaveCount(1);
+  await page.clock.fastForward(5000);
+  await page.getByRole('button', { name: 'Skip' }).click();
+  const readRemaining = () =>
+    page.evaluate(async () => {
+      const database = await new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open('atlas-rush');
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      const record = await new Promise<unknown>((resolve, reject) => {
+        const request = database
+          .transaction('sessions')
+          .objectStore('sessions')
+          .get(
+            JSON.stringify([1, 'south-america', 'beginner', true, 'Timer_1']),
+          );
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      database.close();
+      if (
+        typeof record !== 'object' ||
+        record === null ||
+        !('snapshot' in record) ||
+        typeof record.snapshot !== 'object' ||
+        record.snapshot === null ||
+        !('remainingSeconds' in record.snapshot) ||
+        typeof record.snapshot.remainingSeconds !== 'number'
+      ) {
+        return Infinity;
+      }
+      return record.snapshot.remainingSeconds;
+    });
+  await expect.poll(readRemaining).toBeLessThanOrEqual(115);
+  const savedRemaining = await readRemaining();
+  await page.reload();
+  const dialog = page.getByRole('dialog', { name: 'Continue your survey?' });
+  await expect(dialog).toBeVisible();
+  await page.clock.fastForward(30000);
+  await dialog.getByRole('button', { name: 'Continue' }).click();
+  const seconds = Math.ceil(savedRemaining);
+  const displayedTime = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+  await expect(
+    page.getByText('Time remaining').locator('..').locator('strong'),
+  ).toHaveText(displayedTime);
 });

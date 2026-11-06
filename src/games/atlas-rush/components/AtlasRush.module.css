@@ -42,6 +42,14 @@
   position: relative;
   z-index: 1;
 }
+.commandIndex {
+  color: #8099ae;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+  text-align: right;
+  text-transform: uppercase;
+}
 .hud {
   display: flex;
   justify-content: space-between;

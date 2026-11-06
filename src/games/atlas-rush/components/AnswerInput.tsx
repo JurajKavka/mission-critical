@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
+import { useStore } from 'zustand';
 import type * as React from 'react';
+import { regionTargets } from '../data/targets';
+import { getCommandIndex } from '../domain/session';
 import { AsciiKeyboard } from './AsciiKeyboard';
 import { editAnswerText } from './answer-edit';
 import type { AsciiKey } from './AsciiKeyboard';
@@ -26,6 +29,11 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   const [feedback, setFeedback] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [usesNativeKeyboard, setUsesNativeKeyboard] = useState(false);
+  const commandIndex = useStore(store, (state) =>
+    getCommandIndex(state.session),
+  );
+  const totalTargets =
+    regionTargets[store.getState().session.config.regionId].length;
   const previousPhase = useRef(phase);
   const focusInput = () => inputRef.current?.focus({ preventScroll: true });
 
@@ -131,6 +139,9 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
 
   return (
     <footer className={styles.command}>
+      <div className={styles.commandIndex}>
+        Target {String(commandIndex).padStart(2, '0')} / {totalTargets}
+      </div>
       {phase === 'playing' && isMobile && (
         <AsciiKeyboard
           onKey={handleKey}

@@ -39,6 +39,10 @@ export const GameMap: React.FC<GameMapProps> = ({
   const region = regionMetadata[regionId];
 
   useEffect(() => {
+    setTooltip(null);
+  }, [targetId, phase]);
+
+  useEffect(() => {
     let active = true;
     loadGeography(regionId)
       .then((loaded) => {

@@ -4,19 +4,20 @@ A collection of neon arcade games built with Astro. See the [design manual](./DE
 
 Install dependencies with `npm ci`, then run commands from the repository root:
 
-| Command           | Purpose                                              |
-| ----------------- | ---------------------------------------------------- |
-| `npm run clean`   | Remove root dependency, build, and cache directories |
-| `npm run dev`     | Start the website and games locally                  |
-| `npm run check`   | Run ESLint, Prettier, and Astro/TypeScript checks    |
-| `npm run test`    | Run the Vitest unit suite once without watching      |
-| `npm run build`   | Build the static website into `dist/`                |
-| `npm run preview` | Serve the production build                           |
+| Command            | Purpose                                              |
+| ------------------ | ---------------------------------------------------- |
+| `npm run clean`    | Remove root dependency, build, and cache directories |
+| `npm run dev`      | Start the website and games locally                  |
+| `npm run check`    | Run ESLint, Prettier, and Astro/TypeScript checks    |
+| `npm run test`     | Run the Vitest unit suite once without watching      |
+| `npm run test:e2e` | Run the Playwright browser suite once                |
+| `npm run build`    | Build the static website into `dist/`                |
+| `npm run preview`  | Serve the production build                           |
 
-After cleaning, run `npm ci` to reinstall dependencies.
+After cleaning, run `npm ci` to reinstall dependencies. Install the Playwright browser once with `npx playwright install chromium`. The browser suite starts its own local server; Chromium must be allowed to launch in the execution environment.
 
-Game routes live in `src/pages/games/`; legacy game runtimes and styles live in their `_game/` directories alongside their pages. Atlas Rush’s extracted gameplay domain and geometry-free metadata live in `src/games/atlas-rush/`. Astro pages can import shared components from `src/components/`. Add new games to `src/data/games.ts` and create their routes under `src/pages/games/`.
+Game routes live in `src/pages/games/`. Atlas Rush uses a static settings page and React game islands at `/games/atlas-rush/{region}/`; its domain, state, components and infrastructure live in `src/games/atlas-rush/`, while the original geography paths remain under its `_game/` directory. Astro pages can import shared components from `src/components/`. Add new games to `src/data/games.ts` and create their routes under `src/pages/games/`.
 
-The graphics catalogs are available at `/games/asteroids/graphics/` and `/games/atlas-rush/graphics/`. Set `SITE_URL` to the public site URL to generate absolute social-image URLs.
+The graphics catalogs are available at `/games/asteroids/graphics/` and `/games/atlas-rush/graphics/`. Set `SITE_URL` to the public site URL when building to generate absolute canonical and social-image URLs.
 
 For Cloudflare, use the repository root as the root directory, `npm run build` as the build command, and `dist` as the build output directory.
