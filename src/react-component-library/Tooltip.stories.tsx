@@ -4,7 +4,7 @@ import { Tooltip } from './Tooltip';
 const meta = {
   title: 'Components/Tooltip',
   component: Tooltip,
-  args: { name: 'Madagascar', x: 24, y: 24 },
+  args: { name: 'Madagascar', left: 24, top: 24 },
 } satisfies Meta<typeof Tooltip>;
 
 export default meta;

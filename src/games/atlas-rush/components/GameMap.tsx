@@ -33,8 +33,8 @@ export const GameMap: React.FC<GameMapProps> = ({
   const [geography, setGeography] = useState<Geography | null>(null);
   const [tooltip, setTooltip] = useState<{
     name: string;
-    x: number;
-    y: number;
+    left: number;
+    top: number;
   } | null>(null);
   const [error, setError] = useState(false);
   const region = regionMetadata[regionId];
@@ -88,11 +88,11 @@ export const GameMap: React.FC<GameMapProps> = ({
     const bounds = element.getBoundingClientRect();
     setTooltip({
       name,
-      x: Math.max(
+      left: Math.max(
         8,
         Math.min(bounds.left + bounds.width / 2, window.innerWidth - 180),
       ),
-      y: Math.max(8, bounds.top - 45),
+      top: Math.max(8, bounds.top - 45),
     });
   };
   if (error) {
@@ -155,7 +155,9 @@ export const GameMap: React.FC<GameMapProps> = ({
         canReveal &&
         geography.countries.some(
           (country) => country.id === targetId && country.name === tooltip.name,
-        ) && <Tooltip name={tooltip.name} x={tooltip.x} y={tooltip.y} />}
+        ) && (
+          <Tooltip name={tooltip.name} left={tooltip.left} top={tooltip.top} />
+        )}
     </>
   );
 };

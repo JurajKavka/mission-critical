@@ -2,8 +2,10 @@ import type * as React from 'react';
 import styled from 'styled-components';
 import { pixelsToRem } from '../utils/units';
 
-const TooltipSurface = styled.div`
+const TooltipSurface = styled.div<{ $left: number; $top: number }>`
   position: fixed;
+  left: ${({ $left }) => $left}px;
+  top: ${({ $top }) => $top}px;
   z-index: 4;
   max-width: calc(100vw - 16px);
   padding: ${pixelsToRem(8)} ${pixelsToRem(12)};
@@ -17,12 +19,12 @@ const TooltipSurface = styled.div`
 
 type TooltipProps = {
   name: string;
-  x: number;
-  y: number;
+  left: number;
+  top: number;
 };
 
-export const Tooltip: React.FC<TooltipProps> = ({ name, x, y }) => (
-  <TooltipSurface role="status" style={{ left: x, top: y }}>
+export const Tooltip: React.FC<TooltipProps> = ({ name, left, top }) => (
+  <TooltipSurface role="status" $left={left} $top={top}>
     {name}
   </TooltipSurface>
 );
