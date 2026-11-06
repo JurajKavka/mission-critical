@@ -38,6 +38,9 @@ test('plays a survey and preserves map paths during typing and timer updates', a
   page,
 }) => {
   await page.goto('/games/atlas-rush/africa/?learning=1');
+  await expect(
+    page.getByRole('group', { name: 'On-screen keyboard' }),
+  ).toHaveCount(0);
   const target = page.locator('path[data-learning-target]');
   await expect(target).toHaveCount(1);
   await target.focus();
@@ -71,6 +74,56 @@ test('plays a survey and preserves map paths during typing and timer updates', a
     page.getByRole('dialog', { name: 'End this game?' }),
   ).toBeHidden();
   await page.getByRole('button', { name: 'Skip' }).click();
+});
+
+test.describe('mobile keyboard', () => {
+  test.use({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+  });
+
+  test('keeps controls above the answer, supports editing and the native fallback', async ({
+    page,
+  }) => {
+    await page.goto('/games/atlas-rush/africa/?learning=1&seed=Mobile_1');
+    const keyboard = page.getByRole('group', { name: 'On-screen keyboard' });
+    const input = page.getByLabel('country name');
+    await expect(keyboard).toBeVisible();
+    await expect(input).toHaveAttribute('readonly', '');
+    const keyboardBounds = await keyboard.boundingBox();
+    const inputBounds = await input.boundingBox();
+    expect(keyboardBounds).not.toBeNull();
+    expect(inputBounds).not.toBeNull();
+    expect(
+      (keyboardBounds?.y ?? 0) + (keyboardBounds?.height ?? 0),
+    ).toBeLessThanOrEqual(inputBounds?.y ?? 0);
+    await keyboard.getByRole('button', { name: 'A', exact: true }).click();
+    await expect(input).toHaveValue('A');
+    await keyboard.getByRole('button', { name: 'Space', exact: true }).click();
+    await expect(input).toHaveValue('A ');
+    await keyboard
+      .getByRole('button', { name: 'Backspace', exact: true })
+      .click();
+    await expect(input).toHaveValue('A');
+    const afterTyping = await keyboard.boundingBox();
+    expect(afterTyping).toEqual(keyboardBounds);
+    await input.focus();
+    await page.keyboard.type('B');
+    await expect(input).toHaveValue('AB');
+    await keyboard.getByRole('button', { name: 'Skip', exact: true }).click();
+    await expect(input).toHaveValue('');
+    await keyboard.getByRole('button', { name: 'Use native keyboard' }).click();
+    await expect(input).not.toHaveAttribute('readonly', '');
+    await input.fill('test');
+    await expect(input).toHaveValue('test');
+    await page.setViewportSize({ width: 844, height: 390 });
+    await expect(keyboard).toBeVisible();
+    const landscapeInput = await input.boundingBox();
+    expect(
+      (landscapeInput?.y ?? Infinity) + (landscapeInput?.height ?? Infinity),
+    ).toBeLessThanOrEqual(390);
+  });
 });
 
 test('normalizes challenge settings and repeats the same target order on reload', async ({

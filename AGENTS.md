@@ -16,6 +16,7 @@ These instructions apply to the entire repository.
 - Write TypeScript using a functional style: prefer pure functions, explicit inputs and return values, and immutable data where practical.
 - Prefer array methods such as `map`, `filter`, and `reduce` for collection transformations and accumulation, rather than imperative loops with externally managed accumulators. Keep the chosen approach clear and focused.
 - Prefer arrow functions assigned to `const`.
+- Name module-level constant values using uppercase letters and underscores, such as `MOBILE_KEYBOARD_QUERY`; keep function names descriptive and in camelCase.
 - Do not introduce classes when functions, closures, or plain objects are sufficient.
 - Use descriptive names. Avoid vague names such as `type` when a domain-specific name such as `pickupType` is clearer.
 - Use single quotes in TypeScript and JavaScript. Keep Prettier configured with `singleQuote: true`.

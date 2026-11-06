@@ -51,7 +51,7 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [store]);
 
-  const focusInput = () => inputRef.current?.focus();
+  const focusInput = () => inputRef.current?.focus({ preventScroll: true });
   const changeSettings = async () => {
     if (!(await persistence.discard())) {
       return;

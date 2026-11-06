@@ -43,7 +43,7 @@ export const PauseDialog: React.FC<PauseDialogProps> = ({
       <p className={styles.eyebrow}>Survey paused</p>
       <h2 id="pause-title">End this game?</h2>
       <p id="pause-description">Your progress in this round will be lost.</p>
-      {notice && <p role="status">{notice}</p>}
+      {isPaused && notice && <p role="status">{notice}</p>}
       <div className={styles.actions}>
         <button type="button" className={styles.primaryButton} onClick={onEnd}>
           End game
