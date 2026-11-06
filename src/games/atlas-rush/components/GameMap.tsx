@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
 import { Tooltip } from '../../../react-component-library';
@@ -37,6 +37,7 @@ export const GameMap: React.FC<GameMapProps> = ({
     top: number;
   } | null>(null);
   const [error, setError] = useState(false);
+  const isPointerFocusing = useRef(false);
   const region = regionMetadata[regionId];
 
   useEffect(() => {
@@ -76,23 +77,27 @@ export const GameMap: React.FC<GameMapProps> = ({
         setTooltip(null);
       }
     };
+    const resetPointerFocus = () => {
+      isPointerFocusing.current = false;
+    };
     document.addEventListener('pointerdown', hide);
+    document.addEventListener('pointerup', resetPointerFocus);
+    document.addEventListener('pointercancel', resetPointerFocus);
     document.addEventListener('keydown', hideOnEscape);
     return () => {
       document.removeEventListener('pointerdown', hide);
+      document.removeEventListener('pointerup', resetPointerFocus);
+      document.removeEventListener('pointercancel', resetPointerFocus);
       document.removeEventListener('keydown', hideOnEscape);
     };
   }, []);
 
-  const show = (name: string, element: SVGPathElement) => {
+  const showAtTarget = (name: string, element: SVGPathElement) => {
     const bounds = element.getBoundingClientRect();
     setTooltip({
       name,
-      left: Math.max(
-        8,
-        Math.min(bounds.left + bounds.width / 2, window.innerWidth - 180),
-      ),
-      top: Math.max(8, bounds.top - 45),
+      left: bounds.left + bounds.width / 2,
+      top: bounds.top,
     });
   };
   if (error) {
@@ -124,16 +129,48 @@ export const GameMap: React.FC<GameMapProps> = ({
               tabIndex={canSelect ? 0 : undefined}
               role={canSelect ? 'button' : undefined}
               aria-label={canSelect ? 'Reveal the name' : undefined}
+              onPointerDown={
+                canSelect
+                  ? () => {
+                      isPointerFocusing.current = true;
+                    }
+                  : undefined
+              }
               onFocus={
                 canSelect
-                  ? (event) => show(country.name, event.currentTarget)
+                  ? (event) => {
+                      if (!isPointerFocusing.current) {
+                        showAtTarget(country.name, event.currentTarget);
+                      }
+                    }
                   : undefined
               }
               onClick={
                 canSelect
                   ? (event) => {
-                      show(country.name, event.currentTarget);
+                      if (event.detail === 0) {
+                        showAtTarget(country.name, event.currentTarget);
+                      } else {
+                        setTooltip({
+                          name: country.name,
+                          left: event.clientX,
+                          top: event.clientY,
+                        });
+                      }
                       onReturnFocus();
+                    }
+                  : undefined
+              }
+              onPointerMove={
+                canSelect && tooltip?.name === country.name
+                  ? (event) => {
+                      if (event.pointerType === 'mouse') {
+                        setTooltip({
+                          name: country.name,
+                          left: event.clientX,
+                          top: event.clientY,
+                        });
+                      }
                     }
                   : undefined
               }
@@ -142,7 +179,7 @@ export const GameMap: React.FC<GameMapProps> = ({
                   ? (event) => {
                       if (event.key === 'Enter' || event.key === ' ') {
                         event.preventDefault();
-                        show(country.name, event.currentTarget);
+                        showAtTarget(country.name, event.currentTarget);
                       }
                     }
                   : undefined
