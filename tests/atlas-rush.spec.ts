@@ -230,6 +230,7 @@ test('results show timeout data and support replay and settings', async ({
     '/games/atlas-rush/south-america/?level=expert&seed=Results_1',
   );
   await expect(page.locator('path[data-country]')).toHaveCount(12);
+  await expect(page.getByLabel('End game')).toBeVisible();
   await page.clock.fastForward(37000);
   const result = page.getByRole('dialog', { name: 'Time is up' });
   await expect(result).toBeVisible();
