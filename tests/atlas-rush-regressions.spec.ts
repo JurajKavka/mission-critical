@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { regionTargets } from '../src/games/atlas-rush/data/targets';
 import { shuffleTargetIds } from '../src/games/atlas-rush/domain/shuffle';
+import { expectIdentifiedCount, getHudMetricValue } from './helpers/atlas-rush';
 
 const AFRICA_IDS = regionTargets.africa.map((target) => target.id);
 const CONGO_SEED = Array.from(
@@ -30,7 +31,7 @@ test('accepts an alias and preserves keyboard focus through pause', async ({
   await expect(input).toBeFocused();
   await input.fill('Congo Brazzaville');
   await input.press('Enter');
-  await expect(page.getByText('01 / 54')).toBeVisible();
+  await expectIdentifiedCount(page, 1, 54);
   await page.keyboard.press('Escape');
   const dialog = page.getByRole('dialog', { name: 'End this game?' });
   await expect(dialog).toBeVisible();
@@ -221,7 +222,7 @@ test('keeps saved progress separate for different challenge seeds', async ({
   expect(name).toBeDefined();
   await page.getByLabel('country name').fill(name ?? '');
   await page.getByLabel('country name').press('Enter');
-  await expect(page.getByText('01 / 12')).toBeVisible();
+  await expectIdentifiedCount(page, 1, 12);
   await expect
     .poll(async () =>
       page.evaluate(async () => {
@@ -262,7 +263,7 @@ test('keeps saved progress separate for different challenge seeds', async ({
   await page.goto(
     '/games/atlas-rush/south-america/?learning=1&seed=Separate_B',
   );
-  await expect(page.getByText('00 / 12')).toBeVisible();
+  await expectIdentifiedCount(page, 0, 12);
   await page.goto(
     '/games/atlas-rush/south-america/?learning=1&seed=Separate_A',
   );
@@ -270,7 +271,7 @@ test('keeps saved progress separate for different challenge seeds', async ({
     .getByRole('dialog', { name: 'Continue your survey?' })
     .getByRole('button', { name: 'Continue' })
     .click();
-  await expect(page.getByText('01 / 12')).toBeVisible();
+  await expectIdentifiedCount(page, 1, 12);
 });
 
 test('refresh resumes from the saved timer checkpoint without charging time away', async ({
@@ -321,7 +322,5 @@ test('refresh resumes from the saved timer checkpoint without charging time away
   await dialog.getByRole('button', { name: 'Continue' }).click();
   const seconds = Math.ceil(savedRemaining);
   const displayedTime = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
-  await expect(
-    page.getByText('Time remaining').locator('..').locator('strong'),
-  ).toHaveText(displayedTime);
+  await expect(getHudMetricValue(page, 'Countdown')).toHaveText(displayedTime);
 });

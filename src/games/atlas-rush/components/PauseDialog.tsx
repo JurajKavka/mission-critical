@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import type * as React from 'react';
-import { ActionButton } from '../../../react-component-library';
+import {
+  ActionButton,
+  SecondaryButton,
+} from '../../../react-component-library';
 import styles from './AtlasRush.module.css';
 import type { AtlasRushStore } from './types';
 
@@ -9,16 +12,12 @@ type PauseDialogProps = {
   isPaused: boolean;
   onEnd: () => void;
   notice: string;
-  onCopyChallenge: () => void;
-  linkMessage: string;
 };
 export const PauseDialog: React.FC<PauseDialogProps> = ({
   store,
   isPaused,
   onEnd,
   notice,
-  onCopyChallenge,
-  linkMessage,
 }) => {
   const dialog = useRef<HTMLDialogElement>(null);
   const continueButton = useRef<HTMLButtonElement>(null);
@@ -51,26 +50,12 @@ export const PauseDialog: React.FC<PauseDialogProps> = ({
       {isPaused && notice && <p role="status">{notice}</p>}
       <div className={styles.actions}>
         <ActionButton label="End game" onClick={onEnd} />
-        <button
+        <SecondaryButton
           ref={continueButton}
-          type="button"
-          className={styles.secondaryButton}
+          label="Continue"
           onClick={store.getState().resumeGame}
-        >
-          Continue
-          <span className={styles.buttonArrow} aria-hidden="true">
-            →
-          </span>
-        </button>
-        <button
-          type="button"
-          className={styles.secondaryButton}
-          onClick={onCopyChallenge}
-        >
-          Copy challenge link
-        </button>
+        />
       </div>
-      <p aria-live="polite">{linkMessage}</p>
     </dialog>
   );
 };

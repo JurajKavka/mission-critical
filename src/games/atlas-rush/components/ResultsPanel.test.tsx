@@ -40,7 +40,6 @@ describe('results panel', () => {
           result={result}
           onPlayAgain={ignoreAction}
           onChangeSettings={ignoreAction}
-          onCopyChallenge={ignoreAction}
         />,
       );
       expect(markup).toContain(regionMetadata[regionId].name);
@@ -73,7 +72,6 @@ describe('results panel', () => {
         result={result}
         onPlayAgain={ignoreAction}
         onChangeSettings={ignoreAction}
-        onCopyChallenge={ignoreAction}
       />,
     );
     expect(markup).toContain('Atlas complete');

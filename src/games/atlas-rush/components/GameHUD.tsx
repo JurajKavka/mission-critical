@@ -31,10 +31,10 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         </p>
       </div>
       <div className={styles.hudStats}>
-        <div className={styles.telemetry}>
+        <div className={styles.hudMetric}>
           <span>Identified</span>
           <strong>
-            {String(guessed.length).padStart(2, '0')} /{' '}
+            {String(guessed.length).padStart(2, '0')}/
             {String(total).padStart(2, '0')}
           </strong>
         </div>

@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
-import { ActionButton, ExitButton } from '../../../react-component-library';
+import {
+  ActionButton,
+  ExitButton,
+  SecondaryButton,
+} from '../../../react-component-library';
 import { regionMetadata } from '../data/regions';
 import { regionTargets } from '../data/targets';
 import { getResults } from '../domain/results';
 import { defaultSeed } from '../domain/shuffle';
-import type { ChallengeConfig, RegionId } from '../domain/types';
+import type { RegionId } from '../domain/types';
 import { createRandomSeed } from '../infrastructure/browser-url';
 import { getChallengePath } from '../infrastructure/challenge-url';
 import { rememberLandingSettings } from '../infrastructure/landing-settings';
@@ -32,7 +36,6 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
   );
   const phase = useStore(store, selectPhase);
   const persistence = useSessionPersistence(store, regionId);
-  const [linkMessage, setLinkMessage] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const region = regionMetadata[regionId];
   const result =
@@ -66,15 +69,6 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
       seed: createRandomSeed(),
     };
     window.location.assign(getChallengePath(next));
-  };
-  const copyChallenge = async (config: ChallengeConfig) => {
-    const link = new URL(getChallengePath(config), window.location.origin).href;
-    try {
-      await navigator.clipboard.writeText(link);
-      setLinkMessage('Challenge link copied.');
-    } catch {
-      setLinkMessage('Could not copy the challenge link.');
-    }
   };
   return (
     <div className={styles.app}>
@@ -144,10 +138,6 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
           void changeSettings();
         }}
         notice={persistence.notice}
-        onCopyChallenge={() => {
-          void copyChallenge(store.getState().session.config);
-        }}
-        linkMessage={linkMessage}
       />
       {persistence.initialization === 'loading' && (
         <div className={styles.overlay}>
@@ -173,13 +163,17 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
                   onClick={persistence.continueGame}
                 />
               )}
-              <button
-                type="button"
-                className={styles.secondaryButton}
-                onClick={persistence.startNew}
-              >
-                Start new
-              </button>
+              {persistence.canContinue ? (
+                <SecondaryButton
+                  label="Start new"
+                  onClick={persistence.startNew}
+                />
+              ) : (
+                <ActionButton
+                  label="Start new"
+                  onClick={persistence.startNew}
+                />
+              )}
             </div>
             <p role="status">{persistence.notice}</p>
           </section>
@@ -193,10 +187,6 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
             onChangeSettings={() => {
               void changeSettings();
             }}
-            onCopyChallenge={() => {
-              void copyChallenge(result.config);
-            }}
-            linkMessage={linkMessage}
           />
         </ModalDialog>
       )}

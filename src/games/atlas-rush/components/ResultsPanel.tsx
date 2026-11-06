@@ -10,16 +10,12 @@ type ResultsPanelProps = {
   result: GameResults;
   onPlayAgain: () => void;
   onChangeSettings: () => void;
-  onCopyChallenge: () => void;
-  linkMessage?: string;
 };
 
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   result,
   onPlayAgain,
   onChangeSettings,
-  onCopyChallenge,
-  linkMessage = '',
 }) => {
   const region = regionMetadata[result.config.regionId];
   const targetPlural = region.targetName === 'state' ? 'states' : 'countries';
@@ -82,15 +78,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         >
           Change settings
         </button>
-        <button
-          className={styles.secondaryButton}
-          type="button"
-          onClick={onCopyChallenge}
-        >
-          Copy challenge link
-        </button>
       </div>
-      <p aria-live="polite">{linkMessage}</p>
     </section>
   );
 };
