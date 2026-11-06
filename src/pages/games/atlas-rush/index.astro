@@ -1,4 +1,5 @@
 ---
+import ActionButton from '../../../components/ActionButton.astro';
 import { regionMetadata } from '../../../games/atlas-rush/data/regions';
 import { levels } from '../../../games/atlas-rush/domain/levels';
 const title = 'Atlas Rush Geography Game // Mission Critical';
@@ -39,12 +40,9 @@ const regions = [
         <a href="/">Mission Critical</a> <span>//</span> Atlas Rush
       </nav>
       <section class="panel" aria-labelledby="title">
-        <p class="eyebrow">Sector 01 / Geography</p>
+        <p class="eyebrow">Sector 01</p>
         <h1 id="title">Atlas <em>Rush</em></h1>
-        <p>
-          Identify countries and US states before the clock runs out. Select a
-          region and start your survey.
-        </p>
+        <p>Identify countries before the clock runs out.</p>
         <form id="survey-settings">
           <fieldset>
             <legend>Select a region</legend>
@@ -70,12 +68,17 @@ const regions = [
               {level.label}</label
             >)}
           </fieldset>
+          <div class="start-action">
+            <ActionButton
+              id="start-survey"
+              label="Start survey"
+              type="submit"
+              disabled
+            />
+          </div>
           <label class="learning"
             ><input type="checkbox" name="learning" /> Learning mode</label
           >
-          <button id="start-survey" type="submit" disabled>
-            Start survey ↗
-          </button>
           <noscript><p>Enable JavaScript to start a survey.</p></noscript>
         </form>
       </section>
@@ -86,6 +89,9 @@ const regions = [
   </body>
 </html>
 <style>
+  :global(:root) {
+    color-scheme: dark;
+  }
   :global(*) {
     box-sizing: border-box;
   }
@@ -119,6 +125,10 @@ const regions = [
   }
   nav a {
     color: inherit;
+    text-decoration: none;
+  }
+  nav a:hover {
+    text-decoration: underline;
   }
   nav span {
     color: #ff65dc;
@@ -128,6 +138,7 @@ const regions = [
     padding: 32px 42px;
     border: 1px solid rgba(105, 251, 255, 0.45);
     background: linear-gradient(135deg, #091a2a, #030713 75%);
+    box-shadow: 0 0 60px rgba(22, 104, 139, 0.14);
   }
   h1 {
     margin: 12px 0;
@@ -158,6 +169,10 @@ const regions = [
     padding: 15px 0;
     border: 0;
     border-top: 1px solid rgba(105, 251, 255, 0.16);
+    text-transform: uppercase;
+  }
+  fieldset + fieldset {
+    margin-top: 12px;
   }
   legend {
     color: #8099ae;
@@ -166,33 +181,32 @@ const regions = [
     text-transform: uppercase;
   }
   label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 11px;
+    letter-spacing: 0.08em;
     cursor: pointer;
   }
   input {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin: 0;
     accent-color: #69fbff;
   }
   .learning {
     display: flex;
     gap: 10px;
-    margin: 20px 0;
+    align-items: flex-start;
+    margin-top: 20px;
+    letter-spacing: normal;
   }
-  button {
-    padding: 12px 16px;
-    border: 1px solid #69fbff;
-    background: rgba(21, 97, 116, 0.2);
-    color: #f4feff;
-    font: inherit;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    cursor: pointer;
+  .start-action :global(button) {
+    min-width: 190px;
+    margin-top: 12px;
   }
-  button:hover {
-    background: rgba(31, 142, 161, 0.35);
-  }
-  button:disabled {
+  .start-action :global(button:disabled) {
     opacity: 0.6;
     cursor: wait;
   }

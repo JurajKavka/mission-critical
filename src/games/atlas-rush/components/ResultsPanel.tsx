@@ -1,4 +1,5 @@
 import type * as React from 'react';
+import { ActionButton } from '../../../components/ActionButton';
 import { regionMetadata } from '../data/regions';
 import { levels } from '../domain/levels';
 import { formatTime } from '../domain/time';
@@ -73,13 +74,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         {result.correct} / {result.total} {targetPlural} identified
       </p>
       <div className={styles.actions}>
-        <button
-          className={styles.primaryButton}
-          type="button"
-          onClick={onPlayAgain}
-        >
-          Play again ↗
-        </button>
+        <ActionButton label="Play again" onClick={onPlayAgain} />
         <button
           className={styles.secondaryButton}
           type="button"

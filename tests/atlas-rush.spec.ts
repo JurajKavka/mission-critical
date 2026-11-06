@@ -65,7 +65,7 @@ test('plays a survey and preserves map paths during typing and timer updates', a
   ).toBe(true);
   await page.getByRole('button', { name: 'Identify' }).click();
   await expect(page.getByText('01 / 54')).toBeVisible();
-  await expect(page.getByText('Target 02 / 54')).toBeVisible();
+  await expect(page.getByText('02 / 54')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(
     page.getByRole('dialog', { name: 'End this game?' }),

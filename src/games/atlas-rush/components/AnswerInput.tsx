@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useStore } from 'zustand';
 import type * as React from 'react';
+import { ActionButton } from '../../../components/ActionButton';
 import { regionTargets } from '../data/targets';
 import { getCommandIndex } from '../domain/session';
 import { AsciiKeyboard } from './AsciiKeyboard';
@@ -140,7 +141,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   return (
     <footer className={styles.command}>
       <div className={styles.commandIndex}>
-        Target {String(commandIndex).padStart(2, '0')} / {totalTargets}
+        {String(commandIndex).padStart(2, '0')} / {totalTargets}
       </div>
       {phase === 'playing' && isMobile && (
         <AsciiKeyboard
@@ -174,20 +175,21 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           readOnly={isMobile && !usesNativeKeyboard}
           inputMode={isMobile && !usesNativeKeyboard ? 'none' : 'text'}
         />
-        <button
-          className={styles.primaryButton}
+        <ActionButton
+          label="Identify"
           type="submit"
           disabled={phase !== 'playing'}
-        >
-          Identify ↗
-        </button>
+        />
         <button
           className={styles.secondaryButton}
           type="button"
           onClick={handleSkip}
           disabled={phase !== 'playing'}
         >
-          Skip →
+          Skip
+          <span className={styles.buttonArrow} aria-hidden="true">
+            →
+          </span>
         </button>
       </form>
       {isMobile && !usesNativeKeyboard && (

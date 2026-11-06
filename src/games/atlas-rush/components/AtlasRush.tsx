@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
+import { ActionButton } from '../../../components/ActionButton';
 import { regionMetadata } from '../data/regions';
 import { regionTargets } from '../data/targets';
 import { getResults } from '../domain/results';
@@ -95,7 +96,9 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
         <div className={styles.mapHeading}>
           <span>Survey grid / 01</span>
           <span>
-            {region.code} · {regionTargets[regionId].length}{' '}
+            <span className={styles.regionCode}>
+              {region.code} · {regionTargets[regionId].length}{' '}
+            </span>
             {phase === 'playing' && (
               <button
                 type="button"
@@ -116,8 +119,12 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
           />
         </div>
         <div className={styles.mapKey}>
-          <span>■ Identify</span>
-          <span>■ Identified</span>
+          <span>
+            <i aria-hidden="true" /> Identify
+          </span>
+          <span>
+            <i className={styles.keyGuessed} aria-hidden="true" /> Identified
+          </span>
           {region.markerNote && (
             <span className={styles.mapHint}>{region.markerNote}</span>
           )}
@@ -127,20 +134,6 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
             </span>
           )}
         </div>
-        {phase === 'playing' && (
-          <div className={styles.actions}>
-            <button
-              className={styles.secondaryButton}
-              type="button"
-              onClick={() => {
-                void copyChallenge(store.getState().session.config);
-              }}
-            >
-              Copy challenge link
-            </button>
-            <span aria-live="polite">{linkMessage}</span>
-          </div>
-        )}
       </main>
       <AnswerInput
         store={store}
@@ -155,6 +148,10 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
           void changeSettings();
         }}
         notice={persistence.notice}
+        onCopyChallenge={() => {
+          void copyChallenge(store.getState().session.config);
+        }}
+        linkMessage={linkMessage}
       />
       {persistence.initialization === 'loading' && (
         <div className={styles.overlay}>
@@ -175,13 +172,10 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
             </p>
             <div className={styles.actions}>
               {persistence.canContinue && (
-                <button
-                  type="button"
-                  className={styles.primaryButton}
+                <ActionButton
+                  label="Continue"
                   onClick={persistence.continueGame}
-                >
-                  Continue
-                </button>
+                />
               )}
               <button
                 type="button"

@@ -11,6 +11,10 @@
   margin: 0;
   min-width: 320px;
 }
+:global(button),
+:global(input) {
+  font: inherit;
+}
 .app {
   min-height: 100dvh;
   display: grid;
@@ -45,8 +49,7 @@
 .commandIndex {
   color: #8099ae;
   font-size: 10px;
-  letter-spacing: 0.1em;
-  margin-bottom: 6px;
+  white-space: nowrap;
   text-align: right;
   text-transform: uppercase;
 }
@@ -55,6 +58,7 @@
 }
 .hud {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
 }
@@ -64,10 +68,17 @@
   font-weight: 900;
   letter-spacing: 0.25em;
   text-transform: uppercase;
+  margin: 0 0 9px;
 }
 .brand a {
   color: inherit;
   text-decoration: none;
+}
+.brand a:hover {
+  text-decoration: underline;
+}
+.label {
+  display: block;
 }
 .brand span {
   color: #ff65dc;
@@ -81,6 +92,9 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
+.label {
+  letter-spacing: 0.18em;
+}
 .hudStats {
   display: flex;
   gap: clamp(25px, 5vw, 70px);
@@ -90,6 +104,7 @@
   margin-top: 4px;
   font-size: 22px;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
 }
 .urgent {
   color: #ff6b3d;
@@ -115,6 +130,23 @@
 .mapKey {
   justify-content: center;
   flex-wrap: wrap;
+  letter-spacing: 0.08em;
+}
+.mapKey span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.mapKey i {
+  width: 7px;
+  height: 7px;
+  background: #ffe65f;
+}
+.mapKey .keyGuessed {
+  background: #69fbff;
+}
+.regionCode {
+  color: #69fbff;
 }
 .mapSlot {
   display: flex;
@@ -151,20 +183,23 @@
 .country[role='button'] {
   cursor: pointer;
 }
-.country:focus-visible {
+.country:focus {
   outline: none;
+}
+.country:focus-visible {
   stroke: #f4feff;
-  stroke-width: 3px;
 }
 .tooltip {
   position: fixed;
   z-index: 4;
   max-width: calc(100vw - 16px);
   padding: 8px 10px;
-  border: 1px solid #69fbff;
+  border: 1px solid rgba(105, 251, 255, 0.7);
   background: #030d19;
+  color: #f4feff;
   font-size: 12px;
   pointer-events: none;
+  text-transform: uppercase;
 }
 .persistenceNotice {
   position: relative;
@@ -187,6 +222,7 @@
 .answerForm {
   display: flex;
   gap: 8px;
+  margin-top: 14px;
 }
 .answerForm input {
   min-width: 0;
@@ -195,9 +231,14 @@
   background: #020b16;
   color: #f4feff;
   padding: 12px 14px;
-  font: inherit;
   font-size: 14px;
+  text-transform: uppercase;
 }
+.answerForm input::placeholder {
+  color: #8099ae;
+  text-transform: none;
+}
+.answerForm input:hover,
 .answerForm input:focus {
   border-color: #69fbff;
   outline: none;
@@ -248,13 +289,11 @@
 .mobileAnswerForm button {
   display: none;
 }
-.primaryButton,
 .secondaryButton,
 .exitButton {
   cursor: pointer;
   font: inherit;
 }
-.primaryButton,
 .secondaryButton {
   padding: 12px 16px;
   color: #f4feff;
@@ -262,10 +301,12 @@
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  white-space: nowrap;
+  transition: background 0.2s;
 }
-.primaryButton {
-  border: 1px solid #69fbff;
-  background: rgba(21, 97, 116, 0.2);
+.buttonArrow {
+  color: #69fbff;
+  margin-left: 8px;
 }
 .secondaryButton,
 .exitButton {
@@ -273,12 +314,14 @@
   background: transparent;
   color: #9db5c8;
 }
-.primaryButton:hover,
 .secondaryButton:hover {
   background: rgba(31, 142, 161, 0.35);
 }
-.primaryButton:focus-visible,
-.secondaryButton:focus-visible,
+.secondaryButton:focus-visible {
+  border-color: #69fbff;
+  outline: none;
+  box-shadow: inset 0 0 0 2px #69fbff;
+}
 .exitButton:focus-visible {
   outline: 2px solid #69fbff;
   outline-offset: 2px;
@@ -288,12 +331,19 @@
   width: 32px;
   height: 32px;
   font-size: 22px;
+  padding: 0;
+  line-height: 1;
+}
+.exitButton:hover {
+  border-color: #69fbff;
+  color: #f4feff;
 }
 .feedback {
   min-height: 1.3em;
   margin: 10px 0 0;
   color: #9db5c8;
   font-size: 10px;
+  line-height: 1.4;
 }
 .srOnly {
   position: absolute;
@@ -323,6 +373,8 @@
   border: 1px solid rgba(105, 251, 255, 0.45);
   background: linear-gradient(135deg, #091a2a, #030713 75%);
   color: #f4feff;
+  font: inherit;
+  box-shadow: 0 0 60px rgba(22, 104, 139, 0.14);
 }
 .modal {
   width: min(540px, calc(100vw - 36px));
@@ -332,6 +384,7 @@
   border: 0;
   background: transparent;
   color: inherit;
+  font: inherit;
 }
 .panel::backdrop,
 .modal::backdrop {
@@ -353,6 +406,7 @@
 }
 .panel h2 {
   font-size: clamp(28px, 5vw, 40px);
+  letter-spacing: -0.04em;
 }
 .panel p {
   color: #9db5c8;
@@ -400,16 +454,21 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
+  margin: 26px 0 12px;
+  padding: 18px 0;
+  border-block: 1px solid rgba(105, 251, 255, 0.16);
 }
 .results dt {
   color: #8099ae;
   font-size: 9px;
   text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 .results dd {
-  margin: 8px 0;
+  margin: 8px 0 0;
   font-size: clamp(14px, 2.5vw, 22px);
   overflow-wrap: anywhere;
+  font-weight: 700;
 }
 @media (max-width: 600px) {
   .app {
@@ -418,11 +477,24 @@
   .hudStats {
     gap: 16px;
   }
+  .brand {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+  }
+  .label {
+    font-size: 8px;
+  }
+  .mapKey {
+    font-size: 8px;
+  }
   .telemetry strong {
     font-size: 16px;
   }
   .map {
     max-height: 48vh;
+  }
+  .playfield {
+    margin: 14px auto;
   }
   .command {
     padding: 14px;
