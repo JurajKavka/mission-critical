@@ -30,7 +30,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   const [answer, setAnswer] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [usesNativeKeyboard, setUsesNativeKeyboard] = useState(false);
-  
+
   const previousPhase = useRef(phase);
   const focusInput = () => inputRef.current?.focus({ preventScroll: true });
 
@@ -187,7 +187,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
         />
         <SkipButton onClick={handleSkip} disabled={phase !== 'playing'} />
       </form>
-       {phase === 'playing' && isMobile && (
+      {phase === 'playing' && isMobile && (
         <AsciiKeyboard
           onKey={handleKey}
           onToggleNative={toggleNativeKeyboard}

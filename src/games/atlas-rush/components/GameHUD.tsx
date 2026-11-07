@@ -40,10 +40,10 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           </strong>
         </div>
         <GameTimer store={store} readySeconds={readySeconds} />
-         <ExitButton
-                className={styles.exitButton}
-                onClick={store.getState().pauseGame}
-              />
+        <ExitButton
+          className={styles.exitButton}
+          onClick={store.getState().pauseGame}
+        />
       </div>
     </header>
   );
