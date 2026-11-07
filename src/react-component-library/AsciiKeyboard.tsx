@@ -1,5 +1,5 @@
 import { rem } from 'polished';
-import type * as React from 'react';
+import * as React from 'react';
 import styled from 'styled-components';
 
 const COMPACT_KEYBOARD_QUERY =
@@ -122,7 +122,7 @@ const getKeyLabel = (key: 'Space' | 'Backspace' | 'Enter' | 'Skip') => {
   return key;
 };
 
-export const AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
+const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
   onKey,
   onToggleNative,
   usesNativeKeyboard,
@@ -162,3 +162,5 @@ export const AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
     </NativeToggle>
   </Keyboard>
 );
+
+export const AsciiKeyboard = React.memo(_AsciiKeyboard);

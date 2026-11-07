@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import type * as React from 'react';
 import {
@@ -32,7 +32,10 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   const [usesNativeKeyboard, setUsesNativeKeyboard] = useState(false);
 
   const previousPhase = useRef(phase);
-  const focusInput = () => inputRef.current?.focus({ preventScroll: true });
+  const focusInput = useCallback(
+    () => inputRef.current?.focus({ preventScroll: true }),
+    [inputRef],
+  );
 
   useEffect(() => {
     const media = window.matchMedia(MOBILE_KEYBOARD_QUERY);
@@ -66,7 +69,8 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
     previousPhase.current = phase;
   }, [phase, inputRef]);
 
-  const submit = () => {
+  const submit = useCallback(() => {
+    const answer = inputRef.current?.value ?? '';
     if (answer.length === 0) {
       focusInput();
       return;
@@ -78,52 +82,59 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
       setAnswer('');
       focusInput();
     }
-  };
+  }, [focusInput, inputRef, store]);
   const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     submit();
   };
-  const handleSkip = () => {
+  const handleSkip = useCallback(() => {
     store.getState().skipCountry();
     setAnswer('');
     focusInput();
-  };
+  }, [focusInput, store]);
 
-  const editAnswer = (text: string, isBackspace: boolean) => {
-    const input = inputRef.current;
-    const selectedStart = input?.selectionStart ?? answer.length;
-    const selectedEnd = input?.selectionEnd ?? answer.length;
-    const hasSelection = selectedStart !== selectedEnd;
-    const start = hasSelection ? selectedStart : answer.length;
-    const end = hasSelection ? selectedEnd : answer.length;
-    const edit = editAnswerText(answer, start, end, text, isBackspace);
-    setAnswer(edit.value);
-    requestAnimationFrame(() => {
-      if (input?.isConnected) {
-        input.setSelectionRange(input.value.length, input.value.length);
-        input.scrollLeft = input.scrollWidth;
+  const editAnswer = useCallback(
+    (text: string, isBackspace: boolean) => {
+      const input = inputRef.current;
+      const answer = input?.value ?? '';
+      const selectedStart = input?.selectionStart ?? answer.length;
+      const selectedEnd = input?.selectionEnd ?? answer.length;
+      const hasSelection = selectedStart !== selectedEnd;
+      const start = hasSelection ? selectedStart : answer.length;
+      const end = hasSelection ? selectedEnd : answer.length;
+      const edit = editAnswerText(answer, start, end, text, isBackspace);
+      setAnswer(edit.value);
+      requestAnimationFrame(() => {
+        if (input?.isConnected) {
+          input.setSelectionRange(input.value.length, input.value.length);
+          input.scrollLeft = input.scrollWidth;
+        }
+      });
+    },
+    [inputRef],
+  );
+
+  const handleKey = useCallback(
+    (key: AsciiKey) => {
+      switch (key) {
+        case 'Enter':
+          submit();
+          break;
+        case 'Skip':
+          handleSkip();
+          break;
+        case 'Backspace':
+          editAnswer('', true);
+          break;
+        case 'Space':
+          editAnswer(' ', false);
+          break;
+        default:
+          editAnswer(key, false);
       }
-    });
-  };
-
-  const handleKey = (key: AsciiKey) => {
-    switch (key) {
-      case 'Enter':
-        submit();
-        break;
-      case 'Skip':
-        handleSkip();
-        break;
-      case 'Backspace':
-        editAnswer('', true);
-        break;
-      case 'Space':
-        editAnswer(' ', false);
-        break;
-      default:
-        editAnswer(key, false);
-    }
-  };
+    },
+    [editAnswer, handleSkip, submit],
+  );
 
   const handlePhysicalKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (
@@ -144,7 +155,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
     }
   };
 
-  const toggleNativeKeyboard = () => {
+  const toggleNativeKeyboard = useCallback(() => {
     const nextUsesNativeKeyboard = !usesNativeKeyboard;
     inputRef.current?.blur();
     flushSync(() => setUsesNativeKeyboard(nextUsesNativeKeyboard));
@@ -154,7 +165,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
       input.setSelectionRange(input.value.length, input.value.length);
       input.scrollLeft = input.scrollWidth;
     }
-  };
+  }, [focusInput, inputRef, usesNativeKeyboard]);
 
   return (
     <UI.Command>

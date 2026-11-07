@@ -133,6 +133,15 @@ test.describe('mobile keyboard', () => {
     await expect(input).not.toHaveAttribute('readonly', '');
     await input.fill('test');
     await expect(input).toHaveValue('test');
+    await keyboard
+      .getByRole('button', { name: 'Use on-screen keyboard' })
+      .click();
+    await keyboard.getByRole('button', { name: 'A', exact: true }).click();
+    await expect(input).toHaveValue('testA');
+    await keyboard
+      .getByRole('button', { name: 'Backspace', exact: true })
+      .click();
+    await expect(input).toHaveValue('test');
   });
 });
 
