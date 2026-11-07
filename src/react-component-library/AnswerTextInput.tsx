@@ -43,7 +43,7 @@ const blink = keyframes`
 
 const CaretViewport = styled.span`
   position: absolute;
-  inset: 0 ${rem(17)};
+  inset: 0 ${rem(13)} 0 ${rem(17)};
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -52,6 +52,11 @@ const CaretViewport = styled.span`
   font-size: ${rem(14)};
   text-transform: uppercase;
   white-space: pre;
+  visibility: hidden;
+
+  ${InputContainer}:focus-within & {
+    visibility: visible;
+  }
 `;
 
 const CaretText = styled.span`
@@ -110,6 +115,11 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
   const describedBy = [feedbackId, isUsingCustomKeyboard && keyboardHelpId]
     .filter(Boolean)
     .join(' ');
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    if (isUsingCustomKeyboard) {
+      event.currentTarget.scrollLeft = event.currentTarget.scrollWidth;
+    }
+  };
 
   return (
     <InputContainer data-answer-input>
@@ -120,6 +130,7 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
         value={value}
         onChange={onChange}
         onKeyDown={onKeyDown}
+        onFocus={handleFocus}
         onScroll={(event) => setScrollLeft(event.currentTarget.scrollLeft)}
         placeholder={placeholder}
         aria-label={ariaLabel}
@@ -133,7 +144,7 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
         <CaretViewport aria-hidden="true">
           <CaretContent style={{ transform: `translateX(-${scrollLeft}px)` }}>
             <CaretText>{value}</CaretText>
-            <Caret />
+            <Caret data-custom-caret />
           </CaretContent>
         </CaretViewport>
       )}

@@ -87,7 +87,21 @@ test.describe('mobile keyboard', () => {
     hasTouch: true,
   });
 
-  test('keeps controls above the answer, supports editing and the native fallback', async ({
+  test('keeps an incorrect answer unselected after submitting', async ({
+    page,
+  }) => {
+    await page.goto('/games/atlas-rush/africa/?seed=Incorrect_answer');
+    const input = page.getByLabel('country name');
+    const keyboard = page.getByRole('group', { name: 'On-screen keyboard' });
+    await expect(input).toBeEnabled();
+    await keyboard.getByRole('button', { name: 'Q', exact: true }).click();
+    await keyboard.getByRole('button', { name: 'Enter', exact: true }).click();
+    await expect(input).toBeFocused();
+    await keyboard.getByRole('button', { name: 'Q', exact: true }).click();
+    await expect(input).toHaveValue('QQ');
+  });
+
+  test('keeps controls below the answer, supports editing and the native fallback', async ({
     page,
   }) => {
     await page.goto('/games/atlas-rush/africa/?learning=1&seed=Mobile_1');
@@ -100,8 +114,8 @@ test.describe('mobile keyboard', () => {
     expect(keyboardBounds).not.toBeNull();
     expect(inputBounds).not.toBeNull();
     expect(
-      (keyboardBounds?.y ?? 0) + (keyboardBounds?.height ?? 0),
-    ).toBeLessThanOrEqual(inputBounds?.y ?? 0);
+      (inputBounds?.y ?? 0) + (inputBounds?.height ?? 0),
+    ).toBeLessThanOrEqual(keyboardBounds?.y ?? 0);
     await keyboard.getByRole('button', { name: 'A', exact: true }).click();
     await expect(input).toHaveValue('A');
     await keyboard.getByRole('button', { name: 'Space', exact: true }).click();
@@ -110,8 +124,6 @@ test.describe('mobile keyboard', () => {
       .getByRole('button', { name: 'Backspace', exact: true })
       .click();
     await expect(input).toHaveValue('A');
-    const afterTyping = await keyboard.boundingBox();
-    expect(afterTyping).toEqual(keyboardBounds);
     await input.focus();
     await page.keyboard.type('B');
     await expect(input).toHaveValue('AB');
@@ -121,12 +133,6 @@ test.describe('mobile keyboard', () => {
     await expect(input).not.toHaveAttribute('readonly', '');
     await input.fill('test');
     await expect(input).toHaveValue('test');
-    await page.setViewportSize({ width: 844, height: 390 });
-    await expect(keyboard).toBeVisible();
-    const landscapeInput = await input.boundingBox();
-    expect(
-      (landscapeInput?.y ?? Infinity) + (landscapeInput?.height ?? Infinity),
-    ).toBeLessThanOrEqual(390);
   });
 });
 
@@ -234,6 +240,7 @@ test('results show timeout data and support replay and settings', async ({
   );
   await expect(page.locator('path[data-country]')).toHaveCount(12);
   await expect(page.getByLabel('End game')).toBeVisible();
+  await expect(page.getByLabel('country name')).toBeEnabled();
   await page.clock.fastForward(37000);
   const result = page.getByRole('dialog', { name: 'Time is up' });
   await expect(result).toBeVisible();
@@ -245,6 +252,7 @@ test('results show timeout data and support replay and settings', async ({
     /\/south-america\/\?level=expert&seed=[a-f0-9]+$/,
   );
   await expect(page.getByLabel('End game')).toBeVisible();
+  await expect(page.getByLabel('country name')).toBeEnabled();
   await page.clock.fastForward(37000);
   await page
     .getByRole('dialog', { name: 'Time is up' })

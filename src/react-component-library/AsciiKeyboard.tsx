@@ -2,11 +2,20 @@ import { rem } from 'polished';
 import type * as React from 'react';
 import styled from 'styled-components';
 
+const COMPACT_KEYBOARD_QUERY =
+  '(pointer: coarse) and (max-width: 1024px) and (max-height: 360px)';
+
 const Keyboard = styled.div`
   display: grid;
+  align-content: start;
   gap: ${rem(4)};
+  min-width: 0;
+  min-height: 0;
+  padding: ${rem(2)};
+  overflow: auto;
+  overscroll-behavior: contain;
 
-  @media (pointer: coarse) and (max-width: ${rem(1024)}) and (max-height: ${rem(360)}) {
+  @media ${COMPACT_KEYBOARD_QUERY} {
     gap: ${rem(3)};
   }
 `;
@@ -16,18 +25,18 @@ const KeyRow = styled.div`
   justify-content: center;
   gap: ${rem(4)};
 
-  @media (pointer: coarse) and (max-width: ${rem(1024)}) and (max-height: ${rem(360)}) {
+  @media ${COMPACT_KEYBOARD_QUERY} {
     gap: ${rem(3)};
   }
 `;
 
-const Key = styled.button`
+const Key = styled.button<{ $isCommandKey?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: ${rem(8)};
   flex: 1 1 0;
-  min-width: 0;
+  min-width: ${({ $isCommandKey }) => ($isCommandKey ? 'max-content' : '1.5em')};
   min-height: ${rem(44)};
   padding: ${rem(4)};
   border: ${rem(1)} solid rgba(105, 251, 255, 0.38);
@@ -47,7 +56,7 @@ const Key = styled.button`
     background: rgba(31, 142, 161, 0.55);
   }
 
-  @media (pointer: coarse) and (max-width: ${rem(1024)}) and (max-height: ${rem(360)}) {
+  @media ${COMPACT_KEYBOARD_QUERY} {
     min-height: ${rem(36)};
   }
 `;
@@ -68,7 +77,7 @@ const NativeToggle = styled.button`
     outline-offset: ${rem(1)};
   }
 
-  @media (pointer: coarse) and (max-width: ${rem(1024)}) and (max-height: ${rem(360)}) {
+  @media ${COMPACT_KEYBOARD_QUERY} {
     min-height: ${rem(28)};
   }
 `;
@@ -82,6 +91,10 @@ type AsciiKeyboardProps = {
 };
 
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+
+const handleKeyMouseDown = (event: React.MouseEvent<HTMLButtonElement>) => {
+  event.preventDefault();
+};
 
 const getKeyLabel = (key: 'Space' | 'Backspace' | 'Enter' | 'Skip') => {
   if (key === 'Backspace') {
@@ -121,7 +134,7 @@ export const AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
           <Key
             key={letter}
             type="button"
-            onPointerDown={(event) => event.preventDefault()}
+            onMouseDown={handleKeyMouseDown}
             onClick={() => onKey(letter)}
             aria-label={letter}
           >
@@ -134,8 +147,9 @@ export const AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
       {(['Space', 'Backspace', 'Skip', 'Enter'] as const).map((key) => (
         <Key
           key={key}
+          $isCommandKey
           type="button"
-          onPointerDown={(event) => event.preventDefault()}
+          onMouseDown={handleKeyMouseDown}
           onClick={() => onKey(key)}
           aria-label={key}
         >

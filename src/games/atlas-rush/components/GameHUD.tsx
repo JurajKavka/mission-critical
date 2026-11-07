@@ -7,6 +7,7 @@ import { selectGuessedIds } from '../state/selectors';
 import { GameTimer } from './GameTimer';
 import styles from './AtlasRush.module.css';
 import type { AtlasRushStore } from './types';
+import { ExitButton } from '../../../react-component-library/ExitButton';
 
 type GameHUDProps = {
   store: AtlasRushStore;
@@ -24,7 +25,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
     <header className={styles.hud}>
       <div>
         <p className={styles.brand}>
-          <a href="/">Mission Critical</a> <span>//</span> Atlas Rush
+          <a href="/">MC</a> <span>//</span> Atlas Rush
         </p>
         <p className={styles.label}>
           Sector 01 / {regionMetadata[regionId].name}
@@ -39,6 +40,10 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           </strong>
         </div>
         <GameTimer store={store} readySeconds={readySeconds} />
+         <ExitButton
+                className={styles.exitButton}
+                onClick={store.getState().pauseGame}
+              />
       </div>
     </header>
   );
