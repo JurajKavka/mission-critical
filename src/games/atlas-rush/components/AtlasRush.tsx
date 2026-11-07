@@ -4,6 +4,7 @@ import type * as React from 'react';
 import {
   ActionButton,
   ExitButton,
+  mb,
   SecondaryButton,
 } from '../../../react-component-library';
 import { regionMetadata } from '../data/regions';
@@ -16,14 +17,31 @@ import { getChallengePath } from '../infrastructure/challenge-url';
 import { rememberLandingSettings } from '../infrastructure/landing-settings';
 import { useSessionPersistence } from '../hooks/useSessionPersistence';
 import { createAtlasRushStore } from '../state/createAtlasRushStore';
-import { selectPhase } from '../state/selectors';
+import { selectGuessedIds, selectPhase } from '../state/selectors';
 import { AnswerInput } from './AnswerInput';
-import { GameHUD } from './GameHUD';
 import { GameMap } from './GameMap';
 import { ModalDialog } from './ModalDialog';
 import { PauseDialog } from './PauseDialog';
 import { ResultsPanel } from './ResultsPanel';
 import styles from './AtlasRush.module.css';
+import { GameTimer } from './GameTimer';
+import styled from 'styled-components';
+
+const HomeBreadcrumbMobile = styled.span`
+  display: inline-block;
+  ${mb('s')} {
+    display: none;
+  }
+`;
+const HomeBreadcrum = styled.span`
+  display: none;
+  ${mb('s')} {
+    display: inline-block;
+  }
+`;
+const BreadcrumbDivider = styled.span`
+  color: #ff65dc;
+`
 
 type AtlasRushProps = { regionId: RegionId };
 
@@ -35,11 +53,15 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
     ),
   );
   const phase = useStore(store, selectPhase);
+  const guessed = useStore(store, selectGuessedIds);
+  const total = regionTargets[regionId].length;
   const persistence = useSessionPersistence(store, regionId);
   const inputRef = useRef<HTMLInputElement>(null);
   const region = regionMetadata[regionId];
   const result =
     phase === 'finished' ? getResults(store.getState().session) : null;
+
+  const readySeconds = store.getState().session.durationSeconds;
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -72,34 +94,41 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
   };
   return (
     <div className={styles.app}>
-      <div className={styles.statusBar}>
-        <GameHUD
-          store={store}
-          regionId={regionId}
-          readySeconds={store.getState().session.durationSeconds}
-        />
-        {persistence.initialization === 'ready' &&
-          persistence.notice &&
-          phase !== 'paused' && (
+      {persistence.initialization === 'ready' &&
+        persistence.notice &&
+        phase !== 'paused' && (
+          <div className={styles.statusBar}>
             <p className={styles.persistenceNotice} role="status">
               {persistence.notice}
             </p>
-          )}
-      </div>
+          </div>
+        )}
+
       <main className={styles.playfield}>
         <div className={styles.mapHeading}>
-          <span>Survey grid / 01</span>
-          <span>
-            <span className={styles.regionCode}>
-              {region.code} · {regionTargets[regionId].length}{' '}
-            </span>
-            {phase === 'playing' && (
-              <ExitButton
-                className={styles.exitButton}
-                onClick={store.getState().pauseGame}
-              />
-            )}
-          </span>
+          <div>
+            <p className={styles.brand}>
+              <a href="/">
+                <HomeBreadcrumbMobile>MC</HomeBreadcrumbMobile>
+                <HomeBreadcrum>MISSION CRITICAL</HomeBreadcrum>
+              </a>{' '}
+              <BreadcrumbDivider>//</BreadcrumbDivider> Atlas Rush
+            </p>
+            <p className={styles.label}>
+              Sector 01 / {regionMetadata[regionId].name}
+            </p>
+          </div>
+          <div className={styles.hudStats}>
+            <div className={styles.hudMetric}>
+              <span>Identified</span>
+              <strong>
+                {String(guessed.length).padStart(2, '0')}/
+                {String(total).padStart(2, '0')}
+              </strong>
+            </div>
+            <GameTimer store={store} readySeconds={readySeconds} />
+            <ExitButton onClick={store.getState().pauseGame} />
+          </div>
         </div>
         <div className={styles.mapSlot}>
           <GameMap

@@ -2,11 +2,7 @@ import { expect } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 
 export const getHudMetricValue = (page: Page, label: string): Locator =>
-  page
-    .getByRole('banner')
-    .getByText(label, { exact: true })
-    .locator('..')
-    .locator('strong');
+  page.getByText(label, { exact: true }).locator('..').locator('strong');
 
 export const expectIdentifiedCount = async (
   page: Page,

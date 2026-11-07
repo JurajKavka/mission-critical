@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { useStore } from 'zustand';
 import type * as React from 'react';
 import {
   ActionButton,
@@ -9,8 +8,6 @@ import {
   SkipButton,
 } from '../../../react-component-library';
 import type { AsciiKey } from '../../../react-component-library';
-import { regionTargets } from '../data/targets';
-import { getCommandIndex } from '../domain/session';
 import { editAnswerText } from './answer-edit';
 import styles from './AtlasRush.module.css';
 import type { AtlasRushStore } from './types';
@@ -31,14 +28,9 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   inputRef,
 }) => {
   const [answer, setAnswer] = useState('');
-  const [feedback, setFeedback] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [usesNativeKeyboard, setUsesNativeKeyboard] = useState(false);
-  const commandIndex = useStore(store, (state) =>
-    getCommandIndex(state.session),
-  );
-  const totalTargets =
-    regionTargets[store.getState().session.config.regionId].length;
+  
   const previousPhase = useRef(phase);
   const focusInput = () => inputRef.current?.focus({ preventScroll: true });
 
@@ -51,9 +43,22 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   }, []);
 
   useEffect(() => {
+    if (!isMobile || usesNativeKeyboard) {
+      return;
+    }
+    const handleResize = () => {
+      const input = inputRef.current;
+      if (input) {
+        input.scrollLeft = input.scrollWidth;
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [inputRef, isMobile, usesNativeKeyboard]);
+
+  useEffect(() => {
     if (phase === 'ready') {
       setAnswer('');
-      setFeedback('');
     }
     if (phase === 'playing' && previousPhase.current !== 'playing') {
       inputRef.current?.focus({ preventScroll: true });
@@ -68,10 +73,8 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
     }
     const result = store.getState().submitGuess(answer);
     if (result.outcome === 'incorrect') {
-      setFeedback(`Not a match. Try again or skip this ${targetName}.`);
-      inputRef.current?.select();
+      focusInput();
     } else if (result.outcome === 'correct') {
-      setFeedback('');
       setAnswer('');
       focusInput();
     }
@@ -83,18 +86,23 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   const handleSkip = () => {
     store.getState().skipCountry();
     setAnswer('');
-    setFeedback('');
     focusInput();
   };
 
   const editAnswer = (text: string, isBackspace: boolean) => {
     const input = inputRef.current;
-    const start = input?.selectionStart ?? answer.length;
-    const end = input?.selectionEnd ?? answer.length;
+    const selectedStart = input?.selectionStart ?? answer.length;
+    const selectedEnd = input?.selectionEnd ?? answer.length;
+    const hasSelection = selectedStart !== selectedEnd;
+    const start = hasSelection ? selectedStart : answer.length;
+    const end = hasSelection ? selectedEnd : answer.length;
     const edit = editAnswerText(answer, start, end, text, isBackspace);
     setAnswer(edit.value);
     requestAnimationFrame(() => {
-      input?.setSelectionRange(edit.caret, edit.caret);
+      if (input?.isConnected) {
+        input.setSelectionRange(input.value.length, input.value.length);
+        input.scrollLeft = input.scrollWidth;
+      }
     });
   };
 
@@ -137,23 +145,19 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   };
 
   const toggleNativeKeyboard = () => {
+    const nextUsesNativeKeyboard = !usesNativeKeyboard;
     inputRef.current?.blur();
-    flushSync(() => setUsesNativeKeyboard(!usesNativeKeyboard));
+    flushSync(() => setUsesNativeKeyboard(nextUsesNativeKeyboard));
     focusInput();
+    if (!nextUsesNativeKeyboard && inputRef.current) {
+      const input = inputRef.current;
+      input.setSelectionRange(input.value.length, input.value.length);
+      input.scrollLeft = input.scrollWidth;
+    }
   };
 
   return (
     <footer className={styles.command}>
-      <div className={styles.commandIndex}>
-        {String(commandIndex).padStart(2, '0')} / {totalTargets}
-      </div>
-      {phase === 'playing' && isMobile && (
-        <AsciiKeyboard
-          onKey={handleKey}
-          onToggleNative={toggleNativeKeyboard}
-          usesNativeKeyboard={usesNativeKeyboard}
-        />
-      )}
       <form
         onSubmit={handleSubmit}
         className={`${styles.answerForm} ${isMobile ? styles.mobileAnswerForm : ''}`}
@@ -163,6 +167,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           {targetName} name
         </label>
         <AnswerTextInput
+          key={usesNativeKeyboard ? 'native' : 'on-screen'}
           ref={inputRef}
           id="answer"
           value={answer}
@@ -182,6 +187,13 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
         />
         <SkipButton onClick={handleSkip} disabled={phase !== 'playing'} />
       </form>
+       {phase === 'playing' && isMobile && (
+        <AsciiKeyboard
+          onKey={handleKey}
+          onToggleNative={toggleNativeKeyboard}
+          usesNativeKeyboard={usesNativeKeyboard}
+        />
+      )}
       {isMobile && !usesNativeKeyboard && (
         <p id="keyboard-help" className={styles.srOnly}>
           Use the on-screen keyboard or a connected physical keyboard to enter
@@ -189,14 +201,6 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           keyboard.
         </p>
       )}
-      <p
-        id="feedback"
-        className={`${styles.feedback} ${isMobile ? styles.mobileFeedback : ''}`}
-        aria-live="polite"
-      >
-        {feedback ||
-          `Type a name, then press Enter. Skip to return to a ${targetName} later.`}
-      </p>
     </footer>
   );
 };

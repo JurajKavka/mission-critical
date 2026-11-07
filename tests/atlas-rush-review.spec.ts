@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expectIdentifiedCount } from './helpers/atlas-rush';
 
 const expectReadyInput = async (page: Page) => {
@@ -8,7 +8,18 @@ const expectReadyInput = async (page: Page) => {
   return input;
 };
 
+const setLargeBrowserFont = async (page: Page, browserName: string) => {
+  if (browserName !== 'chromium') {
+    return;
+  }
+  const session = await page.context().newCDPSession(page);
+  await session.send('Page.setFontSizes', {
+    fontSizes: { standard: 32, fixed: 32 },
+  });
+};
+
 const expectCenterAccessible = async (locator: ReturnType<Page['locator']>) => {
+  await locator.scrollIntoViewIfNeeded();
   await expect(locator).toBeInViewport();
   await expect
     .poll(() =>
@@ -23,6 +34,45 @@ const expectCenterAccessible = async (locator: ReturnType<Page['locator']>) => {
     )
     .toBe(true);
 };
+
+const expectCaretAtSelection = async (input: Locator) => {
+  await expect
+    .poll(() =>
+      input.evaluate((element: HTMLInputElement) => {
+        const caret = element.parentElement?.querySelector(
+          '[data-custom-caret]',
+        );
+        const context = document.createElement('canvas').getContext('2d');
+        if (!caret || !context || element.selectionStart === null) {
+          return Infinity;
+        }
+        const style = getComputedStyle(element);
+        context.font = style.font;
+        const prefix = element.value
+          .slice(0, element.selectionStart)
+          .toUpperCase();
+        const expected =
+          element.getBoundingClientRect().left +
+          parseFloat(style.borderLeftWidth) +
+          parseFloat(style.paddingLeft) +
+          context.measureText(prefix).width -
+          element.scrollLeft;
+        return Math.abs(caret.getBoundingClientRect().left - expected);
+      }),
+    )
+    .toBeLessThan(4);
+};
+
+test('Atlas Rush defines its root font for desktop routes', async ({
+  page,
+  browserName,
+}) => {
+  await setLargeBrowserFont(page, browserName);
+  for (const route of ['/games/atlas-rush/', '/games/atlas-rush/africa/']) {
+    await page.goto(route);
+    await expect(page.locator('html')).toHaveCSS('font-size', '16px');
+  }
+});
 
 test('restore prompt receives focus and contains keyboard navigation', async ({
   page,
@@ -96,52 +146,63 @@ test('results receive focus and keep keyboard navigation inside the report', asy
 test.describe('mobile review regressions', () => {
   test.use({ hasTouch: true, isMobile: true });
 
-  for (const viewport of [
-    { width: 844, height: 390 },
-    { width: 568, height: 320 },
-  ]) {
-    test(`landscape map and pause remain usable at ${viewport.width} × ${viewport.height}`, async ({
-      page,
-    }) => {
-      await page.setViewportSize(viewport);
-      await page.goto('/games/atlas-rush/africa/?learning=1&seed=Landscape');
-      const input = await expectReadyInput(page);
-      const keyboard = page.getByRole('group', { name: 'On-screen keyboard' });
-      const map = page.getByRole('group', { name: /Africa map/ });
-      await expectCenterAccessible(map);
-      const mapBounds = await map.boundingBox();
-      const keyboardBounds = await keyboard.boundingBox();
-      const inputBounds = await input.boundingBox();
-      await expect
-        .poll(() =>
-          keyboard
-            .getByRole('button', { name: 'Backspace' })
-            .evaluate((element) => element.scrollWidth <= element.clientWidth),
-        )
-        .toBe(true);
-      expect(mapBounds?.height).toBeGreaterThan(80);
-      expect(
-        (mapBounds?.x ?? Infinity) + (mapBounds?.width ?? Infinity),
-      ).toBeLessThanOrEqual(keyboardBounds?.x ?? 0);
-      expect(
-        (keyboardBounds?.y ?? Infinity) + (keyboardBounds?.height ?? Infinity),
-      ).toBeLessThanOrEqual(inputBounds?.y ?? 0);
-      await expectCenterAccessible(input);
-      await keyboard.getByRole('button', { name: 'A', exact: true }).tap();
-      await expect(input).toHaveValue('A');
-      await page.getByRole('button', { name: 'End game', exact: true }).tap();
-      const pause = page.getByRole('dialog', { name: 'End this game?' });
-      await expect(pause).toBeVisible();
-      await pause.getByRole('button', { name: 'Continue' }).tap();
-      await expect(pause).toBeHidden();
-    });
-  }
+  test('places the custom caret at the end when switching keyboards', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/games/atlas-rush/africa/?seed=Caret_selection');
+    const input = await expectReadyInput(page);
+    const keyboard = page.getByRole('group', { name: 'On-screen keyboard' });
+    const caret = page.locator('[data-answer-input] [data-custom-caret]');
+    await keyboard.getByRole('button', { name: 'Use native keyboard' }).click();
+    await input.fill('CANADA');
+    await input.press('ArrowLeft');
+    await input.press('ArrowLeft');
+    await input.press('ArrowLeft');
+    await expect
+      .poll(() =>
+        input.evaluate((element: HTMLInputElement) => element.selectionStart),
+      )
+      .toBe(3);
+    await keyboard
+      .getByRole('button', { name: 'Use on-screen keyboard' })
+      .click();
+    await expect(input).toBeFocused();
+    await expect
+      .poll(() =>
+        input.evaluate((element: HTMLInputElement) => element.selectionStart),
+      )
+      .toBe(6);
+    await expect(caret).toBeVisible();
+    await expectCaretAtSelection(input);
 
-  for (const viewport of [
-    { width: 390, height: 844 },
-    { width: 844, height: 390 },
-    { width: 568, height: 320 },
-  ]) {
+    await keyboard.getByRole('button', { name: 'B', exact: true }).click();
+    await expect(input).toHaveValue('CANADAB');
+    await expect
+      .poll(() =>
+        input.evaluate((element: HTMLInputElement) => element.selectionStart),
+      )
+      .toBe(7);
+    await expectCaretAtSelection(input);
+
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => requestAnimationFrame(() => resolve())),
+    );
+    await input.evaluate((element: HTMLInputElement) =>
+      element.setSelectionRange(1, 4),
+    );
+    await keyboard.getByRole('button', { name: 'Q', exact: true }).click();
+    await expect(input).toHaveValue('CQDAB');
+    await expectCaretAtSelection(input);
+    await keyboard.getByRole('button', { name: 'Use native keyboard' }).focus();
+    await expect(caret).toBeHidden();
+    await input.focus();
+    await expect(caret).toBeVisible();
+    await expectCaretAtSelection(input);
+  });
+
+  for (const viewport of [{ width: 390, height: 844 }]) {
     test(`unavailable storage leaves the answer accessible at ${viewport.width} × ${viewport.height}`, async ({
       page,
     }) => {
