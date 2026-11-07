@@ -4,7 +4,7 @@ import { regionMetadata } from '../data/regions';
 import { levels } from '../domain/levels';
 import { formatTime } from '../domain/time';
 import type { GameResults } from '../domain/types';
-import styles from './AtlasRush.module.css';
+import * as UI from './atlas-styles';
 
 type ResultsPanelProps = {
   result: GameResults;
@@ -23,11 +23,11 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
     levels.find((level) => level.id === result.config.level)?.label ??
     result.config.level;
   return (
-    <section className={styles.panel} aria-labelledby="results-title">
-      <p className={styles.eyebrow}>
+    <UI.Panel aria-labelledby="results-title">
+      <UI.Eyebrow>
         Mission report //{' '}
         {result.finishReason === 'completed' ? 'complete' : 'time expired'}
-      </p>
+      </UI.Eyebrow>
       <h2 id="results-title">
         {result.finishReason === 'completed' ? 'Atlas complete' : 'Time is up'}
       </h2>
@@ -36,7 +36,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
           ? `All ${targetPlural} identified in ${formatTime(result.elapsedSeconds)}.`
           : 'Your survey is complete.'}
       </p>
-      <dl className={styles.results}>
+      <UI.Results>
         <div>
           <dt>Region</dt>
           <dd>{region.name}</dd>
@@ -65,20 +65,16 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
           <dt>Coverage</dt>
           <dd>{result.coverage}%</dd>
         </div>
-      </dl>
+      </UI.Results>
       <p>
         {result.correct} / {result.total} {targetPlural} identified
       </p>
-      <div className={styles.actions}>
+      <UI.Actions>
         <ActionButton label="Play again" onClick={onPlayAgain} />
-        <button
-          className={styles.secondaryButton}
-          type="button"
-          onClick={onChangeSettings}
-        >
+        <button type="button" onClick={onChangeSettings}>
           Change settings
         </button>
-      </div>
-    </section>
+      </UI.Actions>
+    </UI.Panel>
   );
 };

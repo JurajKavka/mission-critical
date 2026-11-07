@@ -4,7 +4,7 @@ import {
   ActionButton,
   SecondaryButton,
 } from '../../../react-component-library';
-import styles from './AtlasRush.module.css';
+import * as UI from './atlas-styles';
 import type { AtlasRushStore } from './types';
 
 type PauseDialogProps = {
@@ -34,9 +34,9 @@ export const PauseDialog: React.FC<PauseDialogProps> = ({
     }
   }, [isPaused]);
   return (
-    <dialog
+    <UI.Panel
+      as="dialog"
       ref={dialog}
-      className={styles.panel}
       aria-labelledby="pause-title"
       aria-describedby="pause-description"
       onCancel={(event) => {
@@ -44,18 +44,18 @@ export const PauseDialog: React.FC<PauseDialogProps> = ({
         store.getState().resumeGame();
       }}
     >
-      <p className={styles.eyebrow}>Survey paused</p>
+      <UI.Eyebrow>Survey paused</UI.Eyebrow>
       <h2 id="pause-title">End this game?</h2>
       <p id="pause-description">Your progress in this round will be lost.</p>
       {isPaused && notice && <p role="status">{notice}</p>}
-      <div className={styles.actions}>
+      <UI.Actions>
         <ActionButton label="End game" onClick={onEnd} />
         <SecondaryButton
           ref={continueButton}
           label="Continue"
           onClick={store.getState().resumeGame}
         />
-      </div>
-    </dialog>
+      </UI.Actions>
+    </UI.Panel>
   );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type * as React from 'react';
-import styles from './AtlasRush.module.css';
+import * as UI from './atlas-styles';
 
 const FOCUSABLE_ELEMENTS_QUERY =
   'button, [href], input, select, textarea, [tabindex]';
@@ -57,14 +57,13 @@ export const ModalDialog: React.FC<ModalDialogProps> = ({
   };
 
   return (
-    <dialog
+    <UI.Modal
       ref={dialog}
-      className={styles.modal}
       aria-labelledby={labelledBy}
       onCancel={handleCancel}
       onKeyDown={handleKeyDown}
     >
       {children}
-    </dialog>
+    </UI.Modal>
   );
 };

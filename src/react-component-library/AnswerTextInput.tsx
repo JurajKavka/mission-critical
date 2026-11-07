@@ -2,6 +2,7 @@ import { rem } from 'polished';
 import { useState } from 'react';
 import type * as React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { BackspaceButton } from './BackspaceButton';
 
 const InputContainer = styled.div`
   position: relative;
@@ -17,7 +18,7 @@ const Input = styled.input<{ $isUsingCustomKeyboard: boolean }>`
   border: ${rem(1)} solid rgba(105, 251, 255, 0.28);
   background: #020b16;
   color: #f4feff;
-  padding: ${rem(12)} ${rem(16)};
+  padding: ${rem(12)} ${rem(56)} ${rem(12)} ${rem(16)};
   font: inherit;
   font-size: ${rem(14)};
   text-transform: uppercase;
@@ -43,7 +44,7 @@ const blink = keyframes`
 
 const CaretViewport = styled.span`
   position: absolute;
-  inset: 0 ${rem(13)} 0 ${rem(17)};
+  inset: 0 ${rem(56)} 0 ${rem(17)};
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -88,6 +89,10 @@ type AnswerTextInputProps = {
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
+  onClick?: React.MouseEventHandler<HTMLInputElement>;
+  onBackspace?: () => void;
+  onClear?: () => void;
+  isInvalid?: boolean;
   placeholder?: string;
   'aria-label'?: string;
   feedbackId?: string;
@@ -103,6 +108,10 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
   value,
   onChange,
   onKeyDown,
+  onClick,
+  onBackspace,
+  onClear,
+  isInvalid = false,
   placeholder,
   'aria-label': ariaLabel,
   feedbackId,
@@ -130,10 +139,12 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
         value={value}
         onChange={onChange}
         onKeyDown={onKeyDown}
+        onClick={onClick}
         onFocus={handleFocus}
         onScroll={(event) => setScrollLeft(event.currentTarget.scrollLeft)}
         placeholder={placeholder}
         aria-label={ariaLabel}
+        aria-invalid={isInvalid || undefined}
         aria-describedby={describedBy || undefined}
         required={required}
         disabled={disabled}
@@ -147,6 +158,13 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
             <Caret data-custom-caret />
           </CaretContent>
         </CaretViewport>
+      )}
+      {onBackspace && (
+        <BackspaceButton
+          disabled={disabled}
+          onClick={onBackspace}
+          onDeleteAll={onClear}
+        />
       )}
     </InputContainer>
   );

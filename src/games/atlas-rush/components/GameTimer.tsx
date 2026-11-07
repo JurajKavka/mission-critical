@@ -12,12 +12,12 @@ export const GameTimer: React.FC<GameTimerProps> = ({
 }) => {
   const phase = useStore(store, selectPhase);
   const [seconds, setSeconds] = useState(() =>
-    store.getState().getRemainingSeconds(),
+    Math.ceil(store.getState().getRemainingSeconds()),
   );
   useEffect(() => {
     const update = () => {
       const remaining = store.getState().getRemainingSeconds();
-      setSeconds(remaining);
+      setSeconds(Math.ceil(remaining));
       if (remaining <= 0) {
         store.getState().finishGame();
       }

@@ -23,9 +23,10 @@ import { GameMap } from './GameMap';
 import { ModalDialog } from './ModalDialog';
 import { PauseDialog } from './PauseDialog';
 import { ResultsPanel } from './ResultsPanel';
-import styles from './AtlasRush.module.css';
+import * as UI from './atlas-styles';
 import { GameTimer } from './GameTimer';
 import styled from 'styled-components';
+import { ATLAS_THEME } from './theme';
 
 const HomeBreadcrumbMobile = styled.span`
   display: inline-block;
@@ -40,7 +41,7 @@ const HomeBreadcrum = styled.span`
   }
 `;
 const BreadcrumbDivider = styled.span`
-  color: #ff65dc;
+  color: ${ATLAS_THEME.colors.magenta};
 `;
 
 type AtlasRushProps = { regionId: RegionId };
@@ -93,132 +94,130 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
     window.location.assign(getChallengePath(next));
   };
   return (
-    <div className={styles.app}>
-      {persistence.initialization === 'ready' &&
-        persistence.notice &&
-        phase !== 'paused' && (
-          <div className={styles.statusBar}>
-            <p className={styles.persistenceNotice} role="status">
-              {persistence.notice}
-            </p>
-          </div>
-        )}
+    <>
+      <UI.GlobalStyles />
+      <UI.Wrapper>
+        {persistence.initialization === 'ready' &&
+          persistence.notice &&
+          phase !== 'paused' && (
+            <UI.StatusBar>
+              <UI.PersistenceNotice role="status">
+                {persistence.notice}
+              </UI.PersistenceNotice>
+            </UI.StatusBar>
+          )}
 
-      <main className={styles.playfield}>
-        <div className={styles.mapHeading}>
-          <div>
-            <p className={styles.brand}>
-              <a href="/">
-                <HomeBreadcrumbMobile>MC</HomeBreadcrumbMobile>
-                <HomeBreadcrum>MISSION CRITICAL</HomeBreadcrum>
-              </a>{' '}
-              <BreadcrumbDivider>//</BreadcrumbDivider> Atlas Rush
-            </p>
-            <p className={styles.label}>
-              Sector 01 / {regionMetadata[regionId].name}
-            </p>
-          </div>
-          <div className={styles.hudStats}>
-            <div className={styles.hudMetric}>
-              <span>Identified</span>
-              <strong>
-                {String(guessed.length).padStart(2, '0')}/
-                {String(total).padStart(2, '0')}
-              </strong>
+        <UI.Playfield>
+          <UI.MapHeading>
+            <div>
+              <UI.Brand>
+                <a href="/">
+                  <HomeBreadcrumbMobile>MC</HomeBreadcrumbMobile>
+                  <HomeBreadcrum>MISSION CRITICAL</HomeBreadcrum>
+                </a>{' '}
+                <BreadcrumbDivider>//</BreadcrumbDivider> Atlas Rush
+              </UI.Brand>
+              <UI.Label>Sector 01 / {regionMetadata[regionId].name}</UI.Label>
             </div>
-            <GameTimer store={store} readySeconds={readySeconds} />
-            <ExitButton onClick={store.getState().pauseGame} />
-          </div>
-        </div>
-        <div className={styles.mapSlot}>
-          <GameMap
-            store={store}
-            regionId={regionId}
-            onReturnFocus={focusInput}
-          />
-        </div>
-        <div className={styles.mapKey}>
-          <span>
-            <i aria-hidden="true" /> Identify
-          </span>
-          <span>
-            <i className={styles.keyGuessed} aria-hidden="true" /> Identified
-          </span>
-          {region.markerNote && (
-            <span className={styles.mapHint}>{region.markerNote}</span>
-          )}
-          {phase === 'playing' && store.getState().session.config.learning && (
-            <span className={styles.mapHint}>
-              Learning mode / Select the highlighted area to reveal its name
+            <UI.HudStats>
+              <UI.HudMetric>
+                <span>Identified</span>
+                <strong>
+                  {String(guessed.length).padStart(2, '0')}/
+                  {String(total).padStart(2, '0')}
+                </strong>
+              </UI.HudMetric>
+              <GameTimer store={store} readySeconds={readySeconds} />
+              <ExitButton onClick={store.getState().pauseGame} />
+            </UI.HudStats>
+          </UI.MapHeading>
+          <UI.MapSlot>
+            <GameMap
+              store={store}
+              regionId={regionId}
+              onReturnFocus={focusInput}
+            />
+          </UI.MapSlot>
+          <UI.MapKey>
+            <span>
+              <i aria-hidden="true" /> Identify
             </span>
-          )}
-        </div>
-      </main>
-      <AnswerInput
-        store={store}
-        phase={phase}
-        targetName={region.targetName}
-        inputRef={inputRef}
-      />
-      <PauseDialog
-        store={store}
-        isPaused={phase === 'paused'}
-        onEnd={() => {
-          void changeSettings();
-        }}
-        notice={persistence.notice}
-      />
-      {persistence.initialization === 'loading' && (
-        <div className={styles.overlay}>
-          <section className={styles.panel} role="status">
-            Preparing survey…
-          </section>
-        </div>
-      )}
-      {persistence.initialization === 'choose' && (
-        <ModalDialog labelledBy="restore-title">
-          <section className={styles.panel}>
-            <p className={styles.eyebrow}>Survey archive</p>
-            <h2 id="restore-title">Continue your survey?</h2>
-            <p>
-              {persistence.canContinue
-                ? 'Resume saved progress or begin this challenge again.'
-                : 'Start this challenge again.'}
-            </p>
-            <div className={styles.actions}>
-              {persistence.canContinue && (
-                <ActionButton
-                  label="Continue"
-                  onClick={persistence.continueGame}
-                />
+            <span>
+              <i className="keyGuessed" aria-hidden="true" /> Identified
+            </span>
+            {region.markerNote && <UI.MapHint>{region.markerNote}</UI.MapHint>}
+            {phase === 'playing' &&
+              store.getState().session.config.learning && (
+                <UI.MapHint>
+                  Learning mode / Select the highlighted area to reveal its name
+                </UI.MapHint>
               )}
-              {persistence.canContinue ? (
-                <SecondaryButton
-                  label="Start new"
-                  onClick={persistence.startNew}
-                />
-              ) : (
-                <ActionButton
-                  label="Start new"
-                  onClick={persistence.startNew}
-                />
-              )}
-            </div>
-            <p role="status">{persistence.notice}</p>
-          </section>
-        </ModalDialog>
-      )}
-      {result && (
-        <ModalDialog labelledBy="results-title">
-          <ResultsPanel
-            result={result}
-            onPlayAgain={replay}
-            onChangeSettings={() => {
-              void changeSettings();
-            }}
-          />
-        </ModalDialog>
-      )}
-    </div>
+          </UI.MapKey>
+        </UI.Playfield>
+        <AnswerInput
+          store={store}
+          phase={phase}
+          targetName={region.targetName}
+          inputRef={inputRef}
+        />
+        <PauseDialog
+          store={store}
+          isPaused={phase === 'paused'}
+          onEnd={() => {
+            void changeSettings();
+          }}
+          notice={persistence.notice}
+        />
+        {persistence.initialization === 'loading' && (
+          <UI.Overlay>
+            <UI.Panel role="status">Preparing survey…</UI.Panel>
+          </UI.Overlay>
+        )}
+        {persistence.initialization === 'choose' && (
+          <ModalDialog labelledBy="restore-title">
+            <UI.Panel>
+              <UI.Eyebrow>Survey archive</UI.Eyebrow>
+              <h2 id="restore-title">Continue your survey?</h2>
+              <p>
+                {persistence.canContinue
+                  ? 'Resume saved progress or begin this challenge again.'
+                  : 'Start this challenge again.'}
+              </p>
+              <UI.Actions>
+                {persistence.canContinue && (
+                  <ActionButton
+                    label="Continue"
+                    onClick={persistence.continueGame}
+                  />
+                )}
+                {persistence.canContinue ? (
+                  <SecondaryButton
+                    label="Start new"
+                    onClick={persistence.startNew}
+                  />
+                ) : (
+                  <ActionButton
+                    label="Start new"
+                    onClick={persistence.startNew}
+                  />
+                )}
+              </UI.Actions>
+              <p role="status">{persistence.notice}</p>
+            </UI.Panel>
+          </ModalDialog>
+        )}
+        {result && (
+          <ModalDialog labelledBy="results-title">
+            <ResultsPanel
+              result={result}
+              onPlayAgain={replay}
+              onChangeSettings={() => {
+                void changeSettings();
+              }}
+            />
+          </ModalDialog>
+        )}
+      </UI.Wrapper>
+    </>
   );
 };

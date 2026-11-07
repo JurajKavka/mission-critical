@@ -70,6 +70,7 @@ test('plays a survey and preserves map paths during typing and timer updates', a
   await expectIdentifiedCount(page, 1, 54);
   await expect(target).toHaveCount(1);
   await expect(target).not.toHaveAttribute('data-country', targetId ?? '');
+  await expect(page.getByLabel('country name')).toBeEmpty();
   await page.keyboard.press('Escape');
   await expect(
     page.getByRole('dialog', { name: 'End this game?' }),
@@ -121,9 +122,7 @@ test.describe('mobile keyboard', () => {
     await expect(input).toHaveValue('A');
     await keyboard.getByRole('button', { name: 'Space', exact: true }).click();
     await expect(input).toHaveValue('A ');
-    await keyboard
-      .getByRole('button', { name: 'Backspace', exact: true })
-      .click();
+    await page.getByRole('button', { name: 'Backspace', exact: true }).click();
     await expect(input).toHaveValue('A');
     await input.focus();
     await page.keyboard.type('B');
@@ -134,6 +133,32 @@ test.describe('mobile keyboard', () => {
     await expect(input).not.toHaveAttribute('readonly', '');
     await input.fill('test');
     await expect(input).toHaveValue('test');
+    await input.evaluate((element: HTMLInputElement) =>
+      element.setSelectionRange(1, 3),
+    );
+    await page.getByRole('button', { name: 'Backspace', exact: true }).click();
+    await expect(input).toHaveValue('tt');
+    await input.fill('test');
+    await keyboard
+      .getByRole('button', { name: 'Use on-screen keyboard' })
+      .click();
+    await keyboard.getByRole('button', { name: 'A', exact: true }).click();
+    await expect(input).toHaveValue('testA');
+    await page.getByRole('button', { name: 'Backspace', exact: true }).click();
+    await expect(input).toHaveValue('test');
+    const backspace = page.getByRole('button', {
+      name: 'Backspace',
+      exact: true,
+    });
+    const backspaceBounds = await backspace.boundingBox();
+    expect(backspaceBounds).not.toBeNull();
+    await page.mouse.move(
+      (backspaceBounds?.x ?? 0) + (backspaceBounds?.width ?? 0) / 2,
+      (backspaceBounds?.y ?? 0) + (backspaceBounds?.height ?? 0) / 2,
+    );
+    await page.mouse.down();
+    await expect(input).toHaveValue('', { timeout: 3000 });
+    await page.mouse.up();
   });
 });
 

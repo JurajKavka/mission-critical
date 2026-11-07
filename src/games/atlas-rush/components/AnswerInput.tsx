@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import type * as React from 'react';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../../../react-component-library';
 import type { AsciiKey } from '../../../react-component-library';
 import { editAnswerText } from './answer-edit';
-import styles from './AtlasRush.module.css';
+import * as UI from './atlas-styles';
 import type { AtlasRushStore } from './types';
 
 const MOBILE_KEYBOARD_QUERY = '(pointer: coarse) and (max-width: 1024px)';
@@ -28,11 +28,15 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   inputRef,
 }) => {
   const [answer, setAnswer] = useState('');
+  const [isIncorrect, setIsIncorrect] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [usesNativeKeyboard, setUsesNativeKeyboard] = useState(false);
 
   const previousPhase = useRef(phase);
-  const focusInput = () => inputRef.current?.focus({ preventScroll: true });
+  const focusInput = useCallback(
+    () => inputRef.current?.focus({ preventScroll: true }),
+    [inputRef],
+  );
 
   useEffect(() => {
     const media = window.matchMedia(MOBILE_KEYBOARD_QUERY);
@@ -59,6 +63,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   useEffect(() => {
     if (phase === 'ready') {
       setAnswer('');
+      setIsIncorrect(false);
     }
     if (phase === 'playing' && previousPhase.current !== 'playing') {
       inputRef.current?.focus({ preventScroll: true });
@@ -66,66 +71,80 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
     previousPhase.current = phase;
   }, [phase, inputRef]);
 
-  const submit = () => {
+  const submit = useCallback(() => {
+    const answer = inputRef.current?.value ?? '';
     if (answer.length === 0) {
       focusInput();
       return;
     }
     const result = store.getState().submitGuess(answer);
     if (result.outcome === 'incorrect') {
+      setIsIncorrect(true);
       focusInput();
     } else if (result.outcome === 'correct') {
       setAnswer('');
+      setIsIncorrect(false);
       focusInput();
     }
-  };
+  }, [focusInput, inputRef, store]);
   const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     submit();
   };
-  const handleSkip = () => {
+  const handleSkip = useCallback(() => {
     store.getState().skipCountry();
     setAnswer('');
+    setIsIncorrect(false);
     focusInput();
-  };
+  }, [focusInput, store]);
 
-  const editAnswer = (text: string, isBackspace: boolean) => {
-    const input = inputRef.current;
-    const selectedStart = input?.selectionStart ?? answer.length;
-    const selectedEnd = input?.selectionEnd ?? answer.length;
-    const hasSelection = selectedStart !== selectedEnd;
-    const start = hasSelection ? selectedStart : answer.length;
-    const end = hasSelection ? selectedEnd : answer.length;
-    const edit = editAnswerText(answer, start, end, text, isBackspace);
-    setAnswer(edit.value);
-    requestAnimationFrame(() => {
-      if (input?.isConnected) {
-        input.setSelectionRange(input.value.length, input.value.length);
-        input.scrollLeft = input.scrollWidth;
+  const editAnswer = useCallback(
+    (text: string, isBackspace: boolean, useCaret = false) => {
+      const input = inputRef.current;
+      const answer = input?.value ?? '';
+      const selectedStart = input?.selectionStart ?? answer.length;
+      const selectedEnd = input?.selectionEnd ?? answer.length;
+      const hasSelection = selectedStart !== selectedEnd;
+      const start = hasSelection || useCaret ? selectedStart : answer.length;
+      const end = hasSelection || useCaret ? selectedEnd : answer.length;
+      const edit = editAnswerText(answer, start, end, text, isBackspace);
+      setAnswer(edit.value);
+      requestAnimationFrame(() => {
+        if (input?.isConnected) {
+          const caret = useCaret ? edit.caret : input.value.length;
+          input.setSelectionRange(caret, caret);
+          input.scrollLeft = input.scrollWidth;
+        }
+      });
+    },
+    [inputRef],
+  );
+
+  const handleKey = useCallback(
+    (key: AsciiKey) => {
+      setIsIncorrect(false);
+      switch (key) {
+        case 'Enter':
+          submit();
+          break;
+        case 'Skip':
+          handleSkip();
+          break;
+        case 'Backspace':
+          editAnswer('', true);
+          break;
+        case 'Space':
+          editAnswer(' ', false);
+          break;
+        default:
+          editAnswer(key, false);
       }
-    });
-  };
-
-  const handleKey = (key: AsciiKey) => {
-    switch (key) {
-      case 'Enter':
-        submit();
-        break;
-      case 'Skip':
-        handleSkip();
-        break;
-      case 'Backspace':
-        editAnswer('', true);
-        break;
-      case 'Space':
-        editAnswer(' ', false);
-        break;
-      default:
-        editAnswer(key, false);
-    }
-  };
+    },
+    [editAnswer, handleSkip, submit],
+  );
 
   const handlePhysicalKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    setIsIncorrect(false);
     if (
       !isMobile ||
       usesNativeKeyboard ||
@@ -144,7 +163,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
     }
   };
 
-  const toggleNativeKeyboard = () => {
+  const toggleNativeKeyboard = useCallback(() => {
     const nextUsesNativeKeyboard = !usesNativeKeyboard;
     inputRef.current?.blur();
     flushSync(() => setUsesNativeKeyboard(nextUsesNativeKeyboard));
@@ -154,25 +173,38 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
       input.setSelectionRange(input.value.length, input.value.length);
       input.scrollLeft = input.scrollWidth;
     }
-  };
+  }, [focusInput, inputRef, usesNativeKeyboard]);
 
   return (
-    <footer className={styles.command}>
-      <form
+    <UI.Command>
+      <UI.AnswerForm
         onSubmit={handleSubmit}
-        className={`${styles.answerForm} ${isMobile ? styles.mobileAnswerForm : ''}`}
+        data-mobile={isMobile}
         autoComplete="off"
       >
-        <label className={styles.srOnly} htmlFor="answer">
+        <UI.ScreenReaderOnly as="label" htmlFor="answer">
           {targetName} name
-        </label>
+        </UI.ScreenReaderOnly>
         <AnswerTextInput
           key={usesNativeKeyboard ? 'native' : 'on-screen'}
           ref={inputRef}
           id="answer"
           value={answer}
-          onChange={(event) => setAnswer(event.target.value)}
+          onChange={(event) => {
+            setAnswer(event.target.value);
+            setIsIncorrect(false);
+          }}
           onKeyDown={handlePhysicalKey}
+          onClick={() => setIsIncorrect(false)}
+          onBackspace={() => {
+            setIsIncorrect(false);
+            editAnswer('', true, true);
+          }}
+          onClear={() => {
+            setIsIncorrect(false);
+            setAnswer('');
+          }}
+          isInvalid={isIncorrect}
           placeholder={`Enter ${targetName} name in English`}
           feedbackId="feedback"
           keyboardHelpId="keyboard-help"
@@ -186,7 +218,10 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           disabled={phase !== 'playing'}
         />
         <SkipButton onClick={handleSkip} disabled={phase !== 'playing'} />
-      </form>
+      </UI.AnswerForm>
+      <UI.ScreenReaderOnly as="p" id="feedback" aria-live="polite">
+        {isIncorrect ? 'Incorrect answer. Try again.' : ''}
+      </UI.ScreenReaderOnly>
       {phase === 'playing' && isMobile && (
         <AsciiKeyboard
           onKey={handleKey}
@@ -195,12 +230,12 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
         />
       )}
       {isMobile && !usesNativeKeyboard && (
-        <p id="keyboard-help" className={styles.srOnly}>
+        <UI.ScreenReaderOnly as="p" id="keyboard-help">
           Use the on-screen keyboard or a connected physical keyboard to enter
           an answer. Select Use native keyboard to type with your device
           keyboard.
-        </p>
+        </UI.ScreenReaderOnly>
       )}
-    </footer>
+    </UI.Command>
   );
 };

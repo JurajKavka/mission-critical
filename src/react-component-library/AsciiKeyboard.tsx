@@ -1,5 +1,5 @@
 import { rem } from 'polished';
-import type * as React from 'react';
+import * as React from 'react';
 import styled from 'styled-components';
 
 const COMPACT_KEYBOARD_QUERY =
@@ -30,12 +30,12 @@ const KeyRow = styled.div`
   }
 `;
 
-const Key = styled.button<{ $isCommandKey?: boolean }>`
+const Key = styled.button<{ $isCommandKey?: boolean; $isSpaceKey?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: ${rem(8)};
-  flex: 1 1 0;
+  flex: ${({ $isSpaceKey }) => ($isSpaceKey ? '2 1 0' : '1 1 0')};
   min-width: ${({ $isCommandKey }) => ($isCommandKey ? 'max-content' : '1.5em')};
   min-height: ${rem(44)};
   padding: ${rem(4)};
@@ -96,14 +96,8 @@ const handleKeyMouseDown = (event: React.MouseEvent<HTMLButtonElement>) => {
   event.preventDefault();
 };
 
-const getKeyLabel = (key: 'Space' | 'Backspace' | 'Enter' | 'Skip') => {
-  if (key === 'Backspace') {
-    return (
-      <>
-        Bksp <span aria-hidden="true">⌫</span>
-      </>
-    );
-  } else if (key === 'Enter') {
+const getKeyLabel = (key: 'Space' | 'Enter' | 'Skip') => {
+  if (key === 'Enter') {
     return (
       <>
         Enter{' '}
@@ -122,7 +116,7 @@ const getKeyLabel = (key: 'Space' | 'Backspace' | 'Enter' | 'Skip') => {
   return key;
 };
 
-export const AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
+const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
   onKey,
   onToggleNative,
   usesNativeKeyboard,
@@ -144,10 +138,11 @@ export const AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
       </KeyRow>
     ))}
     <KeyRow>
-      {(['Space', 'Backspace', 'Skip', 'Enter'] as const).map((key) => (
+      {(['Skip', 'Space', 'Enter'] as const).map((key) => (
         <Key
           key={key}
           $isCommandKey
+          $isSpaceKey={key === 'Space'}
           type="button"
           onMouseDown={handleKeyMouseDown}
           onClick={() => onKey(key)}
@@ -162,3 +157,5 @@ export const AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
     </NativeToggle>
   </Keyboard>
 );
+
+export const AsciiKeyboard = React.memo(_AsciiKeyboard);

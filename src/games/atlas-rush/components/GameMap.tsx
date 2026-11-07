@@ -12,7 +12,7 @@ import {
   selectLearning,
   selectPhase,
 } from '../state/selectors';
-import styles from './AtlasRush.module.css';
+import * as UI from './atlas-styles';
 import type { AtlasRushStore } from './types';
 
 type GameMapProps = {
@@ -109,8 +109,7 @@ export const GameMap: React.FC<GameMapProps> = ({
   const canReveal = phase === 'playing' && learning;
   return (
     <>
-      <svg
-        className={styles.map}
+      <UI.Map
         viewBox={geography.viewBox}
         role={canReveal ? 'group' : 'img'}
         aria-label={`${region.name} map. ${canReveal ? `Select the highlighted ${region.targetName} to reveal its name.` : `Identify the highlighted ${region.targetName}.`}`}
@@ -119,13 +118,14 @@ export const GameMap: React.FC<GameMapProps> = ({
           const isTarget = phase === 'playing' && country.id === targetId;
           const canSelect = canReveal && isTarget;
           return (
-            <path
+            <UI.Country
               key={country.id}
               d={country.path}
               data-country={country.id}
               data-learning-target={canSelect ? '' : undefined}
               vectorEffect="non-scaling-stroke"
-              className={`${styles.country} ${isTarget ? styles.target : ''} ${guessed.includes(country.id) ? styles.guessed : ''}`}
+              data-target={isTarget}
+              data-guessed={guessed.includes(country.id)}
               tabIndex={canSelect ? 0 : undefined}
               role={canSelect ? 'button' : undefined}
               aria-label={canSelect ? 'Reveal the name' : undefined}
@@ -187,7 +187,7 @@ export const GameMap: React.FC<GameMapProps> = ({
             />
           );
         })}
-      </svg>
+      </UI.Map>
       {tooltip &&
         canReveal &&
         geography.countries.some(
