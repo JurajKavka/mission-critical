@@ -46,6 +46,8 @@ const Key = styled.button<{ $isCommandKey?: boolean; $isSpaceKey?: boolean }>`
   font-size: clamp(${rem(11)}, 2.8vw, ${rem(14)});
   font-weight: 700;
   touch-action: manipulation;
+  user-select: none;
+  -webkit-touch-callout: none;
 
   &:focus-visible {
     outline: ${rem(2)} solid #69fbff;
@@ -92,10 +94,6 @@ type AsciiKeyboardProps = {
 
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 
-const handleKeyMouseDown = (event: React.MouseEvent<HTMLButtonElement>) => {
-  event.preventDefault();
-};
-
 const getKeyLabel = (key: 'Space' | 'Enter' | 'Skip') => {
   if (key === 'Enter') {
     return (
@@ -128,8 +126,17 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
           <Key
             key={letter}
             type="button"
-            onMouseDown={handleKeyMouseDown}
-            onClick={() => onKey(letter)}
+            onPointerDown={(event) => {
+              if (event.button === 0) {
+                event.preventDefault();
+                onKey(letter);
+              }
+            }}
+            onClick={(event) => {
+              if (event.detail === 0) {
+                onKey(letter);
+              }
+            }}
             aria-label={letter}
           >
             {letter}
@@ -144,8 +151,17 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
           $isCommandKey
           $isSpaceKey={key === 'Space'}
           type="button"
-          onMouseDown={handleKeyMouseDown}
-          onClick={() => onKey(key)}
+          onPointerDown={(event) => {
+            if (event.button === 0) {
+              event.preventDefault();
+              onKey(key);
+            }
+          }}
+          onClick={(event) => {
+            if (event.detail === 0) {
+              onKey(key);
+            }
+          }}
           aria-label={key}
         >
           {getKeyLabel(key)}

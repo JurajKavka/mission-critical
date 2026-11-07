@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import type * as React from 'react';
 import styled from 'styled-components';
 
-const BACKSPACE_HOLD_MS = 2000;
+const BACKSPACE_HOLD_MS = 1000;
 
 const Button = styled.button`
   position: absolute;
@@ -18,15 +18,13 @@ const Button = styled.button`
   font: inherit;
   font-size: ${rem(20)};
   cursor: pointer;
-
-  &:hover,
-  &:focus-visible {
-    color: #69fbff;
-  }
+  touch-action: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 
   &:focus-visible {
-    outline: ${rem(2)} solid #69fbff;
-    outline-offset: ${rem(-3)};
+    outline: none;
+    border: none;
   }
 
   &:disabled {
@@ -47,7 +45,6 @@ export const BackspaceButton: React.FC<BackspaceButtonProps> = ({
   disabled,
 }) => {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const didDeleteAll = useRef(false);
   const cancelHold = () => {
     if (holdTimer.current !== null) {
       clearTimeout(holdTimer.current);
@@ -63,28 +60,20 @@ export const BackspaceButton: React.FC<BackspaceButtonProps> = ({
   }, [disabled]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
-    if (event.button !== 0) {
+    if (!onDeleteAll) {
       return;
     }
     event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
     cancelHold();
-    didDeleteAll.current = false;
-    if (onDeleteAll) {
-      holdTimer.current = setTimeout(() => {
-        holdTimer.current = null;
-        didDeleteAll.current = true;
-        onDeleteAll();
-      }, BACKSPACE_HOLD_MS);
-    }
+    holdTimer.current = setTimeout(() => {
+      holdTimer.current = null;
+      onDeleteAll();
+    }, BACKSPACE_HOLD_MS);
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (didDeleteAll.current && event.detail !== 0) {
-      didDeleteAll.current = false;
-    } else {
-      didDeleteAll.current = false;
-      onClick();
-    }
+  const handleClick = () => {
+    onClick();
   };
 
   return (
@@ -94,8 +83,9 @@ export const BackspaceButton: React.FC<BackspaceButtonProps> = ({
       disabled={disabled}
       onPointerDown={handlePointerDown}
       onPointerUp={cancelHold}
-      onPointerLeave={cancelHold}
       onPointerCancel={cancelHold}
+      onLostPointerCapture={cancelHold}
+      onContextMenu={(event) => event.preventDefault()}
       onClick={handleClick}
     >
       <span aria-hidden="true">⌫</span>
