@@ -28,6 +28,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   inputRef,
 }) => {
   const [answer, setAnswer] = useState('');
+  const [isIncorrect, setIsIncorrect] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [usesNativeKeyboard, setUsesNativeKeyboard] = useState(false);
 
@@ -62,6 +63,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   useEffect(() => {
     if (phase === 'ready') {
       setAnswer('');
+      setIsIncorrect(false);
     }
     if (phase === 'playing' && previousPhase.current !== 'playing') {
       inputRef.current?.focus({ preventScroll: true });
@@ -77,9 +79,11 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
     }
     const result = store.getState().submitGuess(answer);
     if (result.outcome === 'incorrect') {
+      setIsIncorrect(true);
       focusInput();
     } else if (result.outcome === 'correct') {
       setAnswer('');
+      setIsIncorrect(false);
       focusInput();
     }
   }, [focusInput, inputRef, store]);
@@ -90,6 +94,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   const handleSkip = useCallback(() => {
     store.getState().skipCountry();
     setAnswer('');
+    setIsIncorrect(false);
     focusInput();
   }, [focusInput, store]);
 
@@ -116,6 +121,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
 
   const handleKey = useCallback(
     (key: AsciiKey) => {
+      setIsIncorrect(false);
       switch (key) {
         case 'Enter':
           submit();
@@ -137,6 +143,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   );
 
   const handlePhysicalKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    setIsIncorrect(false);
     if (
       !isMobile ||
       usesNativeKeyboard ||
@@ -182,8 +189,13 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           ref={inputRef}
           id="answer"
           value={answer}
-          onChange={(event) => setAnswer(event.target.value)}
+          onChange={(event) => {
+            setAnswer(event.target.value);
+            setIsIncorrect(false);
+          }}
           onKeyDown={handlePhysicalKey}
+          onClick={() => setIsIncorrect(false)}
+          isInvalid={isIncorrect}
           placeholder={`Enter ${targetName} name in English`}
           feedbackId="feedback"
           keyboardHelpId="keyboard-help"
@@ -198,6 +210,9 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
         />
         <SkipButton onClick={handleSkip} disabled={phase !== 'playing'} />
       </UI.AnswerForm>
+      <UI.ScreenReaderOnly as="p" id="feedback" aria-live="polite">
+        {isIncorrect ? 'Incorrect answer. Try again.' : ''}
+      </UI.ScreenReaderOnly>
       {phase === 'playing' && isMobile && (
         <AsciiKeyboard
           onKey={handleKey}

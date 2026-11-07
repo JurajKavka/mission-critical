@@ -13,7 +13,7 @@ export const ATLAS_THEME = {
     muted: '#8099ae',
     secondary: '#9db5c8',
     text: '#f4feff',
-    danger: '#ff6b3d',
+    danger: '#ff65dc',
     amber: '#ffb35f',
     yellow: '#ffe65f',
     overlay: 'rgba(1, 3, 9, 0.86)',

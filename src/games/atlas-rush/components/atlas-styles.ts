@@ -328,6 +328,13 @@ export const Command = styled.footer`
 `;
 
 export const AnswerForm = styled.form`
+  input[aria-invalid='true'],
+  input[aria-invalid='true']:hover,
+  input[aria-invalid='true']:focus {
+    border-color: ${ATLAS_THEME.colors.danger};
+    box-shadow: inset 0 0 0 ${rem(2)} ${ATLAS_THEME.colors.danger};
+    color: ${ATLAS_THEME.colors.danger};
+  }
   &[data-mobile='true'] button {
     display: none;
   }

@@ -88,6 +88,8 @@ type AnswerTextInputProps = {
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
+  onClick?: React.MouseEventHandler<HTMLInputElement>;
+  isInvalid?: boolean;
   placeholder?: string;
   'aria-label'?: string;
   feedbackId?: string;
@@ -103,6 +105,8 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
   value,
   onChange,
   onKeyDown,
+  onClick,
+  isInvalid = false,
   placeholder,
   'aria-label': ariaLabel,
   feedbackId,
@@ -130,10 +134,12 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
         value={value}
         onChange={onChange}
         onKeyDown={onKeyDown}
+        onClick={onClick}
         onFocus={handleFocus}
         onScroll={(event) => setScrollLeft(event.currentTarget.scrollLeft)}
         placeholder={placeholder}
         aria-label={ariaLabel}
+        aria-invalid={isInvalid || undefined}
         aria-describedby={describedBy || undefined}
         required={required}
         disabled={disabled}
