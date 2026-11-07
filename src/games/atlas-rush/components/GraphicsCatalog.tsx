@@ -10,7 +10,8 @@ import { createAtlasRushStore } from '../state/createAtlasRushStore';
 import { GameMap } from './GameMap';
 import { ResultsPanel } from './ResultsPanel';
 import { TimerDisplay } from './TimerDisplay';
-import styles from './GraphicsCatalog.module.css';
+import { GlobalStyles } from './atlas-styles';
+import * as UI from './catalog-styles';
 
 const CATALOG_CONFIG: ChallengeConfig = {
   regionId: 'africa',
@@ -57,35 +58,36 @@ export const GraphicsCatalog: React.FC = () => {
   const openSettings = () => window.location.assign('/games/atlas-rush/');
   const ignoreMapFocus = () => {};
   return (
-    <main className={styles.catalog}>
-      <p className={styles.eyebrow}>
-        Mission Critical // Development reference
-      </p>
-      <h1>Atlas Rush graphics</h1>
-      <p>Shared components used in the Africa survey.</p>
-      <section className={styles.section}>
-        <h2>Continent map</h2>
-        <div className={styles.map}>
-          <GameMap
-            store={store}
-            regionId="africa"
-            onReturnFocus={ignoreMapFocus}
+    <>
+      <GlobalStyles />
+      <UI.Wrapper>
+        <p className="eyebrow">Mission Critical // Development reference</p>
+        <h1>Atlas Rush graphics</h1>
+        <p>Shared components used in the Africa survey.</p>
+        <UI.Section>
+          <h2>Continent map</h2>
+          <UI.MapWrapper>
+            <GameMap
+              store={store}
+              regionId="africa"
+              onReturnFocus={ignoreMapFocus}
+            />
+          </UI.MapWrapper>
+          <p>■ Identify &nbsp; ■ Identified</p>
+        </UI.Section>
+        <UI.Section>
+          <h2>Countdown timer</h2>
+          <TimerDisplay seconds={163} />
+        </UI.Section>
+        <UI.Section>
+          <h2>Results modal</h2>
+          <ResultsPanel
+            result={CATALOG_RESULT}
+            onPlayAgain={openSurvey}
+            onChangeSettings={openSettings}
           />
-        </div>
-        <p>■ Identify &nbsp; ■ Identified</p>
-      </section>
-      <section className={styles.section}>
-        <h2>Countdown timer</h2>
-        <TimerDisplay seconds={163} />
-      </section>
-      <section className={styles.section}>
-        <h2>Results modal</h2>
-        <ResultsPanel
-          result={CATALOG_RESULT}
-          onPlayAgain={openSurvey}
-          onChangeSettings={openSettings}
-        />
-      </section>
-    </main>
+        </UI.Section>
+      </UI.Wrapper>
+    </>
   );
 };

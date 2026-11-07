@@ -1,8 +1,9 @@
 ---
 import RouteTransition from '../../../games/atlas-rush/components/RouteTransition.astro';
-import ActionButton from '../../../components/ActionButton.astro';
-import { regionMetadata } from '../../../games/atlas-rush/data/regions';
-import { levels } from '../../../games/atlas-rush/domain/levels';
+import { createElement } from 'react';
+import { renderToString } from 'react-dom/server';
+import { ServerStyleSheet } from 'styled-components';
+import { Landing } from '../../../games/atlas-rush/components/Landing';
 const title = 'Atlas Rush Geography Game // Mission Critical';
 const description =
   'Identify countries and US states against the clock in Atlas Rush. Choose a region, difficulty and learning mode.';
@@ -12,12 +13,10 @@ const canonical = Astro.site
 const image = Astro.site
   ? new URL('/og-image.png', Astro.site).href
   : '/og-image.png';
-const regions = [
-  regionMetadata.africa,
-  regionMetadata['south-america'],
-  regionMetadata.usa,
-  regionMetadata.europe,
-];
+const sheet = new ServerStyleSheet();
+renderToString(sheet.collectStyles(createElement(Landing)));
+const landingStyles = sheet.getStyleTags();
+sheet.seal();
 ---
 
 <!doctype html>
@@ -27,6 +26,7 @@ const regions = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#02040b" />
     <RouteTransition />
+    <Fragment set:html={landingStyles} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
@@ -37,188 +37,6 @@ const regions = [
     <title>{title}</title>
   </head>
   <body>
-    <main class="landing">
-      <nav aria-label="Game location">
-        <a href="/">Mission Critical</a> <span>//</span> Atlas Rush
-      </nav>
-      <section class="panel" aria-labelledby="title">
-        <p class="eyebrow">Sector 01</p>
-        <h1 id="title">Atlas <em>Rush</em></h1>
-        <p>Identify countries before the clock runs out.</p>
-        <form id="survey-settings">
-          <fieldset>
-            <legend>Select a region</legend>
-            {regions.map((region, index) => <label
-              ><input
-                type="radio"
-                name="region"
-                value={region.id}
-                checked={index === 0}
-              />
-              {region.name}</label
-            >)}
-          </fieldset>
-          <fieldset>
-            <legend>Select a level</legend>
-            {levels.map((level, index) => <label
-              ><input
-                type="radio"
-                name="level"
-                value={level.id}
-                checked={index === 0}
-              />
-              {level.label}</label
-            >)}
-          </fieldset>
-          <div class="start-action">
-            <ActionButton
-              id="start-survey"
-              label="Start survey"
-              type="submit"
-              disabled
-            />
-          </div>
-          <label class="learning"
-            ><input type="checkbox" name="learning" /> Learning mode</label
-          >
-          <noscript><p>Enable JavaScript to start a survey.</p></noscript>
-        </form>
-      </section>
-    </main>
-    <script>
-      import './_scripts/landing';
-    </script>
+    <Landing client:load />
   </body>
 </html>
-<style>
-  :global(:root) {
-    color-scheme: dark;
-  }
-  :global(*) {
-    box-sizing: border-box;
-  }
-  :global(body) {
-    margin: 0;
-    background: #02040b;
-    color: #f4feff;
-    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  }
-  .landing {
-    min-height: 100dvh;
-    display: grid;
-    place-items: center;
-    padding: 70px 18px 30px;
-    background: radial-gradient(
-      ellipse at 50% 44%,
-      #0b1830,
-      #050b19 45%,
-      #010309
-    );
-  }
-  nav {
-    position: absolute;
-    top: 22px;
-    left: 22px;
-    color: #69fbff;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  nav a {
-    color: inherit;
-    text-decoration: none;
-  }
-  nav a:hover {
-    text-decoration: underline;
-  }
-  nav span {
-    color: #ff65dc;
-  }
-  .panel {
-    width: min(540px, 100%);
-    padding: 32px 42px;
-    border: 1px solid rgba(105, 251, 255, 0.45);
-    background: linear-gradient(135deg, #091a2a, #030713 75%);
-    box-shadow: 0 0 60px rgba(22, 104, 139, 0.14);
-  }
-  h1 {
-    margin: 12px 0;
-    font-size: clamp(43px, 8vw, 72px);
-    line-height: 0.95;
-    letter-spacing: -0.065em;
-    text-transform: uppercase;
-  }
-  h1 em {
-    color: #69fbff;
-    font-style: normal;
-  }
-  p {
-    color: #9db5c8;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-  .eyebrow {
-    color: #69fbff;
-    font-size: 9px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-  }
-  fieldset {
-    display: grid;
-    gap: 12px;
-    margin: 24px 0 12px;
-    padding: 15px 0;
-    border: 0;
-    border-top: 1px solid rgba(105, 251, 255, 0.16);
-    text-transform: uppercase;
-  }
-  fieldset + fieldset {
-    margin-top: 12px;
-  }
-  legend {
-    color: #8099ae;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-  label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-  }
-  input {
-    flex: none;
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    accent-color: #69fbff;
-  }
-  .learning {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    margin-top: 20px;
-    letter-spacing: normal;
-  }
-  .start-action :global(button) {
-    min-width: 190px;
-    margin-top: 12px;
-  }
-  .start-action :global(button:disabled) {
-    opacity: 0.6;
-    cursor: wait;
-  }
-  :focus-visible {
-    outline: 2px solid #69fbff;
-    outline-offset: 3px;
-  }
-  @media (max-width: 600px) {
-    .panel {
-      padding: 26px;
-    }
-  }
-</style>

@@ -9,7 +9,7 @@ import {
 } from '../../../react-component-library';
 import type { AsciiKey } from '../../../react-component-library';
 import { editAnswerText } from './answer-edit';
-import styles from './AtlasRush.module.css';
+import * as UI from './atlas-styles';
 import type { AtlasRushStore } from './types';
 
 const MOBILE_KEYBOARD_QUERY = '(pointer: coarse) and (max-width: 1024px)';
@@ -30,7 +30,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   const [answer, setAnswer] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [usesNativeKeyboard, setUsesNativeKeyboard] = useState(false);
-  
+
   const previousPhase = useRef(phase);
   const focusInput = () => inputRef.current?.focus({ preventScroll: true });
 
@@ -157,15 +157,15 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   };
 
   return (
-    <footer className={styles.command}>
-      <form
+    <UI.Command>
+      <UI.AnswerForm
         onSubmit={handleSubmit}
-        className={`${styles.answerForm} ${isMobile ? styles.mobileAnswerForm : ''}`}
+        data-mobile={isMobile}
         autoComplete="off"
       >
-        <label className={styles.srOnly} htmlFor="answer">
+        <UI.ScreenReaderOnly as="label" htmlFor="answer">
           {targetName} name
-        </label>
+        </UI.ScreenReaderOnly>
         <AnswerTextInput
           key={usesNativeKeyboard ? 'native' : 'on-screen'}
           ref={inputRef}
@@ -186,8 +186,8 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           disabled={phase !== 'playing'}
         />
         <SkipButton onClick={handleSkip} disabled={phase !== 'playing'} />
-      </form>
-       {phase === 'playing' && isMobile && (
+      </UI.AnswerForm>
+      {phase === 'playing' && isMobile && (
         <AsciiKeyboard
           onKey={handleKey}
           onToggleNative={toggleNativeKeyboard}
@@ -195,12 +195,12 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
         />
       )}
       {isMobile && !usesNativeKeyboard && (
-        <p id="keyboard-help" className={styles.srOnly}>
+        <UI.ScreenReaderOnly as="p" id="keyboard-help">
           Use the on-screen keyboard or a connected physical keyboard to enter
           an answer. Select Use native keyboard to type with your device
           keyboard.
-        </p>
+        </UI.ScreenReaderOnly>
       )}
-    </footer>
+    </UI.Command>
   );
 };

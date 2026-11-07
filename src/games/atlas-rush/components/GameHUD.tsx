@@ -5,9 +5,14 @@ import { regionMetadata } from '../data/regions';
 import type { RegionId } from '../domain/types';
 import { selectGuessedIds } from '../state/selectors';
 import { GameTimer } from './GameTimer';
-import styles from './AtlasRush.module.css';
+import * as UI from './atlas-styles';
 import type { AtlasRushStore } from './types';
 import { ExitButton } from '../../../react-component-library/ExitButton';
+import styled from 'styled-components';
+
+const HudExitButton = styled(ExitButton)`
+  margin-left: 12px;
+`;
 
 type GameHUDProps = {
   store: AtlasRushStore;
@@ -22,29 +27,24 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   const guessed = useStore(store, selectGuessedIds);
   const total = regionTargets[regionId].length;
   return (
-    <header className={styles.hud}>
+    <UI.Hud>
       <div>
-        <p className={styles.brand}>
+        <UI.Brand>
           <a href="/">MC</a> <span>//</span> Atlas Rush
-        </p>
-        <p className={styles.label}>
-          Sector 01 / {regionMetadata[regionId].name}
-        </p>
+        </UI.Brand>
+        <UI.Label>Sector 01 / {regionMetadata[regionId].name}</UI.Label>
       </div>
-      <div className={styles.hudStats}>
-        <div className={styles.hudMetric}>
+      <UI.HudStats>
+        <UI.HudMetric>
           <span>Identified</span>
           <strong>
             {String(guessed.length).padStart(2, '0')}/
             {String(total).padStart(2, '0')}
           </strong>
-        </div>
+        </UI.HudMetric>
         <GameTimer store={store} readySeconds={readySeconds} />
-         <ExitButton
-                className={styles.exitButton}
-                onClick={store.getState().pauseGame}
-              />
-      </div>
-    </header>
+        <HudExitButton onClick={store.getState().pauseGame} />
+      </UI.HudStats>
+    </UI.Hud>
   );
 };
