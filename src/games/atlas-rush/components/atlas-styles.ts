@@ -335,7 +335,7 @@ export const AnswerForm = styled.form`
     box-shadow: inset 0 0 0 ${rem(2)} ${ATLAS_THEME.colors.danger};
     color: ${ATLAS_THEME.colors.danger};
   }
-  &[data-mobile='true'] button {
+  &[data-mobile='true'] > button {
     display: none;
   }
   ${mb('l', { max: true, pointer: 'coarse' })} {
@@ -353,7 +353,7 @@ export const AnswerForm = styled.form`
     [data-answer-input] {
       flex-basis: 100%;
     }
-    button {
+    > button {
       flex: 1;
     }
   }

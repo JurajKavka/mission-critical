@@ -1,6 +1,7 @@
 export { ActionButton } from './ActionButton';
 export { AnswerTextInput } from './AnswerTextInput';
 export { AsciiKeyboard } from './AsciiKeyboard';
+export { BackspaceButton } from './BackspaceButton';
 export type { AsciiKey } from './AsciiKeyboard';
 export { ExitButton } from './ExitButton';
 export { BREAKPOINTS, mb } from './media-breakpoints';

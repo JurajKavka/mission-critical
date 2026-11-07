@@ -99,19 +99,20 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   }, [focusInput, store]);
 
   const editAnswer = useCallback(
-    (text: string, isBackspace: boolean) => {
+    (text: string, isBackspace: boolean, useCaret = false) => {
       const input = inputRef.current;
       const answer = input?.value ?? '';
       const selectedStart = input?.selectionStart ?? answer.length;
       const selectedEnd = input?.selectionEnd ?? answer.length;
       const hasSelection = selectedStart !== selectedEnd;
-      const start = hasSelection ? selectedStart : answer.length;
-      const end = hasSelection ? selectedEnd : answer.length;
+      const start = hasSelection || useCaret ? selectedStart : answer.length;
+      const end = hasSelection || useCaret ? selectedEnd : answer.length;
       const edit = editAnswerText(answer, start, end, text, isBackspace);
       setAnswer(edit.value);
       requestAnimationFrame(() => {
         if (input?.isConnected) {
-          input.setSelectionRange(input.value.length, input.value.length);
+          const caret = useCaret ? edit.caret : input.value.length;
+          input.setSelectionRange(caret, caret);
           input.scrollLeft = input.scrollWidth;
         }
       });
@@ -195,6 +196,14 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           }}
           onKeyDown={handlePhysicalKey}
           onClick={() => setIsIncorrect(false)}
+          onBackspace={() => {
+            setIsIncorrect(false);
+            editAnswer('', true, true);
+          }}
+          onClear={() => {
+            setIsIncorrect(false);
+            setAnswer('');
+          }}
           isInvalid={isIncorrect}
           placeholder={`Enter ${targetName} name in English`}
           feedbackId="feedback"
