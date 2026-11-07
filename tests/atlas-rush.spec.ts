@@ -44,6 +44,8 @@ test('plays a survey and preserves map paths during typing and timer updates', a
   ).toHaveCount(0);
   const target = page.locator('path[data-learning-target]');
   await expect(target).toHaveCount(1);
+  const targetId = await target.getAttribute('data-country');
+  expect(targetId).toBeTruthy();
   await target.focus();
   const answer = await page.getByRole('status').last().textContent();
   expect(answer).toBeTruthy();
@@ -66,9 +68,8 @@ test('plays a survey and preserves map paths during typing and timer updates', a
   ).toBe(true);
   await page.getByRole('button', { name: 'Identify' }).click();
   await expectIdentifiedCount(page, 1, 54);
-  await expect(
-    page.getByRole('contentinfo').getByText('02 / 54', { exact: true }),
-  ).toBeVisible();
+  await expect(target).toHaveCount(1);
+  await expect(target).not.toHaveAttribute('data-country', targetId ?? '');
   await page.keyboard.press('Escape');
   await expect(
     page.getByRole('dialog', { name: 'End this game?' }),

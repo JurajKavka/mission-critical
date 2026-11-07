@@ -41,7 +41,7 @@ const HomeBreadcrum = styled.span`
 `;
 const BreadcrumbDivider = styled.span`
   color: #ff65dc;
-`
+`;
 
 type AtlasRushProps = { regionId: RegionId };
 
