@@ -1,3 +1,5 @@
+import { rem } from 'polished';
+
 export const ATLAS_THEME = {
   colors: {
     spaceOuter: '#010309',
@@ -31,13 +33,13 @@ export const ATLAS_THEME = {
   },
   fonts: { mono: "ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace" },
   fontSizes: {
-    tiny: '8px',
-    caption: '9px',
-    label: '10px',
-    small: '11px',
-    body: '12px',
-    paragraph: '14px',
-    metric: '22px',
+    tiny: rem(8),
+    caption: rem(9),
+    label: rem(10),
+    small: rem(11),
+    body: rem(12),
+    paragraph: rem(14),
+    metric: rem(22),
   },
   fontWeights: { bold: 700, heavy: 900 },
 } as const;

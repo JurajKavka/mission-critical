@@ -1,14 +1,15 @@
+import { rem } from 'polished';
 import styled from 'styled-components';
 import { ATLAS_THEME } from './theme';
 
 export const Wrapper = styled.main`
-  max-width: 1000px;
+  max-width: ${rem(1000)};
   margin: auto;
-  padding: 40px 22px;
+  padding: ${rem(40)} ${rem(22)};
 
   h1 {
-    margin: 12px 0;
-    font-size: clamp(36px, 6vw, 64px);
+    margin: ${rem(12)} 0;
+    font-size: clamp(${rem(36)}, 6vw, ${rem(64)});
     text-transform: uppercase;
     letter-spacing: -0.06em;
   }
@@ -25,9 +26,9 @@ export const Wrapper = styled.main`
 `;
 
 export const Section = styled.section`
-  margin-top: 36px;
-  padding: 22px;
-  border: 1px solid ${ATLAS_THEME.colors.catalogBorder};
+  margin-top: ${rem(36)};
+  padding: ${rem(22)};
+  border: ${rem(1)} solid ${ATLAS_THEME.colors.catalogBorder};
   background: ${ATLAS_THEME.colors.spaceMiddle};
 
   h2 {
@@ -42,12 +43,12 @@ export const Section = styled.section`
     text-transform: uppercase;
   }
   section {
-    margin: 24px auto;
+    margin: ${rem(24)} auto;
   }
 `;
 
 export const MapWrapper = styled.div`
-  height: min(70vh, 600px);
+  height: min(70vh, ${rem(600)});
   display: flex;
   justify-content: center;
 `;
