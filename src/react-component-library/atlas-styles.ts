@@ -1,6 +1,6 @@
 import { rem } from 'polished';
-import styled, { createGlobalStyle } from 'styled-components';
-import { mb } from '../../../react-component-library/media-breakpoints';
+import { createGlobalStyle, styled } from 'styled-components';
+import { mb } from './media-breakpoints';
 import { ATLAS_THEME } from './theme';
 
 export const GlobalStyles = createGlobalStyle`
@@ -78,31 +78,6 @@ export const StatusBar = styled.div`
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
     grid-column: 1;
     grid-row: 1;
-  }
-`;
-
-export const Brand = styled.p`
-  color: ${ATLAS_THEME.colors.cyan};
-  font-size: ${ATLAS_THEME.fontSizes.small};
-  font-weight: ${ATLAS_THEME.fontWeights.heavy};
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  margin: 0 0 ${rem(8)};
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-  a:hover {
-    text-decoration: underline;
-  }
-  ${mb('compact', { max: true })} {
-    font-size: ${ATLAS_THEME.fontSizes.caption};
-    letter-spacing: 0.12em;
-  }
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    margin: 0;
-    font-size: ${ATLAS_THEME.fontSizes.caption};
-    letter-spacing: 0.12em;
   }
 `;
 
@@ -387,7 +362,10 @@ export const Panel = styled.section`
   width: min(${rem(540)}, 100%);
   max-height: calc(100dvh - ${rem(36)});
   overflow-y: auto;
-  padding: ${rem(32)} ${rem(40)};
+  padding: ${rem(32)};
+  ${mb('compact', { max: true })} {
+    padding: ${rem(24)};
+  }
   border: ${rem(1)} solid ${ATLAS_THEME.colors.cyanBorderStrong};
   background: linear-gradient(
     135deg,
@@ -405,6 +383,8 @@ export const Panel = styled.section`
     margin: ${rem(12)} 0;
     line-height: 0.95;
     text-transform: uppercase;
+    font-size: clamp(${rem(28)}, 5vw, ${rem(40)});
+    letter-spacing: -0.04em;
   }
   h1 {
     font-size: clamp(${rem(43)}, 8vw, ${rem(72)});
@@ -414,14 +394,15 @@ export const Panel = styled.section`
     color: ${ATLAS_THEME.colors.cyan};
     font-style: normal;
   }
-  h2 {
-    font-size: clamp(${rem(28)}, 5vw, ${rem(40)});
-    letter-spacing: -0.04em;
-  }
   p {
     color: ${ATLAS_THEME.colors.secondary};
     line-height: 1.7;
-    font-size: ${ATLAS_THEME.fontSizes.paragraph};
+    font-size: ${ATLAS_THEME.fontSizes.bodyBig};
+    margin: ${rem(12)} 0;
+    ${mb('compact', { max: true })} {
+      margin: ${rem(8)} 0;
+      font-size: ${ATLAS_THEME.fontSizes.body};
+    }
   }
   ${Eyebrow} {
     color: ${ATLAS_THEME.colors.cyan};
@@ -470,13 +451,22 @@ export const Actions = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: ${rem(10)};
+  ${mb('compact', { max: true })} {
+    > button {
+      width: 100%;
+    }
+  }
 `;
 
 export const Results = styled.dl`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: ${rem(12)};
-  margin: ${rem(24)} 0 ${rem(12)};
+  gap: ${rem(16)};
+  margin: ${rem(12)} 0 ${rem(32)};
+  ${mb('compact', { max: true })} {
+    margin: ${rem(12)} 0 ${rem(24)};
+    gap: ${rem(8)};
+  }
   padding: ${rem(20)} 0;
   border-block: ${rem(1)} solid ${ATLAS_THEME.colors.cyanFaint};
   dt {
@@ -487,9 +477,15 @@ export const Results = styled.dl`
   }
   dd {
     margin: ${rem(8)} 0 0;
-    font-size: clamp(${rem(14)}, 2.5vw, ${rem(22)});
+    ${mb('compact', { max: true })} {
+      margin: ${rem(4)} 0 0;
+    }
     overflow-wrap: anywhere;
+    font-size: ${ATLAS_THEME.fontSizes.paragraphBig};
     font-weight: ${ATLAS_THEME.fontWeights.bold};
+    ${mb('compact', { max: true })} {
+      font-size: ${ATLAS_THEME.fontSizes.paragraph};
+    }
   }
   ${mb('compact', { max: true })} {
     grid-template-columns: repeat(2, 1fr);

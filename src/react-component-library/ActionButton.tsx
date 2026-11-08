@@ -1,5 +1,40 @@
+import { rem } from 'polished';
 import type * as React from 'react';
-import styles from './ActionButton.module.css';
+import { styled } from 'styled-components';
+
+const Button = styled.button`
+  border: ${rem(1)} solid #69fbff;
+  background: rgba(21, 97, 116, 0.2);
+  color: #f4feff;
+  padding: 0 ${rem(16)};
+  font: inherit;
+  font-size: ${rem(10)};
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background 0.2s;
+  cursor: pointer;
+  height: ${rem(42)};
+
+  &:hover {
+    background: rgba(31, 142, 161, 0.35);
+  }
+
+  &:focus-visible {
+    border-color: #69fbff;
+    outline: none;
+    box-shadow: inset 0 0 0 ${rem(2)} #69fbff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition-duration: 0.01ms;
+  }
+`;
+
+const Arrow = styled.span`
+  color: #69fbff;
+  margin-left: ${rem(8)};
+`;
 
 type ActionButtonProps = {
   label: string;
@@ -14,15 +49,8 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
   disabled = false,
   onClick,
 }) => (
-  <button
-    className={styles.button}
-    type={type}
-    disabled={disabled}
-    onClick={onClick}
-  >
+  <Button type={type} disabled={disabled} onClick={onClick}>
     <span data-action-label>{label}</span>
-    <span className={styles.arrow} aria-hidden="true">
-      ↗
-    </span>
-  </button>
+    <Arrow aria-hidden="true">↗</Arrow>
+  </Button>
 );

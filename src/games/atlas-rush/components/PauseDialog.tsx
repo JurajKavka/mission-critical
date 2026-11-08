@@ -4,7 +4,7 @@ import {
   ActionButton,
   SecondaryButton,
 } from '../../../react-component-library';
-import * as UI from './atlas-styles';
+import * as UI from '../../../react-component-library/atlas-styles';
 import type { AtlasRushStore } from './types';
 
 type PauseDialogProps = {

@@ -1,6 +1,6 @@
 import { rem } from 'polished';
 import * as React from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 const COMPACT_KEYBOARD_QUERY =
   '(pointer: coarse) and (max-width: 1024px) and (max-height: 360px)';
@@ -118,60 +118,47 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
   onKey,
   onToggleNative,
   usesNativeKeyboard,
-}) => (
-  <Keyboard role="group" aria-label="On-screen keyboard">
-    {ROWS.map((row) => (
-      <KeyRow key={row}>
-        {Array.from(row).map((letter) => (
+}) => {
+  console.log('remnder');
+  return (
+    <Keyboard role="group" aria-label="On-screen keyboard">
+      {ROWS.map((row) => (
+        <KeyRow key={row}>
+          {Array.from(row).map((letter) => (
+            <Key
+              key={letter}
+              type="button"
+              onClick={() => {
+                onKey(letter);
+              }}
+              aria-label={letter}
+            >
+              {letter}
+            </Key>
+          ))}
+        </KeyRow>
+      ))}
+      <KeyRow>
+        {(['Skip', 'Space', 'Enter'] as const).map((key) => (
           <Key
-            key={letter}
+            key={key}
+            $isCommandKey
+            $isSpaceKey={key === 'Space'}
             type="button"
-            onPointerDown={(event) => {
-              if (event.button === 0) {
-                event.preventDefault();
-                onKey(letter);
-              }
+            onClick={() => {
+              onKey(key);
             }}
-            onClick={(event) => {
-              if (event.detail === 0) {
-                onKey(letter);
-              }
-            }}
-            aria-label={letter}
+            aria-label={key}
           >
-            {letter}
+            {getKeyLabel(key)}
           </Key>
         ))}
       </KeyRow>
-    ))}
-    <KeyRow>
-      {(['Skip', 'Space', 'Enter'] as const).map((key) => (
-        <Key
-          key={key}
-          $isCommandKey
-          $isSpaceKey={key === 'Space'}
-          type="button"
-          onPointerDown={(event) => {
-            if (event.button === 0) {
-              event.preventDefault();
-              onKey(key);
-            }
-          }}
-          onClick={(event) => {
-            if (event.detail === 0) {
-              onKey(key);
-            }
-          }}
-          aria-label={key}
-        >
-          {getKeyLabel(key)}
-        </Key>
-      ))}
-    </KeyRow>
-    <NativeToggle type="button" onClick={onToggleNative}>
-      {usesNativeKeyboard ? 'Use on-screen keyboard' : 'Use native keyboard'}
-    </NativeToggle>
-  </Keyboard>
-);
+      <NativeToggle type="button" onClick={onToggleNative}>
+        {usesNativeKeyboard ? 'Use on-screen keyboard' : 'Use native keyboard'}
+      </NativeToggle>
+    </Keyboard>
+  );
+};
 
 export const AsciiKeyboard = React.memo(_AsciiKeyboard);

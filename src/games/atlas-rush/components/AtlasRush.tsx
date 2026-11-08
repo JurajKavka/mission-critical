@@ -3,6 +3,8 @@ import { useStore } from 'zustand';
 import type * as React from 'react';
 import {
   ActionButton,
+  BreadcrumbDivider,
+  Breadcrumbs,
   ExitButton,
   mb,
   SecondaryButton,
@@ -22,11 +24,10 @@ import { AnswerInput } from './AnswerInput';
 import { GameMap } from './GameMap';
 import { ModalDialog } from './ModalDialog';
 import { PauseDialog } from './PauseDialog';
-import { ResultsPanel } from './ResultsPanel';
-import * as UI from './atlas-styles';
+import { ResultsPanel } from '../../../react-component-library/ResultsPanel';
+import * as UI from '../../../react-component-library/atlas-styles';
 import { GameTimer } from './GameTimer';
-import styled from 'styled-components';
-import { ATLAS_THEME } from './theme';
+import { styled } from 'styled-components';
 
 const HomeBreadcrumbMobile = styled.span`
   display: inline-block;
@@ -39,9 +40,6 @@ const HomeBreadcrum = styled.span`
   ${mb('s')} {
     display: inline-block;
   }
-`;
-const BreadcrumbDivider = styled.span`
-  color: ${ATLAS_THEME.colors.magenta};
 `;
 
 type AtlasRushProps = { regionId: RegionId };
@@ -110,14 +108,14 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
         <UI.Playfield>
           <UI.MapHeading>
             <div>
-              <UI.Brand>
+              <Breadcrumbs>
                 <a href="/">
                   <HomeBreadcrumbMobile>MC</HomeBreadcrumbMobile>
                   <HomeBreadcrum>MISSION CRITICAL</HomeBreadcrum>
-                </a>{' '}
-                <BreadcrumbDivider>//</BreadcrumbDivider> Atlas Rush
-              </UI.Brand>
-              <UI.Label>Sector 01 / {regionMetadata[regionId].name}</UI.Label>
+                </a>
+                <BreadcrumbDivider />
+               {regionMetadata[regionId].name}
+              </Breadcrumbs>
             </div>
             <UI.HudStats>
               <UI.HudMetric>

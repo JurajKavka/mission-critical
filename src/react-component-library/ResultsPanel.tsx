@@ -1,10 +1,15 @@
 import type * as React from 'react';
-import { ActionButton } from '../../../react-component-library';
-import { regionMetadata } from '../data/regions';
-import { levels } from '../domain/levels';
-import { formatTime } from '../domain/time';
-import type { GameResults } from '../domain/types';
+
+import { regionMetadata } from '../games/atlas-rush/data/regions';
+import { levels } from '../games/atlas-rush/domain/levels';
+import { formatTime } from '../games/atlas-rush/domain/time';
+import type { GameResults } from '../games/atlas-rush/domain/types';
+import { ActionButton } from './ActionButton';
 import * as UI from './atlas-styles';
+import { SecondaryButton } from './SecondaryButton';
+import { Actions } from './atlas-styles';
+import { BreadcrumbDivider } from './BreadcrumbDivider';
+import { Breadcrumbs } from './Breadcrumbs';
 
 type ResultsPanelProps = {
   result: GameResults;
@@ -24,10 +29,11 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
     result.config.level;
   return (
     <UI.Panel aria-labelledby="results-title">
-      <UI.Eyebrow>
-        Mission report //{' '}
-        {result.finishReason === 'completed' ? 'complete' : 'time expired'}
-      </UI.Eyebrow>
+      <Breadcrumbs>
+        <span>Mission report</span>
+        <BreadcrumbDivider />
+        <span>{result.finishReason === 'completed' ? 'complete' : 'time expired'}</span>
+      </Breadcrumbs>
       <h2 id="results-title">
         {result.finishReason === 'completed' ? 'Atlas complete' : 'Time is up'}
       </h2>
@@ -66,15 +72,10 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
           <dd>{result.coverage}%</dd>
         </div>
       </UI.Results>
-      <p>
-        {result.correct} / {result.total} {targetPlural} identified
-      </p>
-      <UI.Actions>
+      <Actions>
         <ActionButton label="Play again" onClick={onPlayAgain} />
-        <button type="button" onClick={onChangeSettings}>
-          Change settings
-        </button>
-      </UI.Actions>
+        <SecondaryButton label="Start over" onClick={onChangeSettings} />
+      </Actions>
     </UI.Panel>
   );
 };

@@ -1,6 +1,6 @@
 import { rem } from 'polished';
-import styled from 'styled-components';
-import { ATLAS_THEME } from './theme';
+import { styled } from 'styled-components';
+import { ATLAS_THEME } from '../../../react-component-library/theme';
 
 export const Wrapper = styled.main`
   max-width: ${rem(1000)};

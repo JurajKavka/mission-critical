@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import type * as React from 'react';
 import { ActionButton } from '../../../react-component-library/ActionButton';
+import { BreadcrumbDivider } from '../../../react-component-library/BreadcrumbDivider';
+import { Breadcrumbs } from '../../../react-component-library/Breadcrumbs';
+import { Panel } from '../../../react-component-library/atlas-styles';
 import { regionMetadata } from '../data/regions';
 import { levels } from '../domain/levels';
 import type { LevelId, RegionId } from '../domain/types';
@@ -45,16 +48,17 @@ export const Landing: React.FC = () => {
     <>
       <UI.GlobalStyles />
       <UI.Wrapper>
-        <nav aria-label="Game location">
-          <a href="/">Mission Critical</a> <span>//</span> Atlas Rush
-        </nav>
-        <UI.Panel aria-labelledby="title">
-          <p className="eyebrow">Sector 01</p>
+        <Breadcrumbs as="nav" aria-label="Game location">
+          <a href="/">Mission Critical</a>
+          <BreadcrumbDivider />
+          <span>Atlas Rush</span>
+        </Breadcrumbs>
+        <Panel aria-labelledby="title">
           <h1 id="title">
             Atlas <em>Rush</em>
           </h1>
           <p>Identify countries before the clock runs out.</p>
-          <form id="survey-settings" onSubmit={handleSubmit}>
+          <UI.SettingsForm id="survey-settings" onSubmit={handleSubmit}>
             <fieldset>
               <legend>Select a region</legend>
               {REGIONS.map((region) => (
@@ -104,8 +108,8 @@ export const Landing: React.FC = () => {
             <noscript>
               <p>Enable JavaScript to start a survey.</p>
             </noscript>
-          </form>
-        </UI.Panel>
+          </UI.SettingsForm>
+        </Panel>
       </UI.Wrapper>
     </>
   );

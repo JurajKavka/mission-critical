@@ -1,11 +1,11 @@
 import { rem } from 'polished';
 import type * as React from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 const Button = styled.button`
   cursor: pointer;
   font: inherit;
-  padding: ${rem(12)} ${rem(16)};
+  padding: 0 ${rem(16)};
   font-size: ${rem(10)};
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -15,6 +15,7 @@ const Button = styled.button`
   border: ${rem(1)} solid rgba(157, 181, 200, 0.3);
   background: transparent;
   color: #9db5c8;
+  height: ${rem(42)};
 
   &:hover {
     background: rgba(31, 142, 161, 0.35);

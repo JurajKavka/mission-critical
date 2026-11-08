@@ -1,5 +1,5 @@
 import { renderToString } from 'react-dom/server';
-import styled, { ServerStyleSheet } from 'styled-components';
+import { ServerStyleSheet, styled } from 'styled-components';
 import { describe, expect, it } from 'vitest';
 import { BREAKPOINTS, mb } from './media-breakpoints';
 
