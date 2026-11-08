@@ -35,6 +35,7 @@ export const createGame = (dom: GameDom): GameController => {
   const sound = createSound();
   const touch = { x: 0, y: 0, braking: false };
   const touchDevice = window.matchMedia('(any-pointer: coarse)');
+  const primaryTouchDevice = window.matchMedia('(pointer: coarse)');
 
   const resetTouch = (): void => {
     touch.x = 0;
@@ -177,7 +178,10 @@ export const createGame = (dom: GameDom): GameController => {
     state.nextWaveTimer = 0;
     state.ufoSpawnedThisWave = false;
     state.ufoSpawnTimer = state.wave >= 2 ? 5 + Math.random() * 6 : Infinity;
-    const count = Math.min(3 + state.wave, 10);
+    const desktopCount = Math.min(3 + state.wave, 10);
+    const count = primaryTouchDevice.matches
+      ? Math.ceil(desktopCount * 0.7)
+      : desktopCount;
     for (let index = 0; index < count; index += 1) {
       safeSpawnAsteroid(state);
     }
