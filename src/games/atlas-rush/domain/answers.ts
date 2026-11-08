@@ -15,6 +15,12 @@ const aliases: Readonly<Record<string, readonly string[]>> = {
   MKD: ['Macedonia'],
   TUR: ['Türkiye'],
   VAT: ['Vatican', 'Holy See'],
+  TLS: ['East Timor'],
+  PSE: ['State of Palestine'],
+  KOR: ['Republic of Korea'],
+  PRK: ['DPRK', 'Democratic People’s Republic of Korea'],
+  ARE: ['UAE'],
+  FSM: ['Federated States of Micronesia'],
 };
 
 export const normalizeAnswer = (answer: string): string =>

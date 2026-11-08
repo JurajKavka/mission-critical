@@ -200,6 +200,7 @@ export const MapKey = styled.div`
 `;
 
 export const MapSlot = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;

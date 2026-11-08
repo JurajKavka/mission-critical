@@ -40,4 +40,12 @@ export const regionMetadata: Readonly<Record<RegionId, RegionMetadata>> = {
     hasIslandMarkers: true,
     markerNote: 'Small countries shown as markers',
   },
+  asia: {
+    id: 'asia',
+    name: 'Asia',
+    targetName: 'country',
+    code: 'ASI',
+    hasIslandMarkers: true,
+    markerNote: 'Small countries shown as markers',
+  },
 };

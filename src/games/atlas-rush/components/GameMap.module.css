@@ -1,0 +1,36 @@
+.zoomButton {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  color: #f4feff;
+  background: rgba(1, 3, 9, 0.9);
+  border: 1px solid rgba(99, 248, 255, 0.48);
+  cursor: pointer;
+}
+
+.zoomButton:hover,
+.zoomButton:focus-visible {
+  border-color: #63f8ff;
+  background: #0b1830;
+  outline: none;
+}
+
+.zoomButton:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.zoomButton svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}

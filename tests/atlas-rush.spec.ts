@@ -50,7 +50,7 @@ test('plays a survey and preserves map paths during typing and timer updates', a
   const answer = await page.getByRole('status').last().textContent();
   expect(answer).toBeTruthy();
   await page
-    .locator('svg path')
+    .locator('path[data-country]')
     .first()
     .evaluate((element) => {
       (window as Window & { mapPath?: Element }).mapPath = element;
@@ -59,7 +59,7 @@ test('plays a survey and preserves map paths during typing and timer updates', a
   await page.waitForTimeout(350);
   expect(
     await page
-      .locator('svg path')
+      .locator('path[data-country]')
       .first()
       .evaluate(
         (element) =>
@@ -80,6 +80,48 @@ test('plays a survey and preserves map paths during typing and timer updates', a
     page.getByRole('dialog', { name: 'End this game?' }),
   ).toBeHidden();
   await page.getByRole('button', { name: 'Skip' }).click();
+});
+
+test('zooms the highlighted area and resets after a correct answer', async ({
+  page,
+}) => {
+  await page.goto('/games/atlas-rush/asia/?learning=1&seed=Zoom');
+  const map = page.getByRole('group', { name: /^Asia map/ });
+  const target = page.locator('path[data-learning-target]');
+  await expect(target).toHaveCount(1);
+  await target.focus();
+  const answer = await page.getByRole('status').last().textContent();
+  expect(answer).toBeTruthy();
+  const fullViewBox = await map.getAttribute('viewBox');
+
+  await page
+    .getByRole('button', { name: 'Zoom in on highlighted area' })
+    .click();
+  const zoomedViewBox = await map.getAttribute('viewBox');
+  expect(zoomedViewBox).not.toBe(fullViewBox);
+  const mapBounds = await map.boundingBox();
+  const [, , viewWidth, viewHeight] = (zoomedViewBox ?? '')
+    .split(' ')
+    .map(Number);
+  expect(viewWidth / viewHeight).toBeCloseTo(
+    (mapBounds?.width ?? 0) / (mapBounds?.height ?? 1),
+    2,
+  );
+  await page.getByLabel('country name').fill('not a country');
+  await page.getByRole('button', { name: 'Identify' }).click();
+  await expect(map).toHaveAttribute('viewBox', zoomedViewBox ?? '');
+  await page.getByRole('button', { name: 'Reset map zoom' }).click();
+  await expect(map).toHaveAttribute('viewBox', fullViewBox ?? '');
+
+  await page
+    .getByRole('button', { name: 'Zoom in on highlighted area' })
+    .click();
+  await page.getByLabel('country name').fill(answer ?? '');
+  await page.getByRole('button', { name: 'Identify' }).click();
+  await expect(map).toHaveAttribute('viewBox', fullViewBox ?? '');
+  await expect(
+    page.getByRole('button', { name: 'Zoom in on highlighted area' }),
+  ).toBeVisible();
 });
 
 test.describe('mobile keyboard', () => {
@@ -224,7 +266,7 @@ test('landing starts the selected region with a shareable challenge', async ({
 test('region pages have unique query-free canonical metadata', async ({
   page,
 }) => {
-  const regions = ['africa', 'europe', 'south-america', 'usa'];
+  const regions = ['africa', 'asia', 'europe', 'south-america', 'usa'];
   const titles: string[] = [];
   for (const region of regions) {
     await page.goto(`/games/atlas-rush/${region}/?learning=1`);

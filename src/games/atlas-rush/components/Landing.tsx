@@ -17,6 +17,7 @@ const REGIONS = [
   regionMetadata['south-america'],
   regionMetadata.usa,
   regionMetadata.europe,
+  regionMetadata.asia,
 ];
 
 export const Landing: React.FC = () => {
