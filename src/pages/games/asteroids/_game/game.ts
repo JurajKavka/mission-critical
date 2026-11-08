@@ -26,14 +26,33 @@ export interface GameController {
 export const createGame = (dom: GameDom): GameController => {
   const state: GameState = createGameState(dom);
   const sound = createSound();
+  const touch = { x: 0, y: 0, braking: false };
+  const touchDevice = window.matchMedia('(any-pointer: coarse)');
+
+  const resetTouch = (): void => {
+    touch.x = 0;
+    touch.y = 0;
+    touch.braking = false;
+    window.dispatchEvent(new Event('asteroids-controls-reset'));
+  };
 
   const mount = (): void => {
+    window.addEventListener('asteroids-steer', (event) => {
+      const { x, y } = (event as CustomEvent<{ x: number; y: number }>).detail;
+      touch.x = x;
+      touch.y = y;
+    });
+    window.addEventListener('asteroids-brake', (event) => {
+      touch.braking = (event as CustomEvent<boolean>).detail;
+    });
+    window.addEventListener('asteroids-hyperspace', hyperspace);
     window.addEventListener('resize', () => resize());
     window.addEventListener('keydown', (event) => onKeyDown(event));
     window.addEventListener('keyup', (event) => state.keys.delete(event.code));
     window.addEventListener('blur', () => {
       state.keys.clear();
       state.pointer.firing = false;
+      resetTouch();
     });
     window.addEventListener('pointerup', () => (state.pointer.firing = false));
 
@@ -94,6 +113,7 @@ export const createGame = (dom: GameDom): GameController => {
     sound.start();
     dom.overlay.classList.add('hidden');
     resetGame();
+    document.body.classList.add('touch-playing');
   };
 
   const resetGame = (): void => {
@@ -125,6 +145,7 @@ export const createGame = (dom: GameDom): GameController => {
       running: true,
     });
     resetGunBonuses();
+    updateTouchCooldown();
     dom.upgradeOverlay.classList.add('hidden');
     resetShip();
     beginWave();
@@ -164,6 +185,8 @@ export const createGame = (dom: GameDom): GameController => {
   const endGame = (): void => {
     state.running = false;
     state.choosingUpgrade = false;
+    document.body.classList.remove('touch-playing');
+    resetTouch();
     dom.upgradeOverlay.classList.add('hidden');
     showMissionEndedMessage(dom, state.score);
     sound.tone(120, 0.7, 0.06, 'sawtooth', 38);
@@ -173,6 +196,8 @@ export const createGame = (dom: GameDom): GameController => {
     state.choosingUpgrade = true;
     state.keys.clear();
     state.pointer.firing = false;
+    document.body.classList.remove('touch-playing');
+    resetTouch();
     state.enemyBullets.length = 0;
     dom.upgradeOverlay.classList.remove('hidden');
     sound.tone(440, 0.25, 0.025, 'triangle', 720);
@@ -197,6 +222,7 @@ export const createGame = (dom: GameDom): GameController => {
     }
     state.bonusFlashTimer = 1.8;
     state.choosingUpgrade = false;
+    document.body.classList.add('touch-playing');
     dom.upgradeOverlay.classList.add('hidden');
     state.wave += 1;
     beginWave();
@@ -287,7 +313,12 @@ export const createGame = (dom: GameDom): GameController => {
 
   const hyperspace = (): void => {
     const { ship } = state;
-    if (!ship.visible || state.hyperspaceCooldown > 0) {
+    if (
+      !state.running ||
+      state.choosingUpgrade ||
+      !ship.visible ||
+      state.hyperspaceCooldown > 0
+    ) {
       return;
     }
 
@@ -296,6 +327,7 @@ export const createGame = (dom: GameDom): GameController => {
     ship.y = Math.random() * state.height;
     ship.shield = Math.max(ship.shield, 1.25);
     state.hyperspaceCooldown = 4;
+    updateTouchCooldown();
     burst(state, ship.x, ship.y, '#6ffcff', 22, 210);
     sound.tone(180, 0.3, 0.035, 'triangle', 720);
   };
@@ -424,7 +456,11 @@ export const createGame = (dom: GameDom): GameController => {
 
   const updateTimers = (delta: number): void => {
     state.fireCooldown = Math.max(0, state.fireCooldown - delta);
+    const previousCooldown = Math.ceil(state.hyperspaceCooldown);
     state.hyperspaceCooldown = Math.max(0, state.hyperspaceCooldown - delta);
+    if (Math.ceil(state.hyperspaceCooldown) !== previousCooldown) {
+      updateTouchCooldown();
+    }
     if (state.comboTimer > 0) {
       state.comboTimer = Math.max(0, state.comboTimer - delta);
       if (state.comboTimer === 0) {
@@ -443,13 +479,25 @@ export const createGame = (dom: GameDom): GameController => {
     }
 
     const rotation = 3.6;
+    const touchMagnitude = Math.hypot(touch.x, touch.y);
+    if (touchMagnitude > 0.2) {
+      const targetAngle = Math.atan2(touch.y, touch.x);
+      const angleDifference = Math.atan2(
+        Math.sin(targetAngle - ship.angle),
+        Math.cos(targetAngle - ship.angle),
+      );
+      ship.angle += Math.max(
+        -rotation * delta,
+        Math.min(rotation * delta, angleDifference),
+      );
+    }
     if (keys.has('KeyA') || keys.has('ArrowLeft')) {
       ship.angle -= rotation * delta;
     }
     if (keys.has('KeyD') || keys.has('ArrowRight')) {
       ship.angle += rotation * delta;
     }
-    if (keys.has('KeyW') || keys.has('ArrowUp')) {
+    if (keys.has('KeyW') || keys.has('ArrowUp') || touchMagnitude > 0.2) {
       const thrust = 235 * state.thrustMultiplier;
       ship.vx += Math.cos(ship.angle) * thrust * delta;
       ship.vy += Math.sin(ship.angle) * thrust * delta;
@@ -466,13 +514,13 @@ export const createGame = (dom: GameDom): GameController => {
         });
       }
     }
-    if (keys.has('KeyS') || keys.has('ArrowDown')) {
+    if (keys.has('KeyS') || keys.has('ArrowDown') || touch.braking) {
       brakeShip(delta);
     }
     if (pointer.firing) {
       ship.angle = Math.atan2(pointer.y - ship.y, pointer.x - ship.x);
     }
-    if (keys.has('Space') || pointer.firing) {
+    if (keys.has('Space') || pointer.firing || touchDevice.matches) {
       fire();
     }
     ship.x += ship.vx * delta;
@@ -754,7 +802,12 @@ export const createGame = (dom: GameDom): GameController => {
   };
 
   const onPointerDown = (event: PointerEvent): void => {
-    if (event.button !== 0 || !state.running || state.choosingUpgrade) {
+    if (
+      event.pointerType === 'touch' ||
+      event.button !== 0 ||
+      !state.running ||
+      state.choosingUpgrade
+    ) {
       return;
     }
     updatePointer(event);
@@ -764,6 +817,14 @@ export const createGame = (dom: GameDom): GameController => {
       state.pointer.x - state.ship.x,
     );
     fire();
+  };
+
+  const updateTouchCooldown = (): void => {
+    window.dispatchEvent(
+      new CustomEvent('asteroids-cooldown', {
+        detail: state.hyperspaceCooldown,
+      }),
+    );
   };
 
   return { mount };
