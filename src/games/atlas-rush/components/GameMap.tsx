@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
-import { IconButton, Tooltip } from '../../../react-component-library';
+import { Tooltip } from '../../../react-component-library';
 import { regionMetadata } from '../data/regions';
 import type { RegionId } from '../domain/types';
 import { loadGeography } from '../infrastructure/geography';
@@ -13,7 +13,7 @@ import {
   selectPhase,
 } from '../state/selectors';
 import * as UI from '../../../react-component-library/atlas-styles';
-import styles from './GameMap.module.css';
+import { ZoomButton } from './GameMap.styles';
 import { getDetailViewBox } from './map-zoom';
 import type { AtlasRushStore } from './types';
 
@@ -23,10 +23,7 @@ type GameMapProps = {
   onReturnFocus: () => void;
 };
 
-const RUSSIA_CROP_TOP: Partial<Record<RegionId, number>> = {
-  asia: 13,
-  europe: 11.6,
-};
+const ASIA_RUSSIA_CROP_TOP = 13;
 
 const getVisibleTargetBounds = (
   target: SVGPathElement,
@@ -34,12 +31,11 @@ const getVisibleTargetBounds = (
   targetId: string | null,
 ) => {
   const bounds = target.getBBox();
-  const cropTop = RUSSIA_CROP_TOP[regionId];
-  if (targetId !== 'RUS' || cropTop === undefined) {
+  if (targetId !== 'RUS' || regionId !== 'asia') {
     return bounds;
   }
 
-  const y = Math.max(bounds.y, cropTop);
+  const y = Math.max(bounds.y, ASIA_RUSSIA_CROP_TOP);
   return {
     x: bounds.x,
     y,
@@ -71,7 +67,6 @@ export const GameMap: React.FC<GameMapProps> = ({
   } | null>(null);
   const mapRef = useRef<SVGSVGElement>(null);
   const clipId = useId();
-  const russiaClipId = useId();
   const isPointerFocusing = useRef(false);
   const region = regionMetadata[regionId];
   const activeZoom =
@@ -214,8 +209,7 @@ export const GameMap: React.FC<GameMapProps> = ({
   };
   return (
     <>
-      <IconButton
-        className={styles.zoomButton}
+      <ZoomButton
         name={isZoomed ? 'zoom-out' : 'zoom-in'}
         label={isZoomed ? 'Reset map zoom' : 'Zoom in on highlighted area'}
         pressed={isZoomed}
@@ -232,11 +226,6 @@ export const GameMap: React.FC<GameMapProps> = ({
           <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
             <rect x={clipX} y={clipY} width={clipWidth} height={clipHeight} />
           </clipPath>
-          {regionId === 'europe' && (
-            <clipPath id={russiaClipId} clipPathUnits="userSpaceOnUse">
-              <rect x="0" y={RUSSIA_CROP_TOP.europe} width="62" height="41" />
-            </clipPath>
-          )}
         </defs>
         <g clipPath={`url(#${clipId})`}>
           {geography.countries.map((country) => {
@@ -246,11 +235,6 @@ export const GameMap: React.FC<GameMapProps> = ({
               <UI.Country
                 key={country.id}
                 d={country.path}
-                clipPath={
-                  regionId === 'europe' && country.id === 'RUS'
-                    ? `url(#${russiaClipId})`
-                    : undefined
-                }
                 data-country={country.id}
                 data-learning-target={canSelect ? '' : undefined}
                 vectorEffect="non-scaling-stroke"
