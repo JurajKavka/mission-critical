@@ -191,9 +191,7 @@ export const GameMap: React.FC<GameMapProps> = ({
       <button
         type="button"
         className={styles.zoomButton}
-        aria-label={
-          isZoomed ? 'Reset map zoom' : 'Zoom in on highlighted area'
-        }
+        aria-label={isZoomed ? 'Reset map zoom' : 'Zoom in on highlighted area'}
         aria-pressed={isZoomed}
         disabled={phase !== 'playing' || targetId === null}
         onClick={handleZoomButtonClick}

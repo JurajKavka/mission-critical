@@ -6,6 +6,8 @@ export { BreadcrumbDivider } from './BreadcrumbDivider';
 export { Breadcrumbs } from './Breadcrumbs';
 export type { AsciiKey } from './AsciiKeyboard';
 export { ExitButton } from './ExitButton';
+export { Icon, ICON_SIZE_MAPPING } from './Icon';
+export type { IconName, IconProps, IconSize } from './Icon';
 export { BREAKPOINTS, mb } from './media-breakpoints';
 export type { Breakpoint } from './media-breakpoints';
 export { ResultsPanel } from './ResultsPanel';
