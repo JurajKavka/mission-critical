@@ -133,7 +133,7 @@ test('results receive focus and keep keyboard navigation inside the report', asy
   await page.clock.fastForward(37_000);
   const dialog = page.getByRole('dialog', { name: 'Time is up' });
   const replay = dialog.getByRole('button', { name: 'Play again' });
-  const settings = dialog.getByRole('button', { name: 'Change settings' });
+  const settings = dialog.getByRole('button', { name: 'Start over' });
   await expect(replay).toBeFocused();
   await page.keyboard.press('Shift+Tab');
   await expect(settings).toBeFocused();

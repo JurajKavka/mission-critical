@@ -13,7 +13,7 @@ describe('Atlas Rush settings page', () => {
       expect(html).toContain('Start survey');
       expect(html).toContain('disabled');
       expect(styles).toContain('padding:4.375rem 1.125rem 1.875rem');
-      expect(styles).toContain('padding:2rem 2.625rem');
+      expect(styles).toContain('padding:2rem;');
     } finally {
       sheet.seal();
     }

@@ -9,7 +9,7 @@ import {
 } from '../../../react-component-library';
 import type { AsciiKey } from '../../../react-component-library';
 import { editAnswerText } from './answer-edit';
-import * as UI from './atlas-styles';
+import * as UI from '../../../react-component-library/atlas-styles';
 import type { AtlasRushStore } from './types';
 
 const MOBILE_KEYBOARD_QUERY = '(pointer: coarse) and (max-width: 1024px)';

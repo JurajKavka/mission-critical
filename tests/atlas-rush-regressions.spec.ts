@@ -191,7 +191,12 @@ test('finishes a complete South America survey with full coverage', async ({
   const result = page.getByRole('dialog', { name: 'Atlas complete' });
   await expect(result).toBeVisible();
   await expect(result.getByText('100%')).toBeVisible();
-  await expect(result.getByText('12 / 12 countries identified')).toBeVisible();
+  await expect(
+    result.getByText('Total', { exact: true }).locator('..').locator('dd'),
+  ).toHaveText('12');
+  await expect(
+    result.getByText('Guessed', { exact: true }).locator('..').locator('dd'),
+  ).toHaveText('12');
 });
 
 test('unknown paths return 404 in the local server without affecting assets', async ({

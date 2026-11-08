@@ -56,6 +56,5 @@ Do not write deeply nested ternaries or unbraced control flow.
 ## Verification
 
 - Preserve strict TypeScript checking.
-- Run TypeScript, ESLint, and Prettier checks after changes.
+- Do not run tests, TypeScript, ESLint, Prettier checks, or builds unless the user explicitly asks. The user runs verification manually.
 - Keep ESLint's `curly: ['error', 'all']` rule enabled.
-- Verify that the Astro production build succeeds.

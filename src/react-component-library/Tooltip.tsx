@@ -1,7 +1,7 @@
 import { rem } from 'polished';
 import { useLayoutEffect, useRef, useState } from 'react';
 import type * as React from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { getTooltipPosition } from './tooltip-position';
 
 const TooltipSurface = styled.div<{

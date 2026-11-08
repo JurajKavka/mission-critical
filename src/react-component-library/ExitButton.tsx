@@ -1,6 +1,6 @@
 import { rem } from 'polished';
 import type * as React from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 const Button = styled.button`
   cursor: pointer;

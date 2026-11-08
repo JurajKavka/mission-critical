@@ -8,9 +8,9 @@ import type { ChallengeConfig, GameResults } from '../domain/types';
 import { getChallengePath } from '../infrastructure/challenge-url';
 import { createAtlasRushStore } from '../state/createAtlasRushStore';
 import { GameMap } from './GameMap';
-import { ResultsPanel } from './ResultsPanel';
+import { ResultsPanel } from '../../../react-component-library/ResultsPanel';
 import { TimerDisplay } from './TimerDisplay';
-import { GlobalStyles } from './atlas-styles';
+import { GlobalStyles } from '../../../react-component-library/atlas-styles';
 import * as UI from './catalog-styles';
 
 const CATALOG_CONFIG: ChallengeConfig = {

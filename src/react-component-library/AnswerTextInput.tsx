@@ -1,7 +1,7 @@
 import { rem } from 'polished';
 import { useState } from 'react';
 import type * as React from 'react';
-import styled, { keyframes } from 'styled-components';
+import { keyframes, styled } from 'styled-components';
 import { BackspaceButton } from './BackspaceButton';
 
 const InputContainer = styled.div`

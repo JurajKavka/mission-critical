@@ -1,10 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { regionTargets } from '../data/targets';
-import { regionMetadata } from '../data/regions';
-import { getCoverage } from '../domain/results';
-import { defaultSeed } from '../domain/shuffle';
-import type { GameResults, RegionId } from '../domain/types';
+import { regionTargets } from '../games/atlas-rush/data/targets';
+import { regionMetadata } from '../games/atlas-rush/data/regions';
+import { getCoverage } from '../games/atlas-rush/domain/results';
+import { defaultSeed } from '../games/atlas-rush/domain/shuffle';
+import type { GameResults, RegionId } from '../games/atlas-rush/domain/types';
 import { ResultsPanel } from './ResultsPanel';
 
 const REGIONS: readonly RegionId[] = [
@@ -48,7 +48,7 @@ describe('results panel', () => {
       expect(markup).toContain(`${result.coverage}%`);
       expect(markup).toContain('Time is up');
       expect(markup).toContain('Play again');
-      expect(markup).toContain('Change settings');
+      expect(markup).toContain('Start over');
     },
   );
   it('presents the completion result', () => {

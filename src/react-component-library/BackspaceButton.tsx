@@ -1,9 +1,9 @@
 import { rem } from 'polished';
 import { useEffect, useRef } from 'react';
 import type * as React from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
-const BACKSPACE_HOLD_MS = 1000;
+const BACKSPACE_HOLD_MS = 750;
 
 const Button = styled.button`
   position: absolute;

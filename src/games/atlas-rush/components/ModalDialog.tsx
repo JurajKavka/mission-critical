@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type * as React from 'react';
-import * as UI from './atlas-styles';
+import * as UI from '../../../react-component-library/atlas-styles';
 
 const FOCUSABLE_ELEMENTS_QUERY =
   'button, [href], input, select, textarea, [tabindex]';
