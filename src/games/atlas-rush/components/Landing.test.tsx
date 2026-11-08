@@ -12,6 +12,10 @@ describe('Atlas Rush settings page', () => {
       expect(html).toContain('Select a region');
       expect(html).toContain('Start survey');
       expect(html).toContain('disabled');
+      expect(html.match(/<fieldset disabled=""/g)).toHaveLength(2);
+      expect(html).toMatch(
+        /<input\b(?=[^>]*\bname="learning")(?=[^>]*\bdisabled="")[^>]*>/,
+      );
       expect(styles).toContain('padding:4.375rem 1.125rem 1.875rem');
       expect(styles).toContain('padding:2rem;');
     } finally {

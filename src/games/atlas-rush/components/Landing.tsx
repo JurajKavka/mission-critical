@@ -59,7 +59,7 @@ export const Landing: React.FC = () => {
           </h1>
           <p>Identify countries before the clock runs out.</p>
           <UI.SettingsForm id="survey-settings" onSubmit={handleSubmit}>
-            <fieldset>
+            <fieldset disabled={!isReady}>
               <legend>Select a region</legend>
               {REGIONS.map((region) => (
                 <label key={region.id}>
@@ -74,7 +74,7 @@ export const Landing: React.FC = () => {
                 </label>
               ))}
             </fieldset>
-            <fieldset>
+            <fieldset disabled={!isReady}>
               <legend>Select a level</legend>
               {levels.map((level) => (
                 <label key={level.id}>
@@ -100,6 +100,7 @@ export const Landing: React.FC = () => {
               <input
                 type="checkbox"
                 name="learning"
+                disabled={!isReady}
                 checked={isLearning}
                 onChange={(event) => setIsLearning(event.target.checked)}
               />{' '}
