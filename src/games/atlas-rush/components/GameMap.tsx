@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
-import { Tooltip } from '../../../react-component-library';
+import { IconButton, Tooltip } from '../../../react-component-library';
 import { regionMetadata } from '../data/regions';
 import type { RegionId } from '../domain/types';
 import { loadGeography } from '../infrastructure/geography';
@@ -188,20 +188,14 @@ export const GameMap: React.FC<GameMapProps> = ({
   };
   return (
     <>
-      <button
-        type="button"
+      <IconButton
         className={styles.zoomButton}
-        aria-label={isZoomed ? 'Reset map zoom' : 'Zoom in on highlighted area'}
-        aria-pressed={isZoomed}
+        name={isZoomed ? 'zoom-out' : 'zoom-in'}
+        label={isZoomed ? 'Reset map zoom' : 'Zoom in on highlighted area'}
+        pressed={isZoomed}
         disabled={phase !== 'playing' || targetId === null}
         onClick={handleZoomButtonClick}
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="10" cy="10" r="6.5" />
-          <path d="M15 15L21 21M7 10H13" />
-          {!isZoomed && <path d="M10 7V13" />}
-        </svg>
-      </button>
+      />
       <UI.Map
         ref={mapRef}
         viewBox={currentViewBox}
