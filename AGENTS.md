@@ -13,8 +13,10 @@ These instructions apply to the entire repository.
 
 ## Code style
 
-- Write TypeScript using a functional style.
+- Write TypeScript using a functional style: prefer pure functions, explicit inputs and return values, and immutable data where practical.
+- Prefer array methods such as `map`, `filter`, and `reduce` for collection transformations and accumulation, rather than imperative loops with externally managed accumulators. Keep the chosen approach clear and focused.
 - Prefer arrow functions assigned to `const`.
+- Name module-level constant values using uppercase letters and underscores, such as `MOBILE_KEYBOARD_QUERY`; keep function names descriptive and in camelCase.
 - Do not introduce classes when functions, closures, or plain objects are sufficient.
 - Use descriptive names. Avoid vague names such as `type` when a domain-specific name such as `pickupType` is clearer.
 - Use single quotes in TypeScript and JavaScript. Keep Prettier configured with `singleQuote: true`.
@@ -54,6 +56,5 @@ Do not write deeply nested ternaries or unbraced control flow.
 ## Verification
 
 - Preserve strict TypeScript checking.
-- Run TypeScript, ESLint, and Prettier checks after changes.
+- Do not run tests, TypeScript, ESLint, Prettier checks, or builds unless the user explicitly asks. The user runs verification manually.
 - Keep ESLint's `curly: ['error', 'all']` rule enabled.
-- Verify that the Astro production build succeeds.

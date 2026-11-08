@@ -1,26 +1,18 @@
-export type Country = {
-  readonly id: string;
-  readonly name: string;
+import type { RegionMetadata } from '../../../../games/atlas-rush/data/regions';
+import type { Target } from '../../../../games/atlas-rush/domain/types';
+
+export type {
+  Level,
+  RegionId,
+} from '../../../../games/atlas-rush/domain/types';
+
+export type Country = Target & {
   readonly path: string;
 };
 
-export type RegionId = 'africa' | 'south-america' | 'usa' | 'europe';
-
-export type Region = {
-  readonly id: RegionId;
-  readonly code: string;
-  readonly hasIslandMarkers: boolean;
-  readonly markerNote?: string;
-  readonly name: string;
-  readonly targetName: 'country' | 'state';
+export type Region = RegionMetadata & {
   readonly viewBox: string;
   readonly countries: readonly Country[];
-};
-
-export type Level = {
-  readonly id: string;
-  readonly label: string;
-  readonly secondsPerCountry: number;
 };
 
 export type Results = {

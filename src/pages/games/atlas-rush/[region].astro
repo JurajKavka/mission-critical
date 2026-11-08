@@ -1,0 +1,51 @@
+---
+import RouteTransition from '../../../games/atlas-rush/components/RouteTransition.astro';
+import { AtlasRush } from '../../../games/atlas-rush/components/AtlasRush';
+import { regionMetadata } from '../../../games/atlas-rush/data/regions';
+import type { RegionId } from '../../../games/atlas-rush/domain/types';
+
+export const getStaticPaths = () =>
+  (Object.keys(regionMetadata) as RegionId[]).map((regionId) => ({
+    params: { region: regionId },
+    props: { regionId },
+  }));
+
+type Props = { regionId: RegionId };
+const { regionId } = Astro.props;
+const region = regionMetadata[regionId];
+const title = `${region.name} Geography Game | Atlas Rush // Mission Critical`;
+const description = `Identify ${region.targetName === 'state' ? 'states' : 'countries'} in ${region.name} against the clock in Atlas Rush. Choose a difficulty and practice with learning mode.`;
+const canonicalPath = `/games/atlas-rush/${regionId}/`;
+const canonical = Astro.site
+  ? new URL(canonicalPath, Astro.site).href
+  : canonicalPath;
+const image = Astro.site
+  ? new URL('/og-image.png', Astro.site).href
+  : '/og-image.png';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#02040b" />
+    <RouteTransition />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <AtlasRush regionId={regionId} client:only="react">
+      <p slot="fallback" role="status" class="atlas-loading">
+        Loading Atlas Rush…
+      </p>
+    </AtlasRush>
+    <noscript>Enable JavaScript to play Atlas Rush.</noscript>
+  </body>
+</html>

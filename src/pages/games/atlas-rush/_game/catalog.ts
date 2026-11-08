@@ -1,5 +1,3 @@
-import './styles.css';
-import './catalog.css';
 import {
   createMap,
   createResults,

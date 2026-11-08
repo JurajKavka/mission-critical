@@ -107,6 +107,7 @@ const handleConfirmButtonClick = () => {
 - Preserve the Mission Critical visual identity from `DESIGN.md` and reuse existing shared design tokens/styles when practical.
 - Prefer CSS class names for UI states; use inline styles only for genuinely dynamic values.
 - Avoid introducing CSS-in-JS runtime dependencies (including styled-components) for new React code. Do not rewrite unrelated existing styles merely to adopt CSS Modules.
+- In styled-components, use `rem` from `polished` to convert fixed pixel dimensions to rems. Keep measured screen coordinates in pixels when positioning depends on them.
 - Follow the root instruction not to use `!important`.
 
 ## Accessibility and testing
