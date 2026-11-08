@@ -180,7 +180,7 @@ export const createGame = (dom: GameDom): GameController => {
     state.ufoSpawnTimer = state.wave >= 2 ? 5 + Math.random() * 6 : Infinity;
     const desktopCount = Math.min(3 + state.wave, 10);
     const count = primaryTouchDevice.matches
-      ? Math.ceil(desktopCount * 0.7)
+      ? Math.ceil(desktopCount / 2)
       : desktopCount;
     for (let index = 0; index < count; index += 1) {
       safeSpawnAsteroid(state);
