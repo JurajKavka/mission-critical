@@ -32,7 +32,9 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
       <Breadcrumbs>
         <span>Mission report</span>
         <BreadcrumbDivider />
-        <span>{result.finishReason === 'completed' ? 'complete' : 'time expired'}</span>
+        <span>
+          {result.finishReason === 'completed' ? 'complete' : 'time expired'}
+        </span>
       </Breadcrumbs>
       <h2 id="results-title">
         {result.finishReason === 'completed' ? 'Atlas complete' : 'Time is up'}

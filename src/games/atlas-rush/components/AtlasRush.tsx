@@ -114,7 +114,7 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
                   <HomeBreadcrum>MISSION CRITICAL</HomeBreadcrum>
                 </a>
                 <BreadcrumbDivider />
-               {regionMetadata[regionId].name}
+                {regionMetadata[regionId].name}
               </Breadcrumbs>
             </div>
             <UI.HudStats>

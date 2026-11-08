@@ -282,7 +282,7 @@ test('results show timeout data and support replay and settings', async ({
   await page.clock.fastForward(37000);
   await page
     .getByRole('dialog', { name: 'Time is up' })
-    .getByRole('button', { name: 'Change settings' })
+    .getByRole('button', { name: 'Start over' })
     .click();
   await expect(page).toHaveURL(/\/games\/atlas-rush\/$/);
   await expect(

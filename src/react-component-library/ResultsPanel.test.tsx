@@ -48,7 +48,7 @@ describe('results panel', () => {
       expect(markup).toContain(`${result.coverage}%`);
       expect(markup).toContain('Time is up');
       expect(markup).toContain('Play again');
-      expect(markup).toContain('Change settings');
+      expect(markup).toContain('Start over');
     },
   );
   it('presents the completion result', () => {

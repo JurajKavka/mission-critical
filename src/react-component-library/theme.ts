@@ -38,7 +38,7 @@ export const ATLAS_THEME = {
     label: rem(10),
     small: rem(11),
     body: rem(12),
-     bodyBig: rem(14),
+    bodyBig: rem(14),
     paragraph: rem(14),
     paragraphBig: rem(16),
     metric: rem(22),
