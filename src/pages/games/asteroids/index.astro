@@ -1,6 +1,7 @@
 ---
 import ActionButton from '../../../components/ActionButton.astro';
 import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
+import { AsteroidsTouchControls } from './_game/touch-controls/AsteroidsTouchControls';
 ---
 
 <!doctype html>
@@ -13,6 +14,7 @@ import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
   </head>
   <body>
     <canvas id="game" aria-label="Neon Asteroids game field"></canvas>
+    <div id="touchControls"><AsteroidsTouchControls client:only="react" /></div>
 
     <div class="hud">
       <div class="hud-top">
@@ -55,6 +57,9 @@ import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
           <div><span>S</span> brake</div>
           <div><span>Space</span> fire</div>
           <div><span>Shift</span> hyperspace</div>
+        </div>
+        <div class="touch-instructions">
+          Steer / thrust · Hold brake · Tap jump · Auto fire
         </div>
       </div>
     </div>
