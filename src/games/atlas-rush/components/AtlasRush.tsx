@@ -5,7 +5,7 @@ import {
   ActionButton,
   BreadcrumbDivider,
   Breadcrumbs,
-  ExitButton,
+  IconButton,
   mb,
   SecondaryButton,
 } from '../../../react-component-library';
@@ -126,7 +126,11 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
                 </strong>
               </UI.HudMetric>
               <GameTimer store={store} readySeconds={readySeconds} />
-              <ExitButton onClick={store.getState().pauseGame} />
+              <IconButton
+                name="exit"
+                label="End game"
+                onClick={store.getState().pauseGame}
+              />
             </UI.HudStats>
           </UI.MapHeading>
           <UI.MapSlot>

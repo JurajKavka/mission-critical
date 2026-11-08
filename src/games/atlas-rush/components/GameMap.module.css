@@ -1,0 +1,9 @@
+button.zoomButton {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: rgba(1, 3, 9, 0.9);
+}
