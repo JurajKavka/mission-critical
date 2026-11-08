@@ -7,7 +7,11 @@ export type Geography = {
 };
 
 export const loadGeography = async (regionId: RegionId): Promise<Geography> => {
-  if (regionId === 'africa') {
+  if (regionId === 'asia') {
+    const { asiaCountries } =
+      await import('../../../pages/games/atlas-rush/_game/asia');
+    return { viewBox: '0 13 120 115', countries: asiaCountries };
+  } else if (regionId === 'africa') {
     const { africaCountries } =
       await import('../../../pages/games/atlas-rush/_game/africa');
     return { viewBox: '0 0 86 78', countries: africaCountries };

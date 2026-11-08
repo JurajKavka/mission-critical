@@ -17,6 +17,7 @@ const REGIONS = [
   regionMetadata['south-america'],
   regionMetadata.usa,
   regionMetadata.europe,
+  regionMetadata.asia,
 ];
 
 export const Landing: React.FC = () => {
@@ -61,18 +62,20 @@ export const Landing: React.FC = () => {
           <UI.SettingsForm id="survey-settings" onSubmit={handleSubmit}>
             <fieldset disabled={!isReady}>
               <legend>Select a region</legend>
-              {REGIONS.map((region) => (
-                <label key={region.id}>
-                  <input
-                    type="radio"
-                    name="region"
-                    value={region.id}
-                    checked={regionId === region.id}
-                    onChange={() => setRegionId(region.id)}
-                  />{' '}
-                  {region.name}
-                </label>
-              ))}
+              <div className="regions">
+                {REGIONS.map((region) => (
+                  <label key={region.id}>
+                    <input
+                      type="radio"
+                      name="region"
+                      value={region.id}
+                      checked={regionId === region.id}
+                      onChange={() => setRegionId(region.id)}
+                    />{' '}
+                    {region.name}
+                  </label>
+                ))}
+              </div>
             </fieldset>
             <fieldset disabled={!isReady}>
               <legend>Select a level</legend>

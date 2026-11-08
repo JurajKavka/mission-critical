@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
 import { Tooltip } from '../../../react-component-library';
@@ -13,12 +13,35 @@ import {
   selectPhase,
 } from '../state/selectors';
 import * as UI from '../../../react-component-library/atlas-styles';
+import { ZoomButton } from './GameMap.styles';
+import { getDetailViewBox } from './map-zoom';
 import type { AtlasRushStore } from './types';
 
 type GameMapProps = {
   store: AtlasRushStore;
   regionId: RegionId;
   onReturnFocus: () => void;
+};
+
+const ASIA_RUSSIA_CROP_TOP = 13;
+
+const getVisibleTargetBounds = (
+  target: SVGPathElement,
+  regionId: RegionId,
+  targetId: string | null,
+) => {
+  const bounds = target.getBBox();
+  if (targetId !== 'RUS' || regionId !== 'asia') {
+    return bounds;
+  }
+
+  const y = Math.max(bounds.y, ASIA_RUSSIA_CROP_TOP);
+  return {
+    x: bounds.x,
+    y,
+    width: bounds.width,
+    height: Math.max(0, bounds.y + bounds.height - y),
+  };
 };
 
 export const GameMap: React.FC<GameMapProps> = ({
@@ -37,12 +60,57 @@ export const GameMap: React.FC<GameMapProps> = ({
     top: number;
   } | null>(null);
   const [error, setError] = useState(false);
+  const [zoom, setZoom] = useState<{
+    regionId: RegionId;
+    targetId: string;
+    viewBox: string;
+  } | null>(null);
+  const mapRef = useRef<SVGSVGElement>(null);
+  const clipId = useId();
   const isPointerFocusing = useRef(false);
   const region = regionMetadata[regionId];
+  const activeZoom =
+    zoom?.regionId === regionId && zoom.targetId === targetId ? zoom : null;
+  const isZoomed = activeZoom !== null;
 
   useEffect(() => {
     setTooltip(null);
   }, [targetId, phase]);
+
+  useEffect(() => {
+    setZoom(null);
+  }, [targetId, regionId]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!isZoomed || !map || !geography) {
+      return;
+    }
+    const updateDetailView = () => {
+      const target = map.querySelector<SVGPathElement>('[data-target="true"]');
+      const { width, height } = map.getBoundingClientRect();
+      if (target && width > 0 && height > 0) {
+        const viewBox = getDetailViewBox(
+          geography.viewBox,
+          getVisibleTargetBounds(target, regionId, targetId),
+          width / height,
+        );
+        setZoom((previous) => {
+          if (
+            !previous ||
+            previous.regionId !== regionId ||
+            previous.targetId !== targetId
+          ) {
+            return previous;
+          }
+          return { ...previous, viewBox };
+        });
+      }
+    };
+    const observer = new ResizeObserver(updateDetailView);
+    observer.observe(map);
+    return () => observer.disconnect();
+  }, [geography, isZoomed, regionId, targetId]);
 
   useEffect(() => {
     let active = true;
@@ -107,86 +175,133 @@ export const GameMap: React.FC<GameMapProps> = ({
     return <p role="status">Loading map…</p>;
   }
   const canReveal = phase === 'playing' && learning;
+  const currentViewBox = activeZoom?.viewBox ?? geography.viewBox;
+  const [clipX, clipY, clipWidth, clipHeight] = currentViewBox
+    .split(' ')
+    .map(Number);
+  const handleZoomButtonClick = () => {
+    if (activeZoom) {
+      setZoom(null);
+    } else {
+      const target = mapRef.current?.querySelector<SVGPathElement>(
+        '[data-target="true"]',
+      );
+      const bounds = mapRef.current?.getBoundingClientRect();
+      if (
+        target &&
+        targetId &&
+        bounds &&
+        bounds.width > 0 &&
+        bounds.height > 0
+      ) {
+        setZoom({
+          regionId,
+          targetId,
+          viewBox: getDetailViewBox(
+            geography.viewBox,
+            getVisibleTargetBounds(target, regionId, targetId),
+            bounds.width / bounds.height,
+          ),
+        });
+      }
+    }
+    onReturnFocus();
+  };
   return (
     <>
+      <ZoomButton
+        name={isZoomed ? 'zoom-out' : 'zoom-in'}
+        label={isZoomed ? 'Reset map zoom' : 'Zoom in on highlighted area'}
+        pressed={isZoomed}
+        disabled={phase !== 'playing' || targetId === null}
+        onClick={handleZoomButtonClick}
+      />
       <UI.Map
-        viewBox={geography.viewBox}
+        ref={mapRef}
+        viewBox={currentViewBox}
         role={canReveal ? 'group' : 'img'}
         aria-label={`${region.name} map. ${canReveal ? `Select the highlighted ${region.targetName} to reveal its name.` : `Identify the highlighted ${region.targetName}.`}`}
       >
-        {geography.countries.map((country) => {
-          const isTarget = phase === 'playing' && country.id === targetId;
-          const canSelect = canReveal && isTarget;
-          return (
-            <UI.Country
-              key={country.id}
-              d={country.path}
-              data-country={country.id}
-              data-learning-target={canSelect ? '' : undefined}
-              vectorEffect="non-scaling-stroke"
-              data-target={isTarget}
-              data-guessed={guessed.includes(country.id)}
-              tabIndex={canSelect ? 0 : undefined}
-              role={canSelect ? 'button' : undefined}
-              aria-label={canSelect ? 'Reveal the name' : undefined}
-              onPointerDown={
-                canSelect
-                  ? () => {
-                      isPointerFocusing.current = true;
-                    }
-                  : undefined
-              }
-              onFocus={
-                canSelect
-                  ? (event) => {
-                      if (!isPointerFocusing.current) {
-                        showAtTarget(country.name, event.currentTarget);
+        <defs>
+          <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
+            <rect x={clipX} y={clipY} width={clipWidth} height={clipHeight} />
+          </clipPath>
+        </defs>
+        <g clipPath={`url(#${clipId})`}>
+          {geography.countries.map((country) => {
+            const isTarget = phase === 'playing' && country.id === targetId;
+            const canSelect = canReveal && isTarget;
+            return (
+              <UI.Country
+                key={country.id}
+                d={country.path}
+                data-country={country.id}
+                data-learning-target={canSelect ? '' : undefined}
+                vectorEffect="non-scaling-stroke"
+                data-target={isTarget}
+                data-guessed={guessed.includes(country.id)}
+                tabIndex={canSelect ? 0 : undefined}
+                role={canSelect ? 'button' : undefined}
+                aria-label={canSelect ? 'Reveal the name' : undefined}
+                onPointerDown={
+                  canSelect
+                    ? () => {
+                        isPointerFocusing.current = true;
                       }
-                    }
-                  : undefined
-              }
-              onClick={
-                canSelect
-                  ? (event) => {
-                      if (event.detail === 0) {
-                        showAtTarget(country.name, event.currentTarget);
-                      } else {
-                        setTooltip({
-                          name: country.name,
-                          left: event.clientX,
-                          top: event.clientY,
-                        });
+                    : undefined
+                }
+                onFocus={
+                  canSelect
+                    ? (event) => {
+                        if (!isPointerFocusing.current) {
+                          showAtTarget(country.name, event.currentTarget);
+                        }
                       }
-                      onReturnFocus();
-                    }
-                  : undefined
-              }
-              onPointerMove={
-                canSelect && tooltip?.name === country.name
-                  ? (event) => {
-                      if (event.pointerType === 'mouse') {
-                        setTooltip({
-                          name: country.name,
-                          left: event.clientX,
-                          top: event.clientY,
-                        });
+                    : undefined
+                }
+                onClick={
+                  canSelect
+                    ? (event) => {
+                        if (event.detail === 0) {
+                          showAtTarget(country.name, event.currentTarget);
+                        } else {
+                          setTooltip({
+                            name: country.name,
+                            left: event.clientX,
+                            top: event.clientY,
+                          });
+                        }
+                        onReturnFocus();
                       }
-                    }
-                  : undefined
-              }
-              onKeyDown={
-                canSelect
-                  ? (event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        showAtTarget(country.name, event.currentTarget);
+                    : undefined
+                }
+                onPointerMove={
+                  canSelect && tooltip?.name === country.name
+                    ? (event) => {
+                        if (event.pointerType === 'mouse') {
+                          setTooltip({
+                            name: country.name,
+                            left: event.clientX,
+                            top: event.clientY,
+                          });
+                        }
                       }
-                    }
-                  : undefined
-              }
-            />
-          );
-        })}
+                    : undefined
+                }
+                onKeyDown={
+                  canSelect
+                    ? (event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          showAtTarget(country.name, event.currentTarget);
+                        }
+                      }
+                    : undefined
+                }
+              />
+            );
+          })}
+        </g>
       </UI.Map>
       {tooltip &&
         canReveal &&

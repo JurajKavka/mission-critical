@@ -1,0 +1,17 @@
+.catalogue {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+  gap: 1rem;
+  width: min(40rem, 90vw);
+}
+
+.icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #69fbff;
+  font-size: 0.75rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}

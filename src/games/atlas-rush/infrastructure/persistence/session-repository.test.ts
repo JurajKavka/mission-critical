@@ -30,7 +30,7 @@ const createRepository = async () => {
 };
 
 describe('session persistence', () => {
-  it.each(['africa', 'south-america', 'usa', 'europe'] as const)(
+  it.each(['africa', 'south-america', 'usa', 'europe', 'asia'] as const)(
     'validates the %s target set and rejects duplicates',
     (regionId) => {
       const regionConfig = createConfig({ regionId });

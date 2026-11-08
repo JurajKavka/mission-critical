@@ -44,6 +44,13 @@ export const SettingsForm = styled.form`
   fieldset + fieldset {
     margin-top: ${rem(12)};
   }
+  .regions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, auto);
+    grid-auto-flow: column;
+    gap: ${rem(12)} ${rem(16)};
+  }
   label {
     display: flex;
     align-items: center;

@@ -8,6 +8,7 @@ export const regionIds: readonly RegionId[] = [
   'south-america',
   'usa',
   'europe',
+  'asia',
 ];
 
 export const createConfig = (

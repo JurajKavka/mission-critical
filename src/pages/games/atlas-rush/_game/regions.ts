@@ -1,5 +1,6 @@
 import { regionMetadata } from '../../../../games/atlas-rush/data/regions';
 import { africaCountries } from './africa';
+import { asiaCountries } from './asia';
 import { europeCountries } from './europe';
 import { southAmericaCountries } from './south-america';
 import { usaStates } from './usa';
@@ -29,4 +30,16 @@ export const europe: Region = {
   countries: europeCountries,
 };
 
-export const regions: readonly Region[] = [africa, southAmerica, usa, europe];
+export const asia: Region = {
+  ...regionMetadata.asia,
+  viewBox: '0 0 120 128',
+  countries: asiaCountries,
+};
+
+export const regions: readonly Region[] = [
+  africa,
+  southAmerica,
+  usa,
+  europe,
+  asia,
+];
