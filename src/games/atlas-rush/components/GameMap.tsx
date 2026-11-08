@@ -23,6 +23,31 @@ type GameMapProps = {
   onReturnFocus: () => void;
 };
 
+const RUSSIA_CROP_TOP: Partial<Record<RegionId, number>> = {
+  asia: 13,
+  europe: 11.6,
+};
+
+const getVisibleTargetBounds = (
+  target: SVGPathElement,
+  regionId: RegionId,
+  targetId: string | null,
+) => {
+  const bounds = target.getBBox();
+  const cropTop = RUSSIA_CROP_TOP[regionId];
+  if (targetId !== 'RUS' || cropTop === undefined) {
+    return bounds;
+  }
+
+  const y = Math.max(bounds.y, cropTop);
+  return {
+    x: bounds.x,
+    y,
+    width: bounds.width,
+    height: Math.max(0, bounds.y + bounds.height - y),
+  };
+};
+
 export const GameMap: React.FC<GameMapProps> = ({
   store,
   regionId,
@@ -46,6 +71,7 @@ export const GameMap: React.FC<GameMapProps> = ({
   } | null>(null);
   const mapRef = useRef<SVGSVGElement>(null);
   const clipId = useId();
+  const russiaClipId = useId();
   const isPointerFocusing = useRef(false);
   const region = regionMetadata[regionId];
   const activeZoom =
@@ -71,7 +97,7 @@ export const GameMap: React.FC<GameMapProps> = ({
       if (target && width > 0 && height > 0) {
         const viewBox = getDetailViewBox(
           geography.viewBox,
-          target.getBBox(),
+          getVisibleTargetBounds(target, regionId, targetId),
           width / height,
         );
         setZoom((previous) => {
@@ -178,7 +204,7 @@ export const GameMap: React.FC<GameMapProps> = ({
           targetId,
           viewBox: getDetailViewBox(
             geography.viewBox,
-            target.getBBox(),
+            getVisibleTargetBounds(target, regionId, targetId),
             bounds.width / bounds.height,
           ),
         });
@@ -206,6 +232,11 @@ export const GameMap: React.FC<GameMapProps> = ({
           <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
             <rect x={clipX} y={clipY} width={clipWidth} height={clipHeight} />
           </clipPath>
+          {regionId === 'europe' && (
+            <clipPath id={russiaClipId} clipPathUnits="userSpaceOnUse">
+              <rect x="0" y={RUSSIA_CROP_TOP.europe} width="62" height="41" />
+            </clipPath>
+          )}
         </defs>
         <g clipPath={`url(#${clipId})`}>
           {geography.countries.map((country) => {
@@ -215,6 +246,11 @@ export const GameMap: React.FC<GameMapProps> = ({
               <UI.Country
                 key={country.id}
                 d={country.path}
+                clipPath={
+                  regionId === 'europe' && country.id === 'RUS'
+                    ? `url(#${russiaClipId})`
+                    : undefined
+                }
                 data-country={country.id}
                 data-learning-target={canSelect ? '' : undefined}
                 vectorEffect="non-scaling-stroke"
