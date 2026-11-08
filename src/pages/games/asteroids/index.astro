@@ -2,6 +2,7 @@
 import ActionButton from '../../../components/ActionButton.astro';
 import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
 import { AsteroidsTouchControls } from './_game/touch-controls/AsteroidsTouchControls';
+import { WEAPON_BONUS_DURATION } from './_game/constants';
 ---
 
 <!doctype html>
@@ -48,7 +49,9 @@ import { AsteroidsTouchControls } from './_game/touch-controls/AsteroidsTouchCon
         <h1 id="title">NEON<br />ASTEROIDS</h1>
         <p class="subtitle" id="subtitle">
           Break the incoming field into fragments and survive.<br />No drag:
-          every impulse persists. Chain hits before the combo meter drains.
+          momentum persists up to the speed limit. Weapon cores last {
+            WEAPON_BONUS_DURATION
+          } seconds. Chain hits before the combo meter drains.
         </p>
         <ActionButton id="start" label="Launch" />
         <div class="controls">
@@ -81,7 +84,7 @@ import { AsteroidsTouchControls } from './_game/touch-controls/AsteroidsTouchCon
             <span class="upgrade-icon">✦</span>
             <span class="upgrade-name">Weapon capacitors</span>
             <span class="upgrade-description"
-              >Reduce the delay between every shot by 12%.</span
+              >Reduce firing delay by 12%, up to the system limit.</span
             >
           </button>
           <button class="upgrade-option" data-upgrade="hull" type="button">

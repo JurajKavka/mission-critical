@@ -90,6 +90,7 @@ export interface GameState {
   fireCooldown: number;
   hyperspaceCooldown: number;
   shieldBonusTimer: number;
+  weaponBonusTimer: number;
   hasTriShot: boolean;
   hasRapidFire: boolean;
   hasOverdrive: boolean;

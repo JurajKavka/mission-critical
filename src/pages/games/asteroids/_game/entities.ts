@@ -94,8 +94,13 @@ export const fireEnemyBullet = (
     return;
   }
 
-  const angle = Math.atan2(state.ship.y - ufo.y, state.ship.x - ufo.x);
   const speed = 225 + state.wave * 8;
+  const distance = Math.hypot(state.ship.x - ufo.x, state.ship.y - ufo.y);
+  const leadTime = Math.min(distance / speed, 1);
+  const angle = Math.atan2(
+    state.ship.y + state.ship.vy * leadTime - ufo.y,
+    state.ship.x + state.ship.vx * leadTime - ufo.x,
+  );
   state.enemyBullets.push({
     x: ufo.x,
     y: ufo.y + 8,
@@ -123,17 +128,17 @@ export const createPickup = (
     angle: Math.random() * TAU,
     spin: (Math.random() - 0.5) * 1.8,
     radius: 13,
-    life: 12,
+    life: 8,
     type,
   });
 };
 
 export const getPickupType = (roll: number): PickupType => {
-  if (roll < 0.22) {
+  if (roll < 0.3) {
     return 'shield';
-  } else if (roll < 0.49) {
+  } else if (roll < 0.6) {
     return 'tri-shot';
-  } else if (roll < 0.76) {
+  } else if (roll < 0.9) {
     return 'rapid-fire';
   } else if (roll < 0.94) {
     return 'overdrive';
@@ -143,8 +148,12 @@ export const getPickupType = (roll: number): PickupType => {
 };
 
 export const maybeDropBonus = (state: GameState, asteroid: Asteroid): void => {
-  const chance = Math.min(0.16 + state.wave * 0.007, 0.28);
-  if (asteroid.size !== 1 || Math.random() > chance) {
+  const chance = Math.min(0.05 + state.wave * 0.001, 0.08);
+  if (
+    asteroid.size !== 1 ||
+    state.pickups.length >= 2 ||
+    Math.random() >= chance
+  ) {
     return;
   }
 

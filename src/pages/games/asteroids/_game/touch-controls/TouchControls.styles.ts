@@ -4,9 +4,12 @@ import { styled } from 'styled-components';
 export const Controls = styled.div<{ $alwaysVisible: boolean }>`
   position: fixed;
   z-index: 1;
-  right: max(${rem(22)}, env(safe-area-inset-right));
   bottom: max(${rem(22)}, env(safe-area-inset-bottom));
-  left: max(${rem(22)}, env(safe-area-inset-left));
+  left: 50%;
+  width: min(100%, 1024px);
+  padding-right: max(${rem(22)}, env(safe-area-inset-right));
+  padding-left: max(${rem(22)}, env(safe-area-inset-left));
+  box-sizing: border-box;
   display: ${({ $alwaysVisible }) => ($alwaysVisible ? 'flex' : 'none')};
   align-items: end;
   justify-content: space-between;
@@ -20,6 +23,7 @@ export const Controls = styled.div<{ $alwaysVisible: boolean }>`
   letter-spacing: 0.12em;
   text-transform: uppercase;
   pointer-events: none;
+  transform: translateX(-50%);
 
   @media (any-pointer: coarse) {
     display: flex;

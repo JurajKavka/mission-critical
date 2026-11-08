@@ -1,4 +1,11 @@
-import { COMBO_WINDOW, TAU, WAVES_PER_MISSION } from './constants';
+import {
+  COMBO_WINDOW,
+  MAX_PLAYER_BULLETS,
+  MAX_SHIP_SPEED,
+  TAU,
+  WAVES_PER_MISSION,
+  WEAPON_BONUS_DURATION,
+} from './constants';
 import { burst } from './effects';
 import {
   createPickup,
@@ -94,8 +101,9 @@ export const createGame = (dom: GameDom): GameController => {
   };
 
   const resize = (): void => {
-    state.width = innerWidth;
-    state.height = innerHeight;
+    const bounds = state.canvas.getBoundingClientRect();
+    state.width = bounds.width;
+    state.height = bounds.height;
     const pixelRatio = Math.min(devicePixelRatio || 1, 2);
     state.canvas.width = Math.floor(state.width * pixelRatio);
     state.canvas.height = Math.floor(state.height * pixelRatio);
@@ -133,6 +141,7 @@ export const createGame = (dom: GameDom): GameController => {
       fireCooldown: 0,
       hyperspaceCooldown: 0,
       shieldBonusTimer: 0,
+      weaponBonusTimer: 0,
       bonusFlashTimer: 0,
       bonusFlashText: '',
       ufoSpawnTimer: Infinity,
@@ -260,6 +269,7 @@ export const createGame = (dom: GameDom): GameController => {
     state.hasTriShot = false;
     state.hasRapidFire = false;
     state.hasOverdrive = false;
+    state.weaponBonusTimer = 0;
   };
 
   const fire = (): void => {
@@ -273,6 +283,10 @@ export const createGame = (dom: GameDom): GameController => {
     const noseY = ship.y + Math.sin(ship.angle) * 19;
     const triShotActive = state.hasTriShot || state.hasOverdrive;
     const rapidFireActive = state.hasRapidFire || state.hasOverdrive;
+    const shotCount = triShotActive ? 3 : 1;
+    if (state.bullets.length + shotCount > MAX_PLAYER_BULLETS) {
+      return;
+    }
     for (const offset of triShotActive ? [-0.15, 0, 0.15] : [0]) {
       const angle = ship.angle + offset;
       state.bullets.push({
@@ -285,10 +299,12 @@ export const createGame = (dom: GameDom): GameController => {
         phase: Math.random() * TAU,
       });
     }
-    const baseCooldown = triShotActive ? 0.11 : 0.14;
-    state.fireCooldown =
-      (rapidFireActive ? baseCooldown * 0.4 : baseCooldown) *
-      state.permanentFireRateMultiplier;
+    const baseCooldown = triShotActive ? 0.26 : 0.24;
+    state.fireCooldown = Math.max(
+      0.14,
+      (rapidFireActive ? baseCooldown * 0.7 : baseCooldown) *
+        state.permanentFireRateMultiplier,
+    );
     ship.vx -= Math.cos(ship.angle) * 3;
     ship.vy -= Math.sin(ship.angle) * 3;
     burst(
@@ -345,14 +361,20 @@ export const createGame = (dom: GameDom): GameController => {
       state.ship.shield = Math.max(state.ship.shield, state.shieldBonusTimer);
       state.bonusFlashText = 'Shield core acquired';
     } else if (pickup.type === 'tri-shot') {
+      resetGunBonuses();
       state.hasTriShot = true;
-      state.bonusFlashText = 'Tri-shot armed until ship lost';
+      state.weaponBonusTimer = WEAPON_BONUS_DURATION;
+      state.bonusFlashText = `Tri-shot armed for ${WEAPON_BONUS_DURATION} seconds`;
     } else if (pickup.type === 'rapid-fire') {
+      resetGunBonuses();
       state.hasRapidFire = true;
-      state.bonusFlashText = 'Rapid fire armed until ship lost';
+      state.weaponBonusTimer = WEAPON_BONUS_DURATION;
+      state.bonusFlashText = `Rapid fire armed for ${WEAPON_BONUS_DURATION} seconds`;
     } else if (pickup.type === 'overdrive') {
+      resetGunBonuses();
       state.hasOverdrive = true;
-      state.bonusFlashText = 'R3 armed until ship lost';
+      state.weaponBonusTimer = WEAPON_BONUS_DURATION;
+      state.bonusFlashText = `R3 armed for ${WEAPON_BONUS_DURATION} seconds`;
     } else {
       state.lives = Math.min(5, state.lives + 1);
       state.bonusFlashText = 'Extra ship secured';
@@ -399,10 +421,14 @@ export const createGame = (dom: GameDom): GameController => {
     const ufo = state.ufos[index];
     state.ufos.splice(index, 1);
     registerTargetHit(600);
-    const rewards: PickupType[] = ['tri-shot', 'rapid-fire', 'overdrive'];
-    const reward = rewards[Math.floor(Math.random() * rewards.length)];
-    createPickup(state, ufo.x, ufo.y, ufo.vx * 0.22, -18, reward);
-    state.bonusFlashText = 'UFO DESTROYED — WEAPON CORE DROPPED';
+    if (state.pickups.length < 2) {
+      const reward: PickupType =
+        Math.random() < 0.5 ? 'tri-shot' : 'rapid-fire';
+      createPickup(state, ufo.x, ufo.y, ufo.vx * 0.22, -18, reward);
+      state.bonusFlashText = 'UFO DESTROYED — WEAPON CORE DROPPED';
+    } else {
+      state.bonusFlashText = 'UFO DESTROYED';
+    }
     state.bonusFlashTimer = 1.7;
     state.shake = Math.max(state.shake, 16);
     explodeUfo(state, sound, ufo);
@@ -468,6 +494,12 @@ export const createGame = (dom: GameDom): GameController => {
       }
     }
     state.shieldBonusTimer = Math.max(0, state.shieldBonusTimer - delta);
+    if (state.weaponBonusTimer > 0) {
+      state.weaponBonusTimer = Math.max(0, state.weaponBonusTimer - delta);
+      if (state.weaponBonusTimer === 0) {
+        resetGunBonuses();
+      }
+    }
     state.bonusFlashTimer = Math.max(0, state.bonusFlashTimer - delta);
     state.ship.shield = Math.max(0, state.ship.shield - delta);
   };
@@ -522,6 +554,11 @@ export const createGame = (dom: GameDom): GameController => {
     }
     if (keys.has('Space') || pointer.firing || touchDevice.matches) {
       fire();
+    }
+    const speed = Math.hypot(ship.vx, ship.vy);
+    if (speed > MAX_SHIP_SPEED) {
+      ship.vx *= MAX_SHIP_SPEED / speed;
+      ship.vy *= MAX_SHIP_SPEED / speed;
     }
     ship.x += ship.vx * delta;
     ship.y += ship.vy * delta;
