@@ -21,7 +21,11 @@ body {
 canvas {
   display: block;
   width: 100%;
+  max-width: 1024px;
   height: 100%;
+  margin: 0 auto;
+  outline: 1px solid rgba(128, 153, 174, 0.35);
+  outline-offset: -1px;
   cursor: crosshair;
 }
 
@@ -60,6 +64,9 @@ canvas {
 .hud {
   position: fixed;
   inset: 0;
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
   padding: 22px;
   pointer-events: none;
 }

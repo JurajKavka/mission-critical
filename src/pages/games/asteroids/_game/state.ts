@@ -19,6 +19,7 @@ export const createGameState = ({
   fireCooldown: 0,
   hyperspaceCooldown: 0,
   shieldBonusTimer: 0,
+  weaponBonusTimer: 0,
   hasTriShot: false,
   hasRapidFire: false,
   hasOverdrive: false,
