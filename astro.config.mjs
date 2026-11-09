@@ -2,7 +2,9 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 
-const siteUrl = /** @type {any} */ (globalThis).process?.env?.SITE_URL;
+const siteUrl =
+  /** @type {any} */ (globalThis).process?.env?.SITE_URL ||
+  'https://mission-critical.sk';
 
 export default defineConfig({
   site: siteUrl,
