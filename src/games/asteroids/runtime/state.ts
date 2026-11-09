@@ -1,9 +1,9 @@
-import type { GameDom, GameState } from './types';
+import type { GameState } from './types';
 
 export const createGameState = ({
   canvas,
   context,
-}: Pick<GameDom, 'canvas' | 'context'>): GameState => ({
+}: { canvas: HTMLCanvasElement; context: CanvasRenderingContext2D }): GameState => ({
   canvas,
   context,
   galaxyCanvas: document.createElement('canvas'),

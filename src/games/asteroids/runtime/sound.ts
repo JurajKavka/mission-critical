@@ -1,5 +1,6 @@
 export interface Sound {
   start: () => void;
+  close: () => void;
   tone: (
     frequency: number,
     duration: number,
@@ -46,5 +47,11 @@ export const createSound = (): Sound => {
     oscillator.stop(context.currentTime + duration);
   };
 
-  return { start, tone };
+  const close = (): void => {
+    if (context) {
+      void context.close();
+    }
+  };
+
+  return { start, tone, close };
 };
