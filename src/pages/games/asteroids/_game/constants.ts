@@ -4,3 +4,6 @@ export const WAVES_PER_MISSION = 3;
 export const WEAPON_BONUS_DURATION = 30;
 export const MAX_SHIP_SPEED = 320;
 export const MAX_PLAYER_BULLETS = 9;
+export const TOUCH_ASTEROID_SLOW_SPEED = 55;
+export const TOUCH_ASTEROID_MEDIUM_SPEED = 80;
+export const TOUCH_ASTEROID_FAST_SPEED = 110;
