@@ -59,9 +59,8 @@ export const createAsteroid = (
   const velocityY =
     (inheritedVelocity?.vy ?? 0) + Math.sin(direction) * baseSpeed;
   const speed = Math.hypot(velocityX, velocityY);
-  const speedScale = isTouchDevice && speed > 0
-    ? getTouchAsteroidSpeed(state.wave) / speed
-    : 1;
+  const speedScale =
+    isTouchDevice && speed > 0 ? getTouchAsteroidSpeed(state.wave) / speed : 1;
   state.asteroids.push({
     x,
     y,
