@@ -1,6 +1,8 @@
 ---
 import ActionButton from '../../../components/ActionButton.astro';
 import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
+import { AsteroidsTouchControls } from './_game/touch-controls/AsteroidsTouchControls';
+import { WEAPON_BONUS_DURATION } from './_game/constants';
 ---
 
 <!doctype html>
@@ -13,6 +15,7 @@ import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
   </head>
   <body>
     <canvas id="game" aria-label="Neon Asteroids game field"></canvas>
+    <div id="touchControls"><AsteroidsTouchControls client:only="react" /></div>
 
     <div class="hud">
       <div class="hud-top">
@@ -46,7 +49,9 @@ import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
         <h1 id="title">NEON<br />ASTEROIDS</h1>
         <p class="subtitle" id="subtitle">
           Break the incoming field into fragments and survive.<br />No drag:
-          every impulse persists. Chain hits before the combo meter drains.
+          momentum persists up to the speed limit. Weapon cores last
+          {WEAPON_BONUS_DURATION} seconds. Chain hits before the combo meter
+          drains.
         </p>
         <ActionButton id="start" label="Launch" />
         <div class="controls">
@@ -55,6 +60,9 @@ import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
           <div><span>S</span> brake</div>
           <div><span>Space</span> fire</div>
           <div><span>Shift</span> hyperspace</div>
+        </div>
+        <div class="touch-instructions">
+          Steer / thrust · Hold brake · Tap jump · Auto fire
         </div>
       </div>
     </div>
@@ -76,7 +84,7 @@ import GameBreadcrumb from '../../../components/GameBreadcrumb.astro';
             <span class="upgrade-icon">✦</span>
             <span class="upgrade-name">Weapon capacitors</span>
             <span class="upgrade-description"
-              >Reduce the delay between every shot by 12%.</span
+              >Reduce firing delay by 12%, up to the system limit.</span
             >
           </button>
           <button class="upgrade-option" data-upgrade="hull" type="button">

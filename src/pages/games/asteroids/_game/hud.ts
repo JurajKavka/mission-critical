@@ -31,13 +31,13 @@ export const updateBonusHud = (state: GameState, dom: GameDom): void => {
     active.push(`shield ${state.shieldBonusTimer.toFixed(1)}s`);
   }
   if (state.hasTriShot) {
-    active.push('tri-shot armed');
+    active.push(`tri-shot ${Math.ceil(state.weaponBonusTimer)}s`);
   }
   if (state.hasRapidFire) {
-    active.push('rapid fire armed');
+    active.push(`rapid fire ${Math.ceil(state.weaponBonusTimer)}s`);
   }
   if (state.hasOverdrive) {
-    active.push('R3 overdrive armed');
+    active.push(`R3 overdrive ${Math.ceil(state.weaponBonusTimer)}s`);
   }
   dom.bonusStatus.textContent =
     state.bonusFlashTimer > 0 ? state.bonusFlashText : active.join(' · ');

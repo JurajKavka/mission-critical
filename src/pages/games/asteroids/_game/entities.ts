@@ -1,4 +1,9 @@
-import { TAU } from './constants';
+import {
+  TAU,
+  TOUCH_ASTEROID_FAST_SPEED,
+  TOUCH_ASTEROID_MEDIUM_SPEED,
+  TOUCH_ASTEROID_SLOW_SPEED,
+} from './constants';
 import { burst } from './effects';
 import type { Sound } from './sound';
 import type {
@@ -20,12 +25,26 @@ export const getAsteroidRadius = (size: AsteroidSize): number => {
   }
 };
 
+const getTouchAsteroidSpeed = (wave: number): number => {
+  const difficulty = Math.min(Math.max(wave - 1, 0), 10) / 10;
+  const slowChance = 0.6 - difficulty * 0.3;
+  const fastChance = 0.1 + difficulty * 0.15;
+  const roll = Math.random();
+  if (roll < slowChance) {
+    return TOUCH_ASTEROID_SLOW_SPEED;
+  } else if (roll < 1 - fastChance) {
+    return TOUCH_ASTEROID_MEDIUM_SPEED;
+  }
+  return TOUCH_ASTEROID_FAST_SPEED;
+};
+
 export const createAsteroid = (
   state: GameState,
   x: number,
   y: number,
   size: AsteroidSize = 3,
   inheritedVelocity: MovingEntity | null = null,
+  isTouchDevice = false,
 ): void => {
   const radius = getAsteroidRadius(size);
   const pointCount = 8 + Math.floor(Math.random() * 5);
@@ -35,15 +54,18 @@ export const createAsteroid = (
   );
   const direction = Math.random() * TAU;
   const baseSpeed = (4 - size) * 24 + 28 + state.wave * 3;
+  const velocityX =
+    (inheritedVelocity?.vx ?? 0) + Math.cos(direction) * baseSpeed;
+  const velocityY =
+    (inheritedVelocity?.vy ?? 0) + Math.sin(direction) * baseSpeed;
+  const speed = Math.hypot(velocityX, velocityY);
+  const speedScale =
+    isTouchDevice && speed > 0 ? getTouchAsteroidSpeed(state.wave) / speed : 1;
   state.asteroids.push({
     x,
     y,
-    vx: inheritedVelocity
-      ? inheritedVelocity.vx + Math.cos(direction) * baseSpeed
-      : Math.cos(direction) * baseSpeed,
-    vy: inheritedVelocity
-      ? inheritedVelocity.vy + Math.sin(direction) * baseSpeed
-      : Math.sin(direction) * baseSpeed,
+    vx: velocityX * speedScale,
+    vy: velocityY * speedScale,
     angle: Math.random() * TAU,
     spin: (Math.random() - 0.5) * (1.6 / size),
     radius,
@@ -52,7 +74,10 @@ export const createAsteroid = (
   });
 };
 
-export const safeSpawnAsteroid = (state: GameState): void => {
+export const safeSpawnAsteroid = (
+  state: GameState,
+  isTouchDevice = false,
+): void => {
   let x: number;
   let y: number;
   do {
@@ -62,7 +87,7 @@ export const safeSpawnAsteroid = (state: GameState): void => {
     Math.hypot(x - state.ship.x, y - state.ship.y) <
     Math.min(state.width, state.height) * 0.3
   );
-  createAsteroid(state, x, y);
+  createAsteroid(state, x, y, 3, null, isTouchDevice);
 };
 
 export const spawnUfo = (state: GameState, sound: Sound): void => {
@@ -94,8 +119,13 @@ export const fireEnemyBullet = (
     return;
   }
 
-  const angle = Math.atan2(state.ship.y - ufo.y, state.ship.x - ufo.x);
   const speed = 225 + state.wave * 8;
+  const distance = Math.hypot(state.ship.x - ufo.x, state.ship.y - ufo.y);
+  const leadTime = Math.min(distance / speed, 1);
+  const angle = Math.atan2(
+    state.ship.y + state.ship.vy * leadTime - ufo.y,
+    state.ship.x + state.ship.vx * leadTime - ufo.x,
+  );
   state.enemyBullets.push({
     x: ufo.x,
     y: ufo.y + 8,
@@ -123,17 +153,17 @@ export const createPickup = (
     angle: Math.random() * TAU,
     spin: (Math.random() - 0.5) * 1.8,
     radius: 13,
-    life: 12,
+    life: 8,
     type,
   });
 };
 
 export const getPickupType = (roll: number): PickupType => {
-  if (roll < 0.22) {
+  if (roll < 0.3) {
     return 'shield';
-  } else if (roll < 0.49) {
+  } else if (roll < 0.6) {
     return 'tri-shot';
-  } else if (roll < 0.76) {
+  } else if (roll < 0.9) {
     return 'rapid-fire';
   } else if (roll < 0.94) {
     return 'overdrive';
@@ -143,8 +173,12 @@ export const getPickupType = (roll: number): PickupType => {
 };
 
 export const maybeDropBonus = (state: GameState, asteroid: Asteroid): void => {
-  const chance = Math.min(0.16 + state.wave * 0.007, 0.28);
-  if (asteroid.size !== 1 || Math.random() > chance) {
+  const chance = Math.min(0.05 + state.wave * 0.001, 0.08);
+  if (
+    asteroid.size !== 1 ||
+    state.pickups.length >= 2 ||
+    Math.random() >= chance
+  ) {
     return;
   }
 
@@ -159,7 +193,11 @@ export const maybeDropBonus = (state: GameState, asteroid: Asteroid): void => {
   );
 };
 
-export const splitAsteroid = (state: GameState, asteroid: Asteroid): void => {
+export const splitAsteroid = (
+  state: GameState,
+  asteroid: Asteroid,
+  isTouchDevice = false,
+): void => {
   if (asteroid.size <= 1) {
     return;
   }
@@ -170,6 +208,7 @@ export const splitAsteroid = (state: GameState, asteroid: Asteroid): void => {
       asteroid.y,
       (asteroid.size - 1) as AsteroidSize,
       asteroid,
+      isTouchDevice,
     );
   }
 };
