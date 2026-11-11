@@ -1,6 +1,7 @@
-import type { Target } from './types';
+import { FULL_NAME_COMPARISON, isValidPrefixLength } from './answer-comparison';
+import type { AnswerComparison, Target } from './types';
 
-const aliases: Readonly<Record<string, readonly string[]>> = {
+const ALIASES: Readonly<Record<string, readonly string[]>> = {
   COG: ['Congo', 'Congo Brazzaville', 'Republic of Congo'],
   COD: ['DR Congo', 'DRC', 'Congo Kinshasa', 'Democratic Republic of Congo'],
   CIV: ['Côte d’Ivoire', 'Cote dIvoire', 'Ivory Coast'],
@@ -30,9 +31,42 @@ export const normalizeAnswer = (answer: string): string =>
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '');
 
-export const matchesTarget = (target: Target, answer: string): boolean => {
-  const normalizedAnswer = normalizeAnswer(answer);
-  return [target.name, ...(aliases[target.id] ?? [])].some(
-    (name) => normalizeAnswer(name) === normalizedAnswer,
+const matchesName = (
+  name: string,
+  normalizedAnswer: string,
+  comparison: AnswerComparison,
+): boolean => {
+  const normalizedName = normalizeAnswer(name);
+  if (normalizedAnswer === normalizedName) {
+    return true;
+  }
+  return (
+    comparison.mode === 'prefix' &&
+    isValidPrefixLength(comparison.minimumCharacters) &&
+    normalizedAnswer.length >= comparison.minimumCharacters &&
+    normalizedName.startsWith(normalizedAnswer)
   );
 };
+
+export const getMatchedTargetName = (
+  target: Target,
+  answer: string,
+  comparison: AnswerComparison = FULL_NAME_COMPARISON,
+): string | null => {
+  const normalizedAnswer = normalizeAnswer(answer);
+  if (normalizedAnswer.length === 0) {
+    return null;
+  }
+  const names = [target.name, ...(ALIASES[target.id] ?? [])];
+  return (
+    names.find((name) => normalizeAnswer(name) === normalizedAnswer) ??
+    names.find((name) => matchesName(name, normalizedAnswer, comparison)) ??
+    null
+  );
+};
+
+export const matchesTarget = (
+  target: Target,
+  answer: string,
+  comparison: AnswerComparison = FULL_NAME_COMPARISON,
+): boolean => getMatchedTargetName(target, answer, comparison) !== null;

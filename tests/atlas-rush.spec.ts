@@ -66,7 +66,7 @@ test('plays a survey and preserves map paths during typing and timer updates', a
           (window as Window & { mapPath?: Element }).mapPath === element,
       ),
   ).toBe(true);
-  await page.getByRole('button', { name: 'Identify' }).click();
+  await expect(page.getByRole('button', { name: 'Identify' })).toHaveCount(0);
   await expectIdentifiedCount(page, 1, 54);
   await expect(target).toHaveCount(1);
   await expect(target).not.toHaveAttribute('data-country', targetId ?? '');
@@ -108,7 +108,7 @@ test('zooms the highlighted area and resets after a correct answer', async ({
     2,
   );
   await page.getByLabel('country name').fill('not a country');
-  await page.getByRole('button', { name: 'Identify' }).click();
+  await page.getByLabel('country name').press('Enter');
   await expect(map).toHaveAttribute('viewBox', zoomedViewBox ?? '');
   await page.getByRole('button', { name: 'Reset map zoom' }).click();
   await expect(map).toHaveAttribute('viewBox', fullViewBox ?? '');
@@ -117,7 +117,6 @@ test('zooms the highlighted area and resets after a correct answer', async ({
     .getByRole('button', { name: 'Zoom in on highlighted area' })
     .click();
   await page.getByLabel('country name').fill(answer ?? '');
-  await page.getByRole('button', { name: 'Identify' }).click();
   await expect(map).toHaveAttribute('viewBox', fullViewBox ?? '');
   await expect(
     page.getByRole('button', { name: 'Zoom in on highlighted area' }),
@@ -227,7 +226,6 @@ test('restores the saved queue and progress on refresh', async ({ page }) => {
   await target.focus();
   const answer = await page.getByRole('status').last().textContent();
   await page.getByLabel('country name').fill(answer ?? '');
-  await page.getByRole('button', { name: 'Identify' }).click();
   await expectIdentifiedCount(page, 1, 12);
   const nextId = await target.getAttribute('data-country');
   await waitForSavedCount(page, 1);
@@ -238,6 +236,32 @@ test('restores the saved queue and progress on refresh', async ({ page }) => {
   await page.getByRole('button', { name: 'Continue' }).click();
   await expectIdentifiedCount(page, 1, 12);
   await expect(target).toHaveAttribute('data-country', nextId ?? '');
+});
+
+test('restores Speed mode progress with the same matching settings', async ({
+  page,
+}) => {
+  await page.goto(
+    '/games/atlas-rush/south-america/?learning=1&speed=4&seed=Speed_restore',
+  );
+  const target = page.locator('path[data-learning-target]');
+  await expect(target).toHaveCount(1);
+  await target.focus();
+  const answer = await page.getByRole('status').last().textContent();
+  await page.getByLabel('country name').fill((answer ?? '').slice(0, 4));
+  await expectIdentifiedCount(page, 1, 12);
+  const nextId = await target.getAttribute('data-country');
+  await waitForSavedCount(page, 1);
+  await page.reload();
+  await page
+    .getByRole('dialog', { name: 'Continue your survey?' })
+    .getByRole('button', { name: 'Continue' })
+    .click();
+  await expectIdentifiedCount(page, 1, 12);
+  await expect(target).toHaveAttribute('data-country', nextId ?? '');
+  await expect(page.locator('#feedback')).toHaveText(
+    'Speed mode / First 4 letters auto-identify.',
+  );
 });
 
 test('landing starts the selected region with a shareable challenge', async ({

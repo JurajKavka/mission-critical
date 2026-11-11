@@ -1,4 +1,5 @@
 import { regionTargets } from '../data/targets';
+import { isAnswerComparison } from '../domain/answer-comparison';
 import { getRoundSeconds } from '../domain/levels';
 import { challengeVersion } from '../domain/shuffle';
 import type { GameSession, LevelId, RegionId } from '../domain/types';
@@ -16,13 +17,14 @@ export const isValidSession = (value: unknown): value is GameSession => {
   if (!isRecord(value) || !isRecord(value.config)) {
     return false;
   }
-  const { regionId, level, learning, seed } = value.config;
+  const { regionId, level, learning, seed, answerComparison } = value.config;
   if (
     value.challengeVersion !== challengeVersion ||
     !isRegionId(regionId) ||
     !isLevelId(level) ||
     typeof learning !== 'boolean' ||
     typeof seed !== 'string' ||
+    (answerComparison !== undefined && !isAnswerComparison(answerComparison)) ||
     !Array.isArray(value.remainingIds) ||
     !Array.isArray(value.guessedIds)
   ) {

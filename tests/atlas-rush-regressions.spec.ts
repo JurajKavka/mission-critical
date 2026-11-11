@@ -29,8 +29,9 @@ test('accepts an alias and preserves keyboard focus through pause', async ({
   await expect(target).toBeVisible();
   const input = page.getByLabel('country name');
   await expect(input).toBeFocused();
+  await input.fill('Cong');
+  await expectIdentifiedCount(page, 0, 54);
   await input.fill('Congo Brazzaville');
-  await input.press('Enter');
   await expectIdentifiedCount(page, 1, 54);
   await page.keyboard.press('Escape');
   const dialog = page.getByRole('dialog', { name: 'End this game?' });
@@ -183,7 +184,6 @@ test('finishes a complete South America survey with full coverage', async ({
     )?.name;
     expect(name).toBeDefined();
     await input.fill(name ?? '');
-    await input.press('Enter');
     if (index < regionTargets['south-america'].length - 1) {
       await expect(target).not.toHaveAttribute('data-country', id ?? '');
     }
@@ -226,7 +226,6 @@ test('keeps saved progress separate for different challenge seeds', async ({
   )?.name;
   expect(name).toBeDefined();
   await page.getByLabel('country name').fill(name ?? '');
-  await page.getByLabel('country name').press('Enter');
   await expectIdentifiedCount(page, 1, 12);
   await expect
     .poll(async () =>

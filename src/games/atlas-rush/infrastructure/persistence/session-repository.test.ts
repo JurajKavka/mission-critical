@@ -30,6 +30,33 @@ const createRepository = async () => {
 };
 
 describe('session persistence', () => {
+  it('separates prefix lengths while preserving legacy full-name identities', () => {
+    const speedConfig = createConfig({
+      answerComparison: { mode: 'prefix', minimumCharacters: 4 },
+    });
+    const longerPrefixConfig = createConfig({
+      answerComparison: { mode: 'prefix', minimumCharacters: 6 },
+    });
+    expect(getChallengeIdentity(speedConfig)).not.toBe(key);
+    expect(getChallengeIdentity(longerPrefixConfig)).not.toBe(
+      getChallengeIdentity(speedConfig),
+    );
+    expect(
+      getChallengeIdentity(createConfig({ answerComparison: { mode: 'full' } })),
+    ).toBe(key);
+    const record = {
+      key: getChallengeIdentity(speedConfig),
+      schemaVersion: 1,
+      generation: 'speed',
+      revision: 1,
+      updatedAt: 1,
+      snapshot: captureSnapshot(startGame(speedConfig)),
+    };
+    expect(isValidRecord(record, speedConfig)).toBe(true);
+    expect(isValidRecord(record, config)).toBe(false);
+    expect(isValidRecord(record, longerPrefixConfig)).toBe(false);
+  });
+
   it.each(['africa', 'south-america', 'usa', 'europe', 'asia'] as const)(
     'validates the %s target set and rejects duplicates',
     (regionId) => {
