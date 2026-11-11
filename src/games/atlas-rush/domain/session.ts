@@ -84,7 +84,10 @@ export const submitGuess = (
   const target = regionTargets[session.config.regionId].find(
     (candidate) => candidate.id === targetId,
   );
-  if (!target || !matchesTarget(target, answer)) {
+  if (
+    !target ||
+    !matchesTarget(target, answer, session.config.answerComparison)
+  ) {
     return { session, outcome: 'incorrect', targetId };
   }
   const progressed: GameSession = {

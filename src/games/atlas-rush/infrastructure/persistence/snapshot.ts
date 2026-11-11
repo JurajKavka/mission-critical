@@ -25,6 +25,9 @@ export const getChallengeIdentity = (config: ChallengeConfig): string =>
     config.level,
     config.learning,
     config.seed,
+    ...(config.answerComparison?.mode === 'prefix'
+      ? ['prefix', config.answerComparison.minimumCharacters]
+      : []),
   ]);
 
 export const captureSnapshot = (session: GameSession): SessionSnapshot => ({

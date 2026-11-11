@@ -20,6 +20,6 @@ After cleaning, run `npm ci` to reinstall dependencies. Install the Playwright b
 
 Game routes live in `src/pages/games/`. Atlas Rush uses a static settings page and React game islands at `/games/atlas-rush/{region}/`; its domain, state, components and infrastructure live in `src/games/atlas-rush/`, while the original geography paths remain under its `_game/` directory. Astro pages can import shared components from `src/components/`. Add new games to `src/data/games.ts` and create their routes under `src/pages/games/`.
 
-The graphics catalogs are available at `/games/asteroids/graphics/` and `/games/atlas-rush/graphics/`. Set `SITE_URL` to the public site URL when building to generate absolute canonical and social-image URLs.
+The graphics catalogs are available at `/games/asteroids/graphics/` and `/games/atlas-rush/graphics/`. Canonical and social-image URLs default to `https://mission-critical.sk`; set `SITE_URL` when building for a different public site URL.
 
 For Cloudflare, use the repository root as the root directory, `npm run build` as the build command, and `dist` as the build output directory.

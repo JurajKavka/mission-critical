@@ -1,5 +1,11 @@
 import { defaultSeed } from '../domain/shuffle';
-import type { ChallengeConfig, LevelId, RegionId } from '../domain/types';
+import { isValidPrefixLength } from '../domain/answer-comparison';
+import type {
+  AnswerComparison,
+  ChallengeConfig,
+  LevelId,
+  RegionId,
+} from '../domain/types';
 
 export const defaultLevel: LevelId = 'beginner';
 export const isValidSeed = (seed: string): boolean =>
@@ -47,6 +53,19 @@ const parseLevel = (value: string | null): LevelId => {
   return defaultLevel;
 };
 
+const parseAnswerComparison = (
+  value: string | null,
+): AnswerComparison | undefined => {
+  if (value === null || !/^[1-9][0-9]*$/.test(value)) {
+    return undefined;
+  }
+  const minimumCharacters = Number(value);
+  if (!isValidPrefixLength(minimumCharacters)) {
+    return undefined;
+  }
+  return { mode: 'prefix', minimumCharacters };
+};
+
 export const serializeChallengeQuery = (config: ChallengeConfig): string => {
   const params = new URLSearchParams();
   if (config.level !== defaultLevel) {
@@ -54,6 +73,12 @@ export const serializeChallengeQuery = (config: ChallengeConfig): string => {
   }
   if (config.learning) {
     params.set('learning', '1');
+  }
+  if (
+    config.answerComparison?.mode === 'prefix' &&
+    isValidPrefixLength(config.answerComparison.minimumCharacters)
+  ) {
+    params.set('speed', String(config.answerComparison.minimumCharacters));
   }
   if (config.seed !== defaultSeed && isValidSeed(config.seed)) {
     params.set('seed', config.seed);
@@ -74,11 +99,13 @@ export const parseChallengeQuery = (
 ): ParsedChallenge => {
   const values = getValues(search);
   const seed = singleValue(values, 'seed');
+  const answerComparison = parseAnswerComparison(singleValue(values, 'speed'));
   const config: ChallengeConfig = {
     regionId,
     level: parseLevel(singleValue(values, 'level')),
     learning: singleValue(values, 'learning') === '1',
     seed: seed !== null && isValidSeed(seed) ? seed : defaultSeed,
+    ...(answerComparison ? { answerComparison } : {}),
   };
   const canonicalSearch = serializeChallengeQuery(config);
   let originalSearch = search;

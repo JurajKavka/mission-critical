@@ -368,6 +368,12 @@ export const ScreenReaderOnly = styled.span`
   border: 0;
 `;
 
+export const AnswerHint = styled.p`
+  margin: 0;
+  color: ${ATLAS_THEME.colors.muted};
+  font-size: ${ATLAS_THEME.fontSizes.small};
+`;
+
 export const Overlay = styled.div`
   position: fixed;
   z-index: 5;
@@ -482,7 +488,8 @@ export const SettingsForm = styled.form`
     height: ${rem(16)};
     margin: 0;
   }
-  .learning {
+  .learning,
+  .mode-option {
     align-items: flex-start;
     margin-top: ${rem(20)};
     letter-spacing: normal;

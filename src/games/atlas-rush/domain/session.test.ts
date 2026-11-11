@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { regionTargets } from '../data/targets';
+import { normalizeAnswer } from './answers';
 import { levels } from './levels';
 import { getCoverage, getResults } from './results';
 import {
@@ -24,6 +25,30 @@ import { getRemainingSeconds } from './time';
 import type { GameSession } from './types';
 
 describe.each(regionIds)('%s gameplay', (regionId) => {
+  it('uses the configured comparison when submitting a guess', () => {
+    const initial = startGame(createConfig({ regionId }));
+    const target = getCurrentTarget(initial);
+    const prefix = normalizeAnswer(target.name).slice(0, 3);
+    expect(submitGuess(initial, prefix).outcome).toBe('incorrect');
+    const speedSession = startGame(
+      createConfig({
+        regionId,
+        answerComparison: { mode: 'prefix', minimumCharacters: 3 },
+      }),
+    );
+    const result = submitGuess(freezeSession(speedSession), prefix, 2);
+    expect(result.outcome).toBe('correct');
+    expect(result.session.guessedIds).toEqual([target.id]);
+    expect(result.session.elapsedSeconds).toBe(2);
+    expect(resetGame(result.session).config.answerComparison).toEqual({
+      mode: 'prefix',
+      minimumCharacters: 3,
+    });
+    expect(
+      submitGuess(speedSession, prefix, speedSession.durationSeconds).outcome,
+    ).toBe('timeout');
+  });
+
   it.each(levels)(
     'preserves the $label budget, progression, score and completion',
     (level) => {

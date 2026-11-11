@@ -14,11 +14,17 @@ export type Level = {
   readonly secondsPerCountry: number;
 };
 
+export type AnswerComparison =
+  | { readonly mode: 'full' }
+  | { readonly mode: 'prefix'; readonly minimumCharacters: number };
+
 export type ChallengeConfig = {
   readonly regionId: RegionId;
   readonly level: LevelId;
   readonly learning: boolean;
   readonly seed: string;
+  /** Omitted in legacy challenges, which require a full name. */
+  readonly answerComparison?: AnswerComparison;
 };
 
 export type GameSession = {

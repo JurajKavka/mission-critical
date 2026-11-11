@@ -9,6 +9,46 @@ import {
 } from './challenge-url';
 
 describe('challenge URL configuration', () => {
+  it.each([1, 4, 6, 20])(
+    'round trips a %i-letter Speed mode',
+    (minimumCharacters) => {
+      const config = {
+        regionId: 'europe',
+        level: 'beginner',
+        learning: false,
+        seed: defaultSeed,
+        answerComparison: { mode: 'prefix', minimumCharacters },
+      } as const;
+      expect(serializeChallengeQuery(config)).toBe(
+        `?speed=${minimumCharacters}`,
+      );
+      expect(
+        parseChallengeQuery('europe', `?speed=${minimumCharacters}`),
+      ).toEqual({
+        config,
+        canonicalSearch: `?speed=${minimumCharacters}`,
+        corrected: false,
+      });
+    },
+  );
+
+  it.each([
+    '?speed=',
+    '?speed=0',
+    '?speed=-1',
+    '?speed=3.5',
+    '?speed=NaN',
+    '?speed=Infinity',
+    '?speed=0x4',
+    '?speed=%ZZ',
+    '?speed=4&speed=4',
+    '?speed=9007199254740992',
+  ])('defaults invalid or ambiguous comparison settings: %s', (search) => {
+    const parsed = parseChallengeQuery('africa', search);
+    expect(parsed.config.answerComparison).toBeUndefined();
+    expect(parsed.canonicalSearch).toBe('');
+  });
+
   it('normalizes the specified invalid example without changing region', () => {
     const parsed = parseChallengeQuery(
       'africa',

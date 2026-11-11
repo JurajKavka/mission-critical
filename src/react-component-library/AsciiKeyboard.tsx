@@ -58,6 +58,11 @@ const Key = styled.button<{ $isCommandKey?: boolean; $isSpaceKey?: boolean }>`
     background: rgba(31, 142, 161, 0.55);
   }
 
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
   @media ${COMPACT_KEYBOARD_QUERY} {
     min-height: ${rem(36)};
   }
@@ -90,6 +95,7 @@ type AsciiKeyboardProps = {
   onKey: (key: AsciiKey) => void;
   onToggleNative: () => void;
   usesNativeKeyboard: boolean;
+  disabled?: boolean;
 };
 
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
@@ -118,6 +124,7 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
   onKey,
   onToggleNative,
   usesNativeKeyboard,
+  disabled = false,
 }) => {
   console.log('remnder');
   return (
@@ -128,6 +135,7 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
             <Key
               key={letter}
               type="button"
+              disabled={disabled}
               onClick={() => {
                 onKey(letter);
               }}
@@ -145,6 +153,7 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
             $isCommandKey
             $isSpaceKey={key === 'Space'}
             type="button"
+            disabled={disabled}
             onClick={() => {
               onKey(key);
             }}
@@ -154,7 +163,7 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
           </Key>
         ))}
       </KeyRow>
-      <NativeToggle type="button" onClick={onToggleNative}>
+      <NativeToggle type="button" onClick={onToggleNative} disabled={disabled}>
         {usesNativeKeyboard ? 'Use on-screen keyboard' : 'Use native keyboard'}
       </NativeToggle>
     </Keyboard>

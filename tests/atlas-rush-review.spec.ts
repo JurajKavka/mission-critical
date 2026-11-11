@@ -265,7 +265,6 @@ test('an aborted save shows a notice and keeps playing without an unhandled reje
   const answer = await page.getByRole('status').last().textContent();
   expect(answer).toBeTruthy();
   await input.fill(answer ?? '');
-  await input.press('Enter');
   await expectIdentifiedCount(page, 1, 54);
   await expect(
     page.getByText('Progress could not be saved. Your game can continue.'),

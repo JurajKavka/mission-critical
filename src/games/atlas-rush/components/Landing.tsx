@@ -5,6 +5,7 @@ import { Breadcrumbs } from '../../../react-component-library/Breadcrumbs';
 import { StartGamePanel } from '../../../react-component-library/StartGamePanel';
 import { regionMetadata } from '../data/regions';
 import { levels } from '../domain/levels';
+import { DEFAULT_PREFIX_LENGTH } from '../domain/answer-comparison';
 import type { LevelId, RegionId } from '../domain/types';
 import { createRandomSeed } from '../infrastructure/browser-url';
 import { getChallengePath } from '../infrastructure/challenge-url';
@@ -24,12 +25,16 @@ export const Landing: React.FC = () => {
   const [regionId, setRegionId] = useState<RegionId>('africa');
   const [selectedLevel, setSelectedLevel] = useState<LevelId>('beginner');
   const [isLearning, setIsLearning] = useState(false);
+  const [isSpeedMode, setIsSpeedMode] = useState(false);
   useEffect(() => {
     const previous = takeLandingSettings();
     if (previous) {
       setRegionId(previous.regionId);
       setSelectedLevel(previous.level);
       setIsLearning(previous.learning);
+      if (previous.answerComparison?.mode === 'prefix') {
+        setIsSpeedMode(true);
+      }
     }
     setIsReady(true);
   }, []);
@@ -41,6 +46,14 @@ export const Landing: React.FC = () => {
         level: selectedLevel,
         learning: isLearning,
         seed: createRandomSeed(),
+        ...(isSpeedMode
+          ? {
+              answerComparison: {
+                mode: 'prefix',
+                minimumCharacters: DEFAULT_PREFIX_LENGTH,
+              } as const,
+            }
+          : {}),
       }),
     );
   };
@@ -92,13 +105,6 @@ export const Landing: React.FC = () => {
                 </label>
               ))}
             </fieldset>
-            <div className="start-action">
-              <ActionButton
-                label="Start survey"
-                type="submit"
-                disabled={!isReady}
-              />
-            </div>
             <label className="learning">
               <input
                 type="checkbox"
@@ -109,6 +115,23 @@ export const Landing: React.FC = () => {
               />{' '}
               Learning mode
             </label>
+            <label className="mode-option">
+              <input
+                type="checkbox"
+                name="speed"
+                disabled={!isReady}
+                checked={isSpeedMode}
+                onChange={(event) => setIsSpeedMode(event.target.checked)}
+              />{' '}
+              Speed mode
+            </label>
+            <div className="start-action">
+              <ActionButton
+                label="Start survey"
+                type="submit"
+                disabled={!isReady}
+              />
+            </div>
             <noscript>
               <p>Enable JavaScript to start a survey.</p>
             </noscript>

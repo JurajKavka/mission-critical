@@ -88,6 +88,8 @@ type AnswerTextInputProps = {
   id?: string;
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onCompositionStart?: React.CompositionEventHandler<HTMLInputElement>;
+  onCompositionEnd?: React.CompositionEventHandler<HTMLInputElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
   onClick?: React.MouseEventHandler<HTMLInputElement>;
   onBackspace?: () => void;
@@ -107,6 +109,8 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
   id,
   value,
   onChange,
+  onCompositionStart,
+  onCompositionEnd,
   onKeyDown,
   onClick,
   onBackspace,
@@ -138,6 +142,8 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
         id={id}
         value={value}
         onChange={onChange}
+        onCompositionStart={onCompositionStart}
+        onCompositionEnd={onCompositionEnd}
         onKeyDown={onKeyDown}
         onClick={onClick}
         onFocus={handleFocus}
