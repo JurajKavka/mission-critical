@@ -189,14 +189,24 @@ export const ControlsHint = styled.div`
   font-size: ${rem(10)};
   line-height: 1.8;
   text-transform: uppercase;
-  @media (any-pointer: coarse) { .desktop-controls { display: none; } }
-  @media (any-pointer: fine) { .mobile-controls { display: none; } }
+  @media (any-pointer: coarse) {
+    .desktop-controls {
+      display: none;
+    }
+  }
+  @media (any-pointer: fine) {
+    .mobile-controls {
+      display: none;
+    }
+  }
 `;
 export const UpgradeOptions = styled.div`
   display: grid;
   gap: ${rem(10)};
   margin-top: ${rem(20)};
-  button { width: 100%; }
+  button {
+    width: 100%;
+  }
 `;
 
 export const GamePanel = styled(Panel)`
@@ -207,6 +217,11 @@ export const GamePanel = styled(Panel)`
     letter-spacing: 0.16em;
     text-transform: uppercase;
   }
-  a { color: #69fbff; }
-  a:focus-visible { outline: ${rem(2)} solid #69fbff; outline-offset: ${rem(3)}; }
+  a {
+    color: #69fbff;
+  }
+  a:focus-visible {
+    outline: ${rem(2)} solid #69fbff;
+    outline-offset: ${rem(3)};
+  }
 `;

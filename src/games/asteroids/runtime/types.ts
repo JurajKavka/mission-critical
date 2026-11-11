@@ -116,4 +116,3 @@ export interface GameState {
   readonly pointer: PointerState;
   readonly ship: Ship;
 }
-

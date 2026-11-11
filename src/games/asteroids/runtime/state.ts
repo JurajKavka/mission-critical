@@ -3,7 +3,10 @@ import type { GameState } from './types';
 export const createGameState = ({
   canvas,
   context,
-}: { canvas: HTMLCanvasElement; context: CanvasRenderingContext2D }): GameState => ({
+}: {
+  canvas: HTMLCanvasElement;
+  context: CanvasRenderingContext2D;
+}): GameState => ({
   canvas,
   context,
   galaxyCanvas: document.createElement('canvas'),

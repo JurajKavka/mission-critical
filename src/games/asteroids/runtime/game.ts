@@ -34,7 +34,10 @@ export type GameController = {
 
 export type GamePhase = 'ready' | 'playing' | 'upgrade' | 'ended';
 
-export const createGame = (canvas: HTMLCanvasElement, onUpdate: (snapshot: HudSnapshot, phase: GamePhase) => void): GameController => {
+export const createGame = (
+  canvas: HTMLCanvasElement,
+  onUpdate: (snapshot: HudSnapshot, phase: GamePhase) => void,
+): GameController => {
   const context = canvas.getContext('2d');
   if (!context) {
     throw new Error('This browser does not support the 2D canvas API.');
@@ -46,7 +49,10 @@ export const createGame = (canvas: HTMLCanvasElement, onUpdate: (snapshot: HudSn
   let phase: GamePhase = 'ready';
   const timers = new Set<ReturnType<typeof setTimeout>>();
   const schedule = (callback: () => void, delay: number): void => {
-    const timer = setTimeout(() => { timers.delete(timer); callback(); }, delay);
+    const timer = setTimeout(() => {
+      timers.delete(timer);
+      callback();
+    }, delay);
     timers.add(timer);
   };
   const publish = (): void => onUpdate(getHudSnapshot(state), phase);
@@ -64,27 +70,54 @@ export const createGame = (canvas: HTMLCanvasElement, onUpdate: (snapshot: HudSn
 
   const mount = (): void => {
     const options = { signal: listeners.signal };
-    window.addEventListener('asteroids-steer', (event) => {
-      const { x, y } = (event as CustomEvent<{ x: number; y: number }>).detail;
-      touch.x = x;
-      touch.y = y;
-    }, options);
-    window.addEventListener('asteroids-brake', (event) => {
-      touch.braking = (event as CustomEvent<boolean>).detail;
-    }, options);
+    window.addEventListener(
+      'asteroids-steer',
+      (event) => {
+        const { x, y } = (event as CustomEvent<{ x: number; y: number }>)
+          .detail;
+        touch.x = x;
+        touch.y = y;
+      },
+      options,
+    );
+    window.addEventListener(
+      'asteroids-brake',
+      (event) => {
+        touch.braking = (event as CustomEvent<boolean>).detail;
+      },
+      options,
+    );
     window.addEventListener('asteroids-hyperspace', hyperspace, options);
     window.addEventListener('resize', resize, options);
     window.addEventListener('keydown', onKeyDown, options);
-    window.addEventListener('keyup', (event) => state.keys.delete(event.code), options);
-    window.addEventListener('blur', () => {
-      state.keys.clear();
-      state.pointer.firing = false;
-      resetTouch();
-    }, options);
-    window.addEventListener('pointerup', () => { state.pointer.firing = false; }, options);
+    window.addEventListener(
+      'keyup',
+      (event) => state.keys.delete(event.code),
+      options,
+    );
+    window.addEventListener(
+      'blur',
+      () => {
+        state.keys.clear();
+        state.pointer.firing = false;
+        resetTouch();
+      },
+      options,
+    );
+    window.addEventListener(
+      'pointerup',
+      () => {
+        state.pointer.firing = false;
+      },
+      options,
+    );
     state.canvas.addEventListener('pointermove', updatePointer, options);
     state.canvas.addEventListener('pointerdown', onPointerDown, options);
-    state.canvas.addEventListener('contextmenu', (event) => event.preventDefault(), options);
+    state.canvas.addEventListener(
+      'contextmenu',
+      (event) => event.preventDefault(),
+      options,
+    );
 
     resize();
     resetShip();
@@ -265,7 +298,6 @@ export const createGame = (canvas: HTMLCanvasElement, onUpdate: (snapshot: HudSn
     state.comboCount = 0;
     state.comboMultiplier = 1;
     state.comboTimer = 0;
-
   };
 
   const resetGunBonuses = (): void => {
@@ -479,8 +511,6 @@ export const createGame = (canvas: HTMLCanvasElement, onUpdate: (snapshot: HudSn
     updateParticles(delta);
     advanceWave(delta);
     state.shake *= Math.pow(0.012, delta);
-
-
   };
 
   const updateTimers = (delta: number): void => {
@@ -566,7 +596,6 @@ export const createGame = (canvas: HTMLCanvasElement, onUpdate: (snapshot: HudSn
     ship.x += ship.vx * delta;
     ship.y += ship.vy * delta;
     wrap(ship, state, ship.radius);
-
   };
 
   const brakeShip = (delta: number): void => {

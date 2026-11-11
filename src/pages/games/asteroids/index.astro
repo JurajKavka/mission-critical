@@ -2,11 +2,14 @@
 import { Asteroids } from '../../../games/asteroids/Asteroids';
 
 const title = 'Neon Asteroids // Mission Critical';
-const description = 'Pilot a neon starship through asteroid fields, collect weapon cores, and survive waves of hostile UFOs.';
+const description =
+  'Pilot a neon starship through asteroid fields, collect weapon cores, and survive waves of hostile UFOs.';
 const canonical = Astro.site
   ? new URL('/games/asteroids/', Astro.site).href
   : '/games/asteroids/';
-const image = Astro.site ? new URL('/og-image.png', Astro.site).href : '/og-image.png';
+const image = Astro.site
+  ? new URL('/og-image.png', Astro.site).href
+  : '/og-image.png';
 ---
 
 <!doctype html>

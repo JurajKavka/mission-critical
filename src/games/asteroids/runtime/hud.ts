@@ -34,6 +34,7 @@ export const getHudSnapshot = (state: GameState): HudSnapshot => {
     comboCount: state.comboCount,
     comboMultiplier: state.comboMultiplier,
     comboProgress: Math.min(1, Math.max(0, state.comboTimer / COMBO_WINDOW)),
-    bonus: state.bonusFlashTimer > 0 ? state.bonusFlashText : active.join(' · '),
+    bonus:
+      state.bonusFlashTimer > 0 ? state.bonusFlashText : active.join(' · '),
   };
 };
