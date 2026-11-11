@@ -17,3 +17,4 @@ export { SecondaryButton } from './SecondaryButton';
 export { SkipButton } from './SkipButton';
 export { StartGamePanel } from './StartGamePanel';
 export { Tooltip } from './Tooltip';
+export { WellcomePanel } from './WellcomePanel';
