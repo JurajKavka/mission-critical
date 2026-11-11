@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import type * as React from 'react';
-import {
-  Breadcrumbs,
-  WellcomePanel,
-} from '../../react-component-library';
+import { Breadcrumbs, WellcomePanel } from '../../react-component-library';
 import * as UI from '../../react-component-library/atlas-styles';
 import * as WelcomeUI from '../../react-component-library/WellcomePanel.styles';
 import { WEAPON_BONUS_DURATION } from './runtime/constants';
@@ -33,28 +30,44 @@ export const Asteroids: React.FC = () => {
           title={
             <>
               <WelcomeUI.Eyebrow>Deep-space relay online</WelcomeUI.Eyebrow>
-              NEON<br />ASTEROIDS
+              NEON
+              <br />
+              ASTEROIDS
             </>
           }
           subtitle={
             <>
-              Break the incoming field into fragments and survive.<br />No drag:
-              momentum persists up to the speed limit. Weapon cores last{' '}
-              {WEAPON_BONUS_DURATION} seconds. Chain hits before the combo meter
-              drains.
+              Break the incoming field into fragments and survive.
+              <br />
+              No drag: momentum persists up to the speed limit. Weapon cores
+              last {WEAPON_BONUS_DURATION} seconds. Chain hits before the combo
+              meter drains.
             </>
           }
         >
-          <WelcomeUI.LaunchButton type="button" onClick={() => setHasLaunched(true)}>
+          <WelcomeUI.LaunchButton
+            type="button"
+            onClick={() => setHasLaunched(true)}
+          >
             <span data-action-label>Launch</span>
             <WelcomeUI.Arrow aria-hidden="true">↗</WelcomeUI.Arrow>
           </WelcomeUI.LaunchButton>
           <WelcomeUI.Controls>
-            <div><span>A / D</span> rotate</div>
-            <div><span>W</span> thrust</div>
-            <div><span>S</span> brake</div>
-            <div><span>Space</span> fire</div>
-            <div><span>Shift</span> hyperspace</div>
+            <div>
+              <span>A / D</span> rotate
+            </div>
+            <div>
+              <span>W</span> thrust
+            </div>
+            <div>
+              <span>S</span> brake
+            </div>
+            <div>
+              <span>Space</span> fire
+            </div>
+            <div>
+              <span>Shift</span> hyperspace
+            </div>
           </WelcomeUI.Controls>
           <WelcomeUI.TouchInstructions>
             Steer / thrust · Hold brake · Tap jump · Auto fire

@@ -10,7 +10,11 @@ export const Card = styled.div`
   border: 0;
   background: rgba(93, 239, 255, 0.48);
   color: #effeff;
-  font: ${rem(16)} / normal ui-monospace, 'SFMono-Regular', Menlo, Consolas,
+  font:
+    ${rem(16)} / normal ui-monospace,
+    'SFMono-Regular',
+    Menlo,
+    Consolas,
     monospace;
   text-align: center;
   text-rendering: auto;

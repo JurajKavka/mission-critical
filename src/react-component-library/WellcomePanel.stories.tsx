@@ -23,19 +23,49 @@ const meta = {
   title: 'Components/Wellcome Panel',
   component: WellcomePanel,
   args: {
-    title: <><UI.Eyebrow>Deep-space relay online</UI.Eyebrow>NEON<br />ASTEROIDS</>,
-    subtitle: <>Break the incoming field into fragments and survive.<br />No drag: momentum persists up to the speed limit. Weapon cores last 30 seconds. Chain hits before the combo meter drains.</>,
-    children: <>
-      <UI.LaunchButton type="button"><span>Launch</span><UI.Arrow aria-hidden="true">↗</UI.Arrow></UI.LaunchButton>
-      <UI.Controls>
-        <div><span>A / D</span> rotate</div>
-        <div><span>W</span> thrust</div>
-        <div><span>S</span> brake</div>
-        <div><span>Space</span> fire</div>
-        <div><span>Shift</span> hyperspace</div>
-      </UI.Controls>
-      <UI.TouchInstructions>Steer / thrust · Hold brake · Tap jump · Auto fire</UI.TouchInstructions>
-    </>,
+    title: (
+      <>
+        <UI.Eyebrow>Deep-space relay online</UI.Eyebrow>NEON
+        <br />
+        ASTEROIDS
+      </>
+    ),
+    subtitle: (
+      <>
+        Break the incoming field into fragments and survive.
+        <br />
+        No drag: momentum persists up to the speed limit. Weapon cores last 30
+        seconds. Chain hits before the combo meter drains.
+      </>
+    ),
+    children: (
+      <>
+        <UI.LaunchButton type="button">
+          <span>Launch</span>
+          <UI.Arrow aria-hidden="true">↗</UI.Arrow>
+        </UI.LaunchButton>
+        <UI.Controls>
+          <div>
+            <span>A / D</span> rotate
+          </div>
+          <div>
+            <span>W</span> thrust
+          </div>
+          <div>
+            <span>S</span> brake
+          </div>
+          <div>
+            <span>Space</span> fire
+          </div>
+          <div>
+            <span>Shift</span> hyperspace
+          </div>
+        </UI.Controls>
+        <UI.TouchInstructions>
+          Steer / thrust · Hold brake · Tap jump · Auto fire
+        </UI.TouchInstructions>
+      </>
+    ),
   },
   parameters: { layout: 'fullscreen' },
   decorators: [

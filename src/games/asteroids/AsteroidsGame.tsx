@@ -3,7 +3,11 @@ import type * as React from 'react';
 import { ActionButton, Breadcrumbs } from '../../react-component-library';
 import * as UI from '../../react-component-library/atlas-styles';
 import { ModalDialog } from '../atlas-rush/components/ModalDialog';
-import { createGame, type GameController, type GamePhase } from './runtime/game';
+import {
+  createGame,
+  type GameController,
+  type GamePhase,
+} from './runtime/game';
 import type { HudSnapshot } from './runtime/hud';
 import type { UpgradeType } from './runtime/types';
 import { AsteroidsTouchControls } from './runtime/touch-controls/AsteroidsTouchControls';
@@ -43,7 +47,9 @@ type AsteroidsGameProps = {
   startOnMount: boolean;
 };
 
-export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({ startOnMount }) => {
+export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
+  startOnMount,
+}) => {
   const canvas = useRef<HTMLCanvasElement>(null);
   const controller = useRef<GameController | null>(null);
   const [hud, setHud] = useState(INITIAL_HUD);
@@ -92,7 +98,9 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({ startOnMount }) =>
       <S.GameHud>
         <div className="hud-top">
           <Breadcrumbs
-            breadcrumbs={[{ label: 'Neon Asteroids', link: '/games/asteroids/' }]}
+            breadcrumbs={[
+              { label: 'Neon Asteroids', link: '/games/asteroids/' },
+            ]}
           />
           <div className="stats">
             <div>
@@ -194,4 +202,3 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({ startOnMount }) =>
     </>
   );
 };
-
