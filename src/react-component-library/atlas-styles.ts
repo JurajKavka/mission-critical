@@ -1,7 +1,16 @@
 import { rem } from 'polished';
-import { createGlobalStyle, styled } from 'styled-components';
+import { createGlobalStyle, css, styled } from 'styled-components';
 import { mb } from './media-breakpoints';
 import { ATLAS_THEME } from './theme';
+
+const SPACE_BACKGROUND = css`
+  background: radial-gradient(
+    ellipse at 50% 44%,
+    ${ATLAS_THEME.colors.spaceCenter},
+    ${ATLAS_THEME.colors.spaceMiddle} 45%,
+    ${ATLAS_THEME.colors.spaceOuter}
+  );
+`;
 
 export const GlobalStyles = createGlobalStyle`
   :root {
@@ -33,12 +42,7 @@ export const Wrapper = styled.div`
   padding: ${rem(24)};
   overflow: hidden;
   position: relative;
-  background: radial-gradient(
-    ellipse at 50% 44%,
-    ${ATLAS_THEME.colors.spaceCenter},
-    ${ATLAS_THEME.colors.spaceMiddle} 45%,
-    ${ATLAS_THEME.colors.spaceOuter}
-  );
+  ${SPACE_BACKGROUND}
   &::before {
     content: '';
     position: absolute;
@@ -70,6 +74,24 @@ export const Wrapper = styled.div`
     grid-template-columns: minmax(0, 1fr) minmax(${rem(280)}, 48%);
     grid-template-rows: auto minmax(0, 1fr);
     column-gap: ${rem(12)};
+  }
+`;
+
+export const LandingWrapper = styled.main`
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: ${rem(70)} ${rem(18)} ${rem(30)};
+  ${SPACE_BACKGROUND}
+
+  nav {
+    position: absolute;
+    top: ${rem(22)};
+    left: ${rem(22)};
+  }
+  :focus-visible {
+    outline: ${rem(2)} solid ${ATLAS_THEME.colors.cyan};
+    outline-offset: ${rem(3)};
   }
 `;
 
@@ -169,7 +191,6 @@ export const MapHeading = styled.div`
 export const MapKey = styled.div`
   color: ${ATLAS_THEME.colors.muted};
   font-size: ${ATLAS_THEME.fontSizes.caption};
-  letter-spacing: 0.15em;
   text-transform: uppercase;
   display: flex;
   gap: ${rem(12)};
@@ -431,6 +452,48 @@ export const Panel = styled.section`
   }
   input {
     accent-color: ${ATLAS_THEME.colors.cyan};
+  }
+`;
+
+export const SettingsForm = styled.form`
+  fieldset {
+    padding: ${rem(15)} 0;
+    text-transform: uppercase;
+  }
+  fieldset + fieldset {
+    margin-top: ${rem(12)};
+  }
+  .regions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, auto);
+    grid-auto-flow: column;
+    gap: ${rem(12)} ${rem(16)};
+  }
+  label {
+    display: flex;
+    align-items: center;
+    gap: ${rem(10)};
+    letter-spacing: 0.08em;
+  }
+  input {
+    flex: none;
+    width: ${rem(16)};
+    height: ${rem(16)};
+    margin: 0;
+  }
+  .learning {
+    align-items: flex-start;
+    margin-top: ${rem(20)};
+    letter-spacing: normal;
+  }
+  .start-action button {
+    min-width: ${rem(190)};
+    margin-top: ${rem(12)};
+  }
+  .start-action button:disabled {
+    opacity: 0.6;
+    cursor: wait;
   }
 `;
 

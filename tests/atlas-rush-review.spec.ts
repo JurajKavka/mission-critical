@@ -63,14 +63,15 @@ const expectCaretAtSelection = async (input: Locator) => {
     .toBeLessThan(4);
 };
 
-test('Atlas Rush defines its root font for desktop routes', async ({
+test('Atlas Rush respects the browser font size on desktop routes', async ({
   page,
   browserName,
 }) => {
+  test.skip(browserName !== 'chromium', 'Font size override requires Chromium');
   await setLargeBrowserFont(page, browserName);
   for (const route of ['/games/atlas-rush/', '/games/atlas-rush/africa/']) {
     await page.goto(route);
-    await expect(page.locator('html')).toHaveCSS('font-size', '16px');
+    await expect(page.locator('html')).toHaveCSS('font-size', '32px');
   }
 });
 

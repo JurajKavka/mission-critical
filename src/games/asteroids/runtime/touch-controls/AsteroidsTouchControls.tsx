@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type * as React from 'react';
 import { TouchControls } from './TouchControls';
 
@@ -28,12 +28,14 @@ export const AsteroidsTouchControls: React.FC = () => {
       window.removeEventListener('asteroids-cooldown', updateCooldown);
   }, []);
 
+  const getHyperspaceCooldown = useCallback(() => cooldown.current, []);
+
   return (
     <TouchControls
       onSteer={steer}
       onBrake={brake}
       onHyperspace={hyperspace}
-      getHyperspaceCooldown={() => cooldown.current}
+      getHyperspaceCooldown={getHyperspaceCooldown}
     />
   );
 };

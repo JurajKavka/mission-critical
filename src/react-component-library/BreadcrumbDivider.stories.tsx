@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { BreadcrumbDivider } from './BreadcrumbDivider';
-import { Breadcrumbs } from './Breadcrumbs';
+import { BreadcrumbsWrapper } from './Breadcrumbs';
 
 const meta = {
   title: 'Components/Breadcrumb Divider',
@@ -12,10 +12,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
-    <Breadcrumbs>
+    <BreadcrumbsWrapper>
       Mission Critical
       <BreadcrumbDivider />
       Atlas Rush
-    </Breadcrumbs>
+    </BreadcrumbsWrapper>
   ),
 };
