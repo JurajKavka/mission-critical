@@ -3,10 +3,8 @@ import { useStore } from 'zustand';
 import type * as React from 'react';
 import {
   ActionButton,
-  BreadcrumbDivider,
   Breadcrumbs,
   IconButton,
-  mb,
   SecondaryButton,
 } from '../../../react-component-library';
 import { regionMetadata } from '../data/regions';
@@ -27,20 +25,6 @@ import { PauseDialog } from './PauseDialog';
 import { ResultsPanel } from '../../../react-component-library/ResultsPanel';
 import * as UI from '../../../react-component-library/atlas-styles';
 import { GameTimer } from './GameTimer';
-import { styled } from 'styled-components';
-
-const HomeBreadcrumbMobile = styled.span`
-  display: inline-block;
-  ${mb('s')} {
-    display: none;
-  }
-`;
-const HomeBreadcrum = styled.span`
-  display: none;
-  ${mb('s')} {
-    display: inline-block;
-  }
-`;
 
 type AtlasRushProps = { regionId: RegionId };
 
@@ -107,16 +91,11 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
 
         <UI.Playfield>
           <UI.MapHeading>
-            <div>
-              <Breadcrumbs>
-                <a href="/">
-                  <HomeBreadcrumbMobile>MC</HomeBreadcrumbMobile>
-                  <HomeBreadcrum>MISSION CRITICAL</HomeBreadcrum>
-                </a>
-                <BreadcrumbDivider />
-                {regionMetadata[regionId].name}
-              </Breadcrumbs>
-            </div>
+            <Breadcrumbs
+              breadcrumbs={[
+                { label: region.name, link: `/games/atlas-rush/${regionId}/` },
+              ]}
+            />
             <UI.HudStats>
               <UI.HudMetric>
                 <span>Identified</span>

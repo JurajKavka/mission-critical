@@ -17,21 +17,45 @@ import {
   spawnUfo,
   splitAsteroid,
 } from './entities';
-import { showMissionEndedMessage } from './dom';
 import { distanceWrapped, wrap } from './geometry';
-import { updateBonusHud, updateComboHud, updateHud } from './hud';
 import { drawFrame } from './renderer';
 import { createSound } from './sound';
 import { createBackgroundStars, renderGalaxyTexture } from './starfield';
 import { createGameState } from './state';
-import type { GameDom, GameState, PickupType, UpgradeType } from './types';
+import type { GameState, PickupType, UpgradeType } from './types';
+import { getHudSnapshot, type HudSnapshot } from './hud';
 
-export interface GameController {
+export type GameController = {
   mount: () => void;
-}
+  unmount: () => void;
+  startGame: () => void;
+  applyUpgrade: (upgrade: UpgradeType) => void;
+};
 
-export const createGame = (dom: GameDom): GameController => {
-  const state: GameState = createGameState(dom);
+export type GamePhase = 'ready' | 'playing' | 'upgrade' | 'ended';
+
+export const createGame = (
+  canvas: HTMLCanvasElement,
+  onUpdate: (snapshot: HudSnapshot, phase: GamePhase) => void,
+): GameController => {
+  const context = canvas.getContext('2d');
+  if (!context) {
+    throw new Error('This browser does not support the 2D canvas API.');
+  }
+  const state: GameState = createGameState({ canvas, context });
+  const listeners = new AbortController();
+  let animationFrame = 0;
+  let lastHudUpdate = 0;
+  let phase: GamePhase = 'ready';
+  const timers = new Set<ReturnType<typeof setTimeout>>();
+  const schedule = (callback: () => void, delay: number): void => {
+    const timer = setTimeout(() => {
+      timers.delete(timer);
+      callback();
+    }, delay);
+    timers.add(timer);
+  };
+  const publish = (): void => onUpdate(getHudSnapshot(state), phase);
   const sound = createSound();
   const touch = { x: 0, y: 0, braking: false };
   const touchDevice = window.matchMedia('(any-pointer: coarse)');
@@ -45,52 +69,60 @@ export const createGame = (dom: GameDom): GameController => {
   };
 
   const mount = (): void => {
-    window.addEventListener('asteroids-steer', (event) => {
-      const { x, y } = (event as CustomEvent<{ x: number; y: number }>).detail;
-      touch.x = x;
-      touch.y = y;
-    });
-    window.addEventListener('asteroids-brake', (event) => {
-      touch.braking = (event as CustomEvent<boolean>).detail;
-    });
-    window.addEventListener('asteroids-hyperspace', hyperspace);
-    window.addEventListener('resize', () => resize());
-    window.addEventListener('keydown', (event) => onKeyDown(event));
-    window.addEventListener('keyup', (event) => state.keys.delete(event.code));
-    window.addEventListener('blur', () => {
-      state.keys.clear();
-      state.pointer.firing = false;
-      resetTouch();
-    });
-    window.addEventListener('pointerup', () => (state.pointer.firing = false));
-
-    state.canvas.addEventListener('pointermove', (event) =>
-      updatePointer(event),
+    const options = { signal: listeners.signal };
+    window.addEventListener(
+      'asteroids-steer',
+      (event) => {
+        const { x, y } = (event as CustomEvent<{ x: number; y: number }>)
+          .detail;
+        touch.x = x;
+        touch.y = y;
+      },
+      options,
     );
-    state.canvas.addEventListener('pointerdown', (event) =>
-      onPointerDown(event),
+    window.addEventListener(
+      'asteroids-brake',
+      (event) => {
+        touch.braking = (event as CustomEvent<boolean>).detail;
+      },
+      options,
     );
-    state.canvas.addEventListener('contextmenu', (event) =>
-      event.preventDefault(),
+    window.addEventListener('asteroids-hyperspace', hyperspace, options);
+    window.addEventListener('resize', resize, options);
+    window.addEventListener('keydown', onKeyDown, options);
+    window.addEventListener(
+      'keyup',
+      (event) => state.keys.delete(event.code),
+      options,
     );
-    dom.startButton.addEventListener('click', () => startGame());
-    for (const button of dom.upgradeButtons) {
-      button.addEventListener('click', () => {
-        const upgrade = button.dataset.upgrade;
-        if (
-          upgrade === 'engine' ||
-          upgrade === 'weapon' ||
-          upgrade === 'hull'
-        ) {
-          applyUpgrade(upgrade);
-        }
-      });
-    }
+    window.addEventListener(
+      'blur',
+      () => {
+        state.keys.clear();
+        state.pointer.firing = false;
+        resetTouch();
+      },
+      options,
+    );
+    window.addEventListener(
+      'pointerup',
+      () => {
+        state.pointer.firing = false;
+      },
+      options,
+    );
+    state.canvas.addEventListener('pointermove', updatePointer, options);
+    state.canvas.addEventListener('pointerdown', onPointerDown, options);
+    state.canvas.addEventListener(
+      'contextmenu',
+      (event) => event.preventDefault(),
+      options,
+    );
 
     resize();
     resetShip();
-    updateHud(state, dom);
-    requestAnimationFrame(frame);
+    publish();
+    animationFrame = requestAnimationFrame(frame);
   };
 
   const frame = (time: number): void => {
@@ -98,7 +130,11 @@ export const createGame = (dom: GameDom): GameController => {
     state.lastTime = time;
     update(delta);
     drawFrame(state, time);
-    requestAnimationFrame(frame);
+    if (time - lastHudUpdate >= 100) {
+      publish();
+      lastHudUpdate = time;
+    }
+    animationFrame = requestAnimationFrame(frame);
   };
 
   const resize = (): void => {
@@ -120,9 +156,8 @@ export const createGame = (dom: GameDom): GameController => {
 
   const startGame = (): void => {
     sound.start();
-    dom.overlay.classList.add('hidden');
+    phase = 'playing';
     resetGame();
-    document.body.classList.add('touch-playing');
   };
 
   const resetGame = (): void => {
@@ -156,7 +191,6 @@ export const createGame = (dom: GameDom): GameController => {
     });
     resetGunBonuses();
     updateTouchCooldown();
-    dom.upgradeOverlay.classList.add('hidden');
     resetShip();
     beginWave();
   };
@@ -192,16 +226,15 @@ export const createGame = (dom: GameDom): GameController => {
       'triangle',
       420 + state.wave * 24,
     );
-    updateHud(state, dom);
+    publish();
   };
 
   const endGame = (): void => {
     state.running = false;
     state.choosingUpgrade = false;
-    document.body.classList.remove('touch-playing');
     resetTouch();
-    dom.upgradeOverlay.classList.add('hidden');
-    showMissionEndedMessage(dom, state.score);
+    phase = 'ended';
+    publish();
     sound.tone(120, 0.7, 0.06, 'sawtooth', 38);
   };
 
@@ -209,10 +242,10 @@ export const createGame = (dom: GameDom): GameController => {
     state.choosingUpgrade = true;
     state.keys.clear();
     state.pointer.firing = false;
-    document.body.classList.remove('touch-playing');
     resetTouch();
     state.enemyBullets.length = 0;
-    dom.upgradeOverlay.classList.remove('hidden');
+    phase = 'upgrade';
+    publish();
     sound.tone(440, 0.25, 0.025, 'triangle', 720);
   };
 
@@ -235,8 +268,7 @@ export const createGame = (dom: GameDom): GameController => {
     }
     state.bonusFlashTimer = 1.8;
     state.choosingUpgrade = false;
-    document.body.classList.add('touch-playing');
-    dom.upgradeOverlay.classList.add('hidden');
+    phase = 'playing';
     state.wave += 1;
     beginWave();
     sound.tone(540, 0.24, 0.035, 'triangle', 960);
@@ -259,14 +291,13 @@ export const createGame = (dom: GameDom): GameController => {
         760 + state.comboMultiplier * 45,
       );
     }
-    updateHud(state, dom);
+    publish();
   };
 
   const resetCombo = (): void => {
     state.comboCount = 0;
     state.comboMultiplier = 1;
     state.comboTimer = 0;
-    updateComboHud(state, dom);
   };
 
   const resetGunBonuses = (): void => {
@@ -392,7 +423,7 @@ export const createGame = (dom: GameDom): GameController => {
       'triangle',
       980,
     );
-    updateHud(state, dom);
+    publish();
   };
 
   const destroyAsteroid = (index: number): void => {
@@ -453,12 +484,12 @@ export const createGame = (dom: GameDom): GameController => {
     state.shake = 24;
     burst(state, ship.x, ship.y, '#63f7ff', 46, 330);
     sound.tone(150, 0.5, 0.06, 'sawtooth', 42);
-    updateHud(state, dom);
+    publish();
     if (state.lives <= 0) {
-      setTimeout(() => endGame(), 500);
+      schedule(endGame, 500);
       return;
     }
-    setTimeout(() => {
+    schedule(() => {
       if (state.running) {
         resetShip();
       }
@@ -480,8 +511,6 @@ export const createGame = (dom: GameDom): GameController => {
     updateParticles(delta);
     advanceWave(delta);
     state.shake *= Math.pow(0.012, delta);
-    updateComboHud(state, dom);
-    updateBonusHud(state, dom);
   };
 
   const updateTimers = (delta: number): void => {
@@ -567,9 +596,6 @@ export const createGame = (dom: GameDom): GameController => {
     ship.x += ship.vx * delta;
     ship.y += ship.vy * delta;
     wrap(ship, state, ship.radius);
-    dom.velocity.textContent = String(
-      Math.round(Math.hypot(ship.vx, ship.vy)),
-    ).padStart(3, '0');
   };
 
   const brakeShip = (delta: number): void => {
@@ -796,7 +822,7 @@ export const createGame = (dom: GameDom): GameController => {
       state.comboTimer = Math.max(state.comboTimer, 3.4);
       state.bonusFlashText = `Wave clear +${waveBonus.toLocaleString()}`;
       state.bonusFlashTimer = 1.3;
-      updateHud(state, dom);
+      publish();
       return;
     }
 
@@ -813,19 +839,15 @@ export const createGame = (dom: GameDom): GameController => {
   };
 
   const onKeyDown = (event: KeyboardEvent): void => {
+    if (!state.running || state.choosingUpgrade) {
+      return;
+    }
     if (
       ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(
         event.code,
       )
     ) {
       event.preventDefault();
-    }
-    if (state.choosingUpgrade) {
-      return;
-    }
-    if (!state.running && event.code === 'Enter') {
-      startGame();
-      return;
     }
     if (
       (event.code === 'ShiftLeft' || event.code === 'ShiftRight') &&
@@ -868,5 +890,12 @@ export const createGame = (dom: GameDom): GameController => {
     );
   };
 
-  return { mount };
+  const unmount = (): void => {
+    listeners.abort();
+    cancelAnimationFrame(animationFrame);
+    timers.forEach(clearTimeout);
+    sound.close();
+  };
+
+  return { mount, unmount, startGame, applyUpgrade };
 };

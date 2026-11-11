@@ -116,22 +116,3 @@ export interface GameState {
   readonly pointer: PointerState;
   readonly ship: Ship;
 }
-
-export interface GameDom {
-  canvas: HTMLCanvasElement;
-  context: CanvasRenderingContext2D;
-  overlay: HTMLDivElement;
-  upgradeOverlay: HTMLDivElement;
-  upgradeButtons: HTMLButtonElement[];
-  startButton: HTMLButtonElement;
-  title: HTMLHeadingElement;
-  eyebrow: HTMLDivElement;
-  subtitle: HTMLParagraphElement;
-  score: HTMLElement;
-  wave: HTMLElement;
-  combo: HTMLElement;
-  comboFill: HTMLDivElement;
-  velocity: HTMLElement;
-  ships: HTMLDivElement;
-  bonusStatus: HTMLDivElement;
-}

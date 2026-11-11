@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { TouchControls } from '../pages/games/asteroids/_game/touch-controls/TouchControls';
+import { TouchControls } from '../games/asteroids/runtime/touch-controls/TouchControls';
 
 const meta = {
   title: 'Games/Asteroids/Touch Controls',
