@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { regionTargets } from '../data/targets';
-import { getMatchedTargetName, matchesTarget, normalizeAnswer } from './answers';
+import {
+  getMatchedTargetName,
+  matchesTarget,
+  normalizeAnswer,
+} from './answers';
 
 const aliasCases: readonly (readonly [string, readonly string[]])[] = [
   ['COG', ['Congo', 'Congo Brazzaville', 'Republic of Congo']],

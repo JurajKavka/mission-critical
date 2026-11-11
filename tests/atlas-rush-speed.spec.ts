@@ -100,7 +100,7 @@ test('briefly disables input while completing the name character by character', 
   await expect(input).toBeFocused();
 });
 
-test('cancels completion when pausing without submitting a stale answer', async ({
+test('cancels completion when pausing with End game without submitting a stale answer', async ({
   page,
 }) => {
   expect(CONGO_SEED).toBeDefined();
@@ -111,15 +111,20 @@ test('cancels completion when pausing without submitting a stale answer', async 
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
   await input.fill('Republ');
   await expect(input).toBeDisabled();
-  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'End game', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'End this game?' });
   await expect(dialog).toBeVisible();
   await page.clock.runFor(500);
+  await expect(dialog).toBeVisible();
+  await expect(input).toBeDisabled();
   await expectIdentifiedCount(page, 0, 54);
   await dialog.getByRole('button', { name: 'Continue' }).click();
+  await expect(dialog).toBeHidden();
   await expect(input).toBeEnabled();
   await expect(input).toHaveValue('Republ');
-  await expect(input).toBeFocused();
+  await page.clock.runFor(500);
+  await expectIdentifiedCount(page, 0, 54);
+  await expect(input).toHaveValue('Republ');
 });
 
 test.describe('mobile Speed mode', () => {
@@ -129,7 +134,9 @@ test.describe('mobile Speed mode', () => {
     hasTouch: true,
   });
 
-  test('submits from the on-screen keyboard without Enter', async ({ page }) => {
+  test('submits from the on-screen keyboard without Enter', async ({
+    page,
+  }) => {
     await page.goto(
       '/games/atlas-rush/south-america/?learning=1&speed=4&seed=Speed_mobile',
     );
@@ -140,7 +147,9 @@ test.describe('mobile Speed mode', () => {
       (candidate) => candidate.id === id,
     )?.name;
     expect(name).toBeDefined();
-    const prefix = normalizeAnswer(name ?? '').slice(0, 4).toUpperCase();
+    const prefix = normalizeAnswer(name ?? '')
+      .slice(0, 4)
+      .toUpperCase();
     const keyboard = page.getByRole('group', { name: 'On-screen keyboard' });
     await expect(keyboard).toBeVisible();
     for (const letter of prefix.slice(0, -1)) {

@@ -42,7 +42,9 @@ describe('session persistence', () => {
       getChallengeIdentity(speedConfig),
     );
     expect(
-      getChallengeIdentity(createConfig({ answerComparison: { mode: 'full' } })),
+      getChallengeIdentity(
+        createConfig({ answerComparison: { mode: 'full' } }),
+      ),
     ).toBe(key);
     const record = {
       key: getChallengeIdentity(speedConfig),

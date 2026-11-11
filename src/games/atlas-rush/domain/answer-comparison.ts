@@ -6,7 +6,9 @@ export const FULL_NAME_COMPARISON: AnswerComparison = { mode: 'full' };
 export const isValidPrefixLength = (value: unknown): value is number =>
   typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
 
-export const isAnswerComparison = (value: unknown): value is AnswerComparison => {
+export const isAnswerComparison = (
+  value: unknown,
+): value is AnswerComparison => {
   if (
     typeof value !== 'object' ||
     value === null ||

@@ -19,14 +19,16 @@ describe('challenge URL configuration', () => {
         seed: defaultSeed,
         answerComparison: { mode: 'prefix', minimumCharacters },
       } as const;
-      expect(serializeChallengeQuery(config)).toBe(`?speed=${minimumCharacters}`);
-      expect(parseChallengeQuery('europe', `?speed=${minimumCharacters}`)).toEqual(
-        {
-          config,
-          canonicalSearch: `?speed=${minimumCharacters}`,
-          corrected: false,
-        },
+      expect(serializeChallengeQuery(config)).toBe(
+        `?speed=${minimumCharacters}`,
       );
+      expect(
+        parseChallengeQuery('europe', `?speed=${minimumCharacters}`),
+      ).toEqual({
+        config,
+        canonicalSearch: `?speed=${minimumCharacters}`,
+        corrected: false,
+      });
     },
   );
 
