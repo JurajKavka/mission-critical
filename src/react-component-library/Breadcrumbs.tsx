@@ -1,9 +1,13 @@
+import { Fragment } from 'react';
+import type * as React from 'react';
 import { rem } from 'polished';
 import { styled } from 'styled-components';
+import { home } from '../lib/url';
+import { BreadcrumbDivider } from './BreadcrumbDivider';
 import { mb } from './media-breakpoints';
 import { ATLAS_THEME } from './theme';
 
-export const Breadcrumbs = styled.div`
+export const BreadcrumbsWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: ${rem(8)};
@@ -25,6 +29,7 @@ export const Breadcrumbs = styled.div`
     text-decoration: underline;
   }
   ${mb('compact', { max: true })} {
+    gap: ${rem(4)};
     font-size: ${ATLAS_THEME.fontSizes.caption};
     letter-spacing: 0.12em;
   }
@@ -33,3 +38,45 @@ export const Breadcrumbs = styled.div`
     letter-spacing: 0.12em;
   }
 `;
+
+const HomeBreadcrumbMobile = styled.span`
+  display: inline-block;
+  ${mb('s')} {
+    display: none;
+  }
+`;
+
+const HomeBreadcrumb = styled.span`
+  display: none;
+  ${mb('s')} {
+    display: inline-block;
+  }
+`;
+
+export type Breadcrumb = {
+  label: string;
+  link: string;
+};
+
+export type BreadcrumbsProps = {
+  breadcrumbs: readonly Breadcrumb[];
+};
+
+export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => (
+  <BreadcrumbsWrapper as="nav" aria-label="Game location">
+    <a href={home()} aria-label="Mission Critical">
+      <HomeBreadcrumbMobile>MSN CRTCL</HomeBreadcrumbMobile>
+      <HomeBreadcrumb>Mission Critical</HomeBreadcrumb>
+    </a>
+    {breadcrumbs.map((breadcrumb, index) => (
+      <Fragment key={breadcrumb.link}>
+        <BreadcrumbDivider />
+        {index === breadcrumbs.length - 1 ? (
+          <span aria-current="page">{breadcrumb.label}</span>
+        ) : (
+          <a href={breadcrumb.link}>{breadcrumb.label}</a>
+        )}
+      </Fragment>
+    ))}
+  </BreadcrumbsWrapper>
+);

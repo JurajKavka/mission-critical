@@ -9,7 +9,7 @@ import * as UI from './atlas-styles';
 import { SecondaryButton } from './SecondaryButton';
 import { Actions } from './atlas-styles';
 import { BreadcrumbDivider } from './BreadcrumbDivider';
-import { Breadcrumbs } from './Breadcrumbs';
+import { BreadcrumbsWrapper } from './Breadcrumbs';
 
 type ResultsPanelProps = {
   result: GameResults;
@@ -29,13 +29,13 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
     result.config.level;
   return (
     <UI.Panel aria-labelledby="results-title">
-      <Breadcrumbs>
+      <BreadcrumbsWrapper>
         <span>Mission report</span>
         <BreadcrumbDivider />
         <span>
           {result.finishReason === 'completed' ? 'complete' : 'time expired'}
         </span>
-      </Breadcrumbs>
+      </BreadcrumbsWrapper>
       <h2 id="results-title">
         {result.finishReason === 'completed' ? 'Atlas complete' : 'Time is up'}
       </h2>

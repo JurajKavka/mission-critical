@@ -77,13 +77,6 @@ canvas {
   gap: ${rem(24)};
 }
 
-.brand {
-  color: #69fbff;
-  font-size: ${rem(12)};
-  font-weight: 900;
-  letter-spacing: 0.32em;
-}
-
 .stats {
   display: flex;
   gap: ${rem(28)};
@@ -182,7 +175,11 @@ canvas {
 `;
 
 export const GameCanvas = styled.canvas``;
-export const GameHud = styled.div.attrs({ className: 'hud' })``;
+export const GameHud = styled.div.attrs({ className: 'hud' })`
+  nav {
+    pointer-events: auto;
+  }
+`;
 export const ControlsHint = styled.div`
   margin-top: ${rem(24)};
   color: #9db5c8;
@@ -210,13 +207,6 @@ export const UpgradeOptions = styled.div`
 `;
 
 export const GamePanel = styled(Panel)`
-  nav {
-    color: #69fbff;
-    font-size: ${rem(10)};
-    font-weight: 900;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
   a {
     color: #69fbff;
   }
