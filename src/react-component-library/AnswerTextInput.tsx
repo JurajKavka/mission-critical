@@ -1,3 +1,4 @@
+import { theme } from './theme';
 import { rem } from 'polished';
 import { useState } from 'react';
 import type * as React from 'react';
@@ -15,9 +16,9 @@ const Input = styled.input<{ $isUsingCustomKeyboard: boolean }>`
   min-width: 0;
   width: 100%;
   box-sizing: border-box;
-  border: ${rem(1)} solid rgba(105, 251, 255, 0.28);
-  background: #020b16;
-  color: #f4feff;
+  border: ${rem(1)} solid ${theme.colors.inputBorder};
+  background: ${theme.colors['space-blue']};
+  color: ${theme.colors.text};
   padding: ${rem(12)} ${rem(56)} ${rem(12)} ${rem(16)};
   font: inherit;
   font-size: ${rem(14)};
@@ -26,15 +27,15 @@ const Input = styled.input<{ $isUsingCustomKeyboard: boolean }>`
     $isUsingCustomKeyboard ? 'transparent' : 'auto'};
 
   &::placeholder {
-    color: #8099ae;
+    color: ${theme.colors.muted};
     text-transform: none;
   }
 
   &:hover,
   &:focus {
-    border-color: #69fbff;
+    border-color: ${theme.colors.cyan};
     outline: none;
-    box-shadow: inset 0 0 0 ${rem(2)} #69fbff;
+    box-shadow: inset 0 0 0 ${rem(2)} ${theme.colors.cyan};
   }
 `;
 
@@ -74,8 +75,8 @@ const Caret = styled.span`
   display: inline-block;
   width: ${rem(1)};
   height: 1em;
-  background: #69fbff;
-  box-shadow: 0 0 ${rem(6)} ${rem(1)} #69fbff;
+  background: ${theme.colors.cyan};
+  box-shadow: 0 0 ${rem(6)} ${rem(1)} ${theme.colors.cyan};
   animation: ${blink} 1s step-end infinite;
 
   @media (prefers-reduced-motion: reduce) {

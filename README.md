@@ -23,3 +23,5 @@ Game routes live in `src/pages/games/`. Atlas Rush uses a static settings page a
 The graphics catalogs are available at `/games/asteroids/graphics/` and `/games/atlas-rush/graphics/`. Canonical and social-image URLs default to `https://mission-critical.sk`; set `SITE_URL` when building for a different public site URL.
 
 For Cloudflare, use the repository root as the root directory, `npm run build` as the build command, and `dist` as the build output directory.
+
+The icons in this project are from: https://lucide.dev/icons/copy

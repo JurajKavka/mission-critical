@@ -24,41 +24,33 @@ Color, particles, trails, screen shake, short transitions, and synthesized tones
 
 ### Foundation
 
-| Role               | Value                       | Use                                      |
-| ------------------ | --------------------------- | ---------------------------------------- |
-| Void               | `#02040b`                   | Page and fallback background             |
-| Deep space         | `#010309`                   | Outer canvas gradient                    |
-| Space blue         | `#050b19`                   | Midpoint of the canvas gradient          |
-| Nebula blue        | `#0b1830`                   | Center of the canvas gradient            |
-| Primary text       | `#f4feff`                   | Titles, values, and critical information |
-| Secondary text     | `#9db5c8`                   | Supporting copy                          |
-| Muted telemetry    | `#8099ae`                   | Labels and low-priority values           |
-| Disabled telemetry | `rgba(187, 215, 232, 0.62)` | Hints and cooldown text                  |
+| Role           | Value     | Use                                   |
+| -------------- | --------- | ------------------------------------- |
+| Background     | `#02040b` | Page and playfield background         |
+| Surface        | `#050b19` | Panels, inputs, background gradients  |
+| Raised surface | `#0b1830` | Prominent panels and gradient centers |
+| Primary text   | `#f4feff` | Titles, values, projectile cores      |
+| Secondary text | `#9db5c8` | Supporting copy and instructions      |
+| Muted text     | `#8099ae` | Labels and low-priority information   |
 
-The canvas background uses a radial progression from nebula blue through space blue to deep space. A faint white grid at approximately 12% opacity provides scale without competing with entities.
+Use the three dark colors for surfaces and the canvas gradient. Tint surfaces with translucent signal colors where needed.
 
 ### Signal colors
 
-| Signal  | Core colors                     | Meaning                                  |
-| ------- | ------------------------------- | ---------------------------------------- |
-| Cyan    | `#63f8ff`, `#69fbff`, `#86fcff` | Player, focus, shields, primary actions  |
-| Violet  | `#7657d9`, `#a176ff`, `#b89bff` | Asteroids, hyperspace, secondary systems |
-| Magenta | `#ff65dc`, `#ff72db`, `#ff9be8` | Combos, bonuses, tri-shot                |
-| Amber   | `#ffb35f`, `#ffd35d`, `#ffe65f` | Rapid fire, UFO energy, valuable rewards |
-| Red     | `#ff3b35`, `#ff4c91`, `#ff6b3d` | Hostile fire, danger, damage             |
-| Green   | `#8eff94`                       | Extra life and recovery                  |
+| Signal  | Value     | Meaning                                  |
+| ------- | --------- | ---------------------------------------- |
+| Cyan    | `#69fbff` | Player, focus, shields, primary actions  |
+| Violet  | `#a176ff` | Asteroids, hyperspace, secondary systems |
+| Magenta | `#ff65dc` | Combos, bonuses, special weapons         |
+| Amber   | `#ffd35d` | Rewards, rapid fire, targets             |
+| Red     | `#ff3b35` | Hostile fire, damage, errors             |
+| Green   | `#8eff94` | Extra lives, recovery, success           |
 
-Use one primary signal color and at most one supporting signal color for a single element. Reserve red for danger and green for recovery so their meanings remain reliable.
+Use one primary signal and at most one supporting signal per element. Reserve red for danger and green for recovery. Use primary text for bright effect cores. New colors need a distinct design purpose.
 
 ### Transparency
 
-Neon surfaces are usually translucent rather than solid:
-
-- Entity interiors: approximately 16–20% opacity.
-- Panel fills: approximately 85–98% opacity when content must remain readable.
-- Grid and minor outlines: approximately 12–22% opacity.
-- Full-screen pause veil: approximately 78–91% opacity.
-- Status borders: approximately 35–48% opacity.
+Use opacity to adapt the palette to its context. Prefer approximately 6% for grids and glow, 16% for fills, 35% for borders and hover fills, 60% for stronger outlines, 85% for overlays, and 96% for readable panel surfaces. Effects may animate opacity continuously. Adjust opacity where needed for legibility and contrast.
 
 ## Typography
 
@@ -254,3 +246,21 @@ Sound effects should be quiet by default and triggered only after a user gesture
 - Controls work with keyboard and any pointer interaction the game advertises.
 - Narrow screens retain readable controls and selection panels.
 - Source remains modular.
+
+### Palette in code
+
+The shared palette lives in [`src/styles/colors.json`](./src/styles/colors.json).
+Use its twelve foundation and signal colors throughout the interface and game
+rendering. Apply opacity where needed instead of adding similar shades.
+
+- In Astro and CSS, use `var(--color-cyan)` for a color or
+  `rgba(var(--color-cyan-rgb), 0.2)` for a translucent version. The generated
+  stylesheet is loaded by the site, game pages, graphics catalogs and Storybook.
+- In styled-components, import `theme` from
+  `src/react-component-library/theme.ts` and use its named colors, including
+  translucent colors. In other TypeScript, import `COLORS` from
+  `src/styles/colors.ts`; use `withOpacity(COLORS.cyan, 0.2)` when an actual
+  color string is needed, such as for canvas rendering.
+- After changing the palette, run `node scripts/generate-colors.mjs` and commit
+  the resulting `src/styles/colors.css` alongside the JSON. Do not edit the
+  generated stylesheet directly.

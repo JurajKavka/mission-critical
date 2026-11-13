@@ -1,10 +1,14 @@
+---
+import '../styles/colors.css';
+---
+
 <style is:inline>
   :root {
     color-scheme: dark;
     font-size: 1rem;
     font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-    color: #f4feff;
-    background: #02040b;
+    color: var(--color-primary-text);
+    background: var(--color-void);
   }
 
   * {
@@ -28,11 +32,11 @@
     margin: 0;
     background: radial-gradient(
       ellipse at 50% 44%,
-      #0b1830,
-      #050b19 45%,
-      #010309
+      var(--color-nebula-blue),
+      var(--color-space-blue) 45%,
+      var(--color-void)
     );
-    color: #9db5c8;
+    color: var(--color-secondary-text);
     font-size: 12px;
     letter-spacing: 0.12em;
     text-transform: uppercase;

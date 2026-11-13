@@ -1,6 +1,6 @@
 import { rem } from 'polished';
 import { styled } from 'styled-components';
-import { ATLAS_THEME } from '../../../react-component-library/theme';
+import { theme } from '../../../react-component-library/theme';
 
 export const Wrapper = styled.main`
   max-width: ${rem(1000)};
@@ -14,12 +14,12 @@ export const Wrapper = styled.main`
     letter-spacing: -0.06em;
   }
   > p {
-    color: ${ATLAS_THEME.colors.secondary};
+    color: ${theme.colors.secondary};
     line-height: 1.6;
   }
   .eyebrow {
-    color: ${ATLAS_THEME.colors.cyan};
-    font-size: ${ATLAS_THEME.fontSizes.caption};
+    color: ${theme.colors.cyan};
+    font-size: ${theme.fontSizes.caption};
     letter-spacing: 0.3em;
     text-transform: uppercase;
   }
@@ -28,18 +28,18 @@ export const Wrapper = styled.main`
 export const Section = styled.section`
   margin-top: ${rem(36)};
   padding: ${rem(22)};
-  border: ${rem(1)} solid ${ATLAS_THEME.colors.catalogBorder};
-  background: ${ATLAS_THEME.colors.spaceMiddle};
+  border: ${rem(1)} solid ${theme.colors.catalogBorder};
+  background: ${theme.colors.spaceMiddle};
 
   h2 {
-    color: ${ATLAS_THEME.colors.cyan};
-    font-size: ${ATLAS_THEME.fontSizes.small};
+    color: ${theme.colors.cyan};
+    font-size: ${theme.fontSizes.small};
     letter-spacing: 0.2em;
     text-transform: uppercase;
   }
   > p {
-    color: ${ATLAS_THEME.colors.secondary};
-    font-size: ${ATLAS_THEME.fontSizes.label};
+    color: ${theme.colors.secondary};
+    font-size: ${theme.fontSizes.label};
     text-transform: uppercase;
   }
   section {

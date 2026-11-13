@@ -1,11 +1,12 @@
+import { theme } from './theme';
 import { rem } from 'polished';
 import type * as React from 'react';
 import { styled } from 'styled-components';
 
 const Button = styled.button`
-  border: ${rem(1)} solid #69fbff;
-  background: rgba(21, 97, 116, 0.2);
-  color: #f4feff;
+  border: ${rem(1)} solid ${theme.colors.cyan};
+  background: ${theme.colors.actionSurface};
+  color: ${theme.colors.text};
   padding: 0 ${rem(16)};
   font: inherit;
   font-size: ${rem(10)};
@@ -17,13 +18,13 @@ const Button = styled.button`
   height: ${rem(42)};
 
   &:hover {
-    background: rgba(31, 142, 161, 0.35);
+    background: ${theme.colors.actionHover};
   }
 
   &:focus-visible {
-    border-color: #69fbff;
+    border-color: ${theme.colors.cyan};
     outline: none;
-    box-shadow: inset 0 0 0 ${rem(2)} #69fbff;
+    box-shadow: inset 0 0 0 ${rem(2)} ${theme.colors.cyan};
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -32,7 +33,7 @@ const Button = styled.button`
 `;
 
 const Arrow = styled.span`
-  color: #69fbff;
+  color: ${theme.colors.cyan};
   margin-left: ${rem(8)};
 `;
 

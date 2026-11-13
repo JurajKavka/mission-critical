@@ -1,3 +1,5 @@
+import { COLORS } from '../../../styles/colors';
+
 import {
   TAU,
   TOUCH_ASTEROID_FAST_SPEED,
@@ -215,22 +217,22 @@ export const splitAsteroid = (
 
 export const pickupColor = (type: PickupType): string => {
   if (type === 'shield') {
-    return '#67faff';
+    return COLORS['cyan'];
   }
   if (type === 'tri-shot') {
-    return '#ff72db';
+    return COLORS['magenta'];
   }
   if (type === 'rapid-fire') {
-    return '#ffb35f';
+    return COLORS['amber'];
   }
   if (type === 'overdrive') {
-    return '#ffe65f';
+    return COLORS['amber'];
   }
-  return '#8eff94';
+  return COLORS['green'];
 };
 
 export const explodeUfo = (state: GameState, sound: Sound, ufo: Ufo): void => {
-  burst(state, ufo.x, ufo.y, '#ffb12f', 42, 270);
-  burst(state, ufo.x, ufo.y, '#ff3d6e', 24, 190);
+  burst(state, ufo.x, ufo.y, COLORS['amber'], 42, 270);
+  burst(state, ufo.x, ufo.y, COLORS['magenta'], 24, 190);
   sound.tone(130, 0.42, 0.055, 'sawtooth', 45);
 };

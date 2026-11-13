@@ -5,15 +5,15 @@ import { styled } from 'styled-components';
 import { home } from '../lib/url';
 import { BreadcrumbDivider } from './BreadcrumbDivider';
 import { mb } from './media-breakpoints';
-import { ATLAS_THEME } from './theme';
+import { theme } from './theme';
 
 export const BreadcrumbsWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: ${rem(8)};
-  color: ${ATLAS_THEME.colors.cyan};
-  font-size: ${ATLAS_THEME.fontSizes.small};
-  font-weight: ${ATLAS_THEME.fontWeights.heavy};
+  color: ${theme.colors.cyan};
+  font-size: ${theme.fontSizes.small};
+  font-weight: ${theme.fontWeights.heavy};
   letter-spacing: 0.25em;
   text-transform: uppercase;
 
@@ -30,11 +30,11 @@ export const BreadcrumbsWrapper = styled.div`
   }
   ${mb('compact', { max: true })} {
     gap: ${rem(4)};
-    font-size: ${ATLAS_THEME.fontSizes.caption};
+    font-size: ${theme.fontSizes.caption};
     letter-spacing: 0.12em;
   }
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    font-size: ${ATLAS_THEME.fontSizes.caption};
+    font-size: ${theme.fontSizes.caption};
     letter-spacing: 0.12em;
   }
 `;

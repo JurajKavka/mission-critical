@@ -1,3 +1,4 @@
+import { theme } from '../../react-component-library/theme';
 import { createGlobalStyle, styled } from 'styled-components';
 import { rem } from 'polished';
 import { Panel } from '../../react-component-library/atlas-styles';
@@ -18,8 +19,8 @@ body {
   height: 100%;
   margin: 0;
   overflow: hidden;
-  background: #02040b;
-  color: #effeff;
+  background: ${theme.colors.void};
+  color: ${theme.colors['primary-text']};
   user-select: none;
 }
 
@@ -29,7 +30,7 @@ canvas {
   max-width: ${rem(1024)};
   height: 100%;
   margin: 0 auto;
-  outline: ${rem(1)} solid rgba(128, 153, 174, 0.35);
+  outline: ${rem(1)} solid ${theme.colors.canvasOutline};
   outline-offset: -${rem(1)};
   cursor: crosshair;
 }
@@ -46,7 +47,7 @@ canvas {
   .touch-instructions {
     display: block;
     margin-top: ${rem(25)};
-    color: #b8dce4;
+    color: ${theme.colors['secondary-text']};
     font-size: ${rem(10)};
     letter-spacing: 0.1em;
     line-height: 1.8;
@@ -80,7 +81,7 @@ canvas {
 .stats {
   display: flex;
   gap: ${rem(28)};
-  color: #8099ae;
+  color: ${theme.colors.muted};
   font-size: ${rem(10)};
   letter-spacing: 0.18em;
   text-align: right;
@@ -90,7 +91,7 @@ canvas {
 .stats strong {
   display: block;
   margin-top: ${rem(4)};
-  color: #f4feff;
+  color: ${theme.colors.text};
   font-size: ${rem(20)};
   letter-spacing: 0.03em;
 }
@@ -101,20 +102,24 @@ canvas {
   margin-top: ${rem(5)};
   margin-left: auto;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.12);
+  background: ${theme.colors.meterTrack};
 }
 
 .combo-fill {
   width: 0;
   height: 100%;
-  background: linear-gradient(90deg, #63f8ff, #ff65dc);
+  background: linear-gradient(
+    90deg,
+    ${theme.colors['cyan']},
+    ${theme.colors.magenta}
+  );
 }
 
 .lives {
   position: absolute;
   left: ${rem(22)};
   bottom: ${rem(22)};
-  color: #8da7ba;
+  color: ${theme.colors['muted-text']};
   font-size: ${rem(10)};
   letter-spacing: 0.19em;
   text-transform: uppercase;
@@ -130,7 +135,7 @@ canvas {
   width: 0;
   height: 0;
   border-right: ${rem(7)} solid transparent;
-  border-bottom: ${rem(19)} solid #68faff;
+  border-bottom: ${rem(19)} solid ${theme.colors['cyan']};
   border-left: ${rem(7)} solid transparent;
   transform: rotate(90deg);
 }
@@ -139,7 +144,7 @@ canvas {
   position: absolute;
   right: ${rem(22)};
   bottom: ${rem(22)};
-  color: rgba(187, 215, 232, 0.62);
+  color: ${theme.colors.disabledTelemetry};
   font-size: ${rem(10)};
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -150,9 +155,9 @@ canvas {
   left: 50%;
   bottom: ${rem(22)};
   padding: ${rem(8)} ${rem(13)};
-  border: ${rem(1)} solid rgba(255, 109, 217, 0.36);
-  background: rgba(25, 7, 38, 0.58);
-  color: #ff9be8;
+  border: ${rem(1)} solid ${theme.colors.bonusBorder};
+  background: ${theme.colors.bonusSurface};
+  color: ${theme.colors['magenta']};
   font-size: ${rem(10)};
   font-weight: 800;
   letter-spacing: 0.18em;
@@ -182,7 +187,7 @@ export const GameHud = styled.div.attrs({ className: 'hud' })`
 `;
 export const ControlsHint = styled.div`
   margin-top: ${rem(24)};
-  color: #9db5c8;
+  color: ${theme.colors.secondary};
   font-size: ${rem(10)};
   line-height: 1.8;
   text-transform: uppercase;
@@ -208,10 +213,10 @@ export const UpgradeOptions = styled.div`
 
 export const GamePanel = styled(Panel)`
   a {
-    color: #69fbff;
+    color: ${theme.colors.cyan};
   }
   a:focus-visible {
-    outline: ${rem(2)} solid #69fbff;
+    outline: ${rem(2)} solid ${theme.colors.cyan};
     outline-offset: ${rem(3)};
   }
 `;

@@ -1,3 +1,4 @@
+import { theme } from './theme';
 import { rem } from 'polished';
 import { useEffect, useRef } from 'react';
 import type * as React from 'react';
@@ -14,7 +15,7 @@ const Button = styled.button`
   padding: 0;
   border: 0;
   background: transparent;
-  color: #9db5c8;
+  color: ${theme.colors.secondary};
   font: inherit;
   font-size: ${rem(20)};
   cursor: pointer;
@@ -28,7 +29,7 @@ const Button = styled.button`
   }
 
   &:disabled {
-    color: #526879;
+    color: ${theme.colors['muted-text']};
     cursor: default;
   }
 `;

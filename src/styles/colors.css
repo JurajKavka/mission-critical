@@ -1,0 +1,27 @@
+/* Generated from colors.json by scripts/generate-colors.mjs. */
+:root {
+  --color-void: #02040b;
+  --color-void-rgb: 2, 4, 11;
+  --color-space-blue: #050b19;
+  --color-space-blue-rgb: 5, 11, 25;
+  --color-nebula-blue: #0b1830;
+  --color-nebula-blue-rgb: 11, 24, 48;
+  --color-primary-text: #f4feff;
+  --color-primary-text-rgb: 244, 254, 255;
+  --color-secondary-text: #9db5c8;
+  --color-secondary-text-rgb: 157, 181, 200;
+  --color-muted-text: #8099ae;
+  --color-muted-text-rgb: 128, 153, 174;
+  --color-cyan: #69fbff;
+  --color-cyan-rgb: 105, 251, 255;
+  --color-violet: #a176ff;
+  --color-violet-rgb: 161, 118, 255;
+  --color-magenta: #ff65dc;
+  --color-magenta-rgb: 255, 101, 220;
+  --color-amber: #ffd35d;
+  --color-amber-rgb: 255, 211, 93;
+  --color-red: #ff3b35;
+  --color-red-rgb: 255, 59, 53;
+  --color-green: #8eff94;
+  --color-green-rgb: 142, 255, 148;
+}

@@ -1,14 +1,14 @@
 import { rem } from 'polished';
 import { createGlobalStyle, css, styled } from 'styled-components';
 import { mb } from './media-breakpoints';
-import { ATLAS_THEME } from './theme';
+import { theme } from './theme';
 
 const SPACE_BACKGROUND = css`
   background: radial-gradient(
     ellipse at 50% 44%,
-    ${ATLAS_THEME.colors.spaceCenter},
-    ${ATLAS_THEME.colors.spaceMiddle} 45%,
-    ${ATLAS_THEME.colors.spaceOuter}
+    ${theme.colors.spaceCenter},
+    ${theme.colors.spaceMiddle} 45%,
+    ${theme.colors.spaceOuter}
   );
 `;
 
@@ -16,9 +16,9 @@ export const GlobalStyles = createGlobalStyle`
   :root {
     color-scheme: dark;
     font-size: ${rem(16)};
-    font-family: ${ATLAS_THEME.fonts.mono};
-    color: ${ATLAS_THEME.colors.text};
-    background: ${ATLAS_THEME.colors.void};
+    font-family: ${theme.fonts.mono};
+    color: ${theme.colors.text};
+    background: ${theme.colors.void};
   }
   * {
     box-sizing: border-box;
@@ -49,13 +49,10 @@ export const Wrapper = styled.div`
     inset: 0;
     pointer-events: none;
     background-image:
-      linear-gradient(
-        ${ATLAS_THEME.colors.grid} ${rem(1)},
-        transparent ${rem(1)}
-      ),
+      linear-gradient(${theme.colors.grid} ${rem(1)}, transparent ${rem(1)}),
       linear-gradient(
         90deg,
-        ${ATLAS_THEME.colors.grid} ${rem(1)},
+        ${theme.colors.grid} ${rem(1)},
         transparent ${rem(1)}
       );
     background-size: ${rem(42)} ${rem(42)};
@@ -90,7 +87,7 @@ export const LandingWrapper = styled.main`
     left: ${rem(22)};
   }
   :focus-visible {
-    outline: ${rem(2)} solid ${ATLAS_THEME.colors.cyan};
+    outline: ${rem(2)} solid ${theme.colors.cyan};
     outline-offset: ${rem(3)};
   }
 `;
@@ -105,12 +102,12 @@ export const StatusBar = styled.div`
 
 export const Label = styled.p`
   display: block;
-  color: ${ATLAS_THEME.colors.muted};
-  font-size: ${ATLAS_THEME.fontSizes.caption};
+  color: ${theme.colors.muted};
+  font-size: ${theme.fontSizes.caption};
   text-transform: uppercase;
   letter-spacing: 0.18em;
   ${mb('compact', { max: true })} {
-    font-size: ${ATLAS_THEME.fontSizes.tiny};
+    font-size: ${theme.fontSizes.tiny};
   }
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
     margin: ${rem(4)} 0 0;
@@ -132,11 +129,11 @@ export const HudStats = styled.div`
 
 export const HudMetric = styled.div`
   strong[data-urgent='true'] {
-    color: ${ATLAS_THEME.colors.danger};
+    color: ${theme.colors.danger};
   }
   span {
-    color: ${ATLAS_THEME.colors.muted};
-    font-size: ${ATLAS_THEME.fontSizes.caption};
+    color: ${theme.colors.muted};
+    font-size: ${theme.fontSizes.caption};
     letter-spacing: 0.15em;
     text-transform: uppercase;
   }
@@ -144,7 +141,7 @@ export const HudMetric = styled.div`
   flex-direction: column;
   gap: ${rem(4)};
   strong {
-    font-size: ${ATLAS_THEME.fontSizes.metric};
+    font-size: ${theme.fontSizes.metric};
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.03em;
   }
@@ -176,8 +173,8 @@ export const Playfield = styled.main`
 `;
 
 export const MapHeading = styled.div`
-  color: ${ATLAS_THEME.colors.muted};
-  font-size: ${ATLAS_THEME.fontSizes.caption};
+  color: ${theme.colors.muted};
+  font-size: ${theme.fontSizes.caption};
   letter-spacing: 0.15em;
   text-transform: uppercase;
   display: flex;
@@ -185,12 +182,12 @@ export const MapHeading = styled.div`
   gap: ${rem(12)};
   align-items: center;
   padding-bottom: ${rem(8)};
-  border-bottom: ${rem(1)} solid ${ATLAS_THEME.colors.cyanSubtle};
+  border-bottom: ${rem(1)} solid ${theme.colors.cyanSubtle};
 `;
 
 export const MapKey = styled.div`
-  color: ${ATLAS_THEME.colors.muted};
-  font-size: ${ATLAS_THEME.fontSizes.caption};
+  color: ${theme.colors.muted};
+  font-size: ${theme.fontSizes.caption};
   text-transform: uppercase;
   display: flex;
   gap: ${rem(12)};
@@ -205,17 +202,17 @@ export const MapKey = styled.div`
   i {
     width: ${rem(7)};
     height: ${rem(7)};
-    background: ${ATLAS_THEME.colors.yellow};
+    background: ${theme.colors.yellow};
   }
   .keyGuessed {
-    background: ${ATLAS_THEME.colors.cyan};
+    background: ${theme.colors.cyan};
   }
   ${mb('compact', { max: true })} {
-    font-size: ${ATLAS_THEME.fontSizes.tiny};
+    font-size: ${theme.fontSizes.tiny};
   }
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
     gap: ${rem(4)} ${rem(8)};
-    font-size: ${ATLAS_THEME.fontSizes.tiny};
+    font-size: ${theme.fontSizes.tiny};
     letter-spacing: 0.08em;
   }
 `;
@@ -244,22 +241,22 @@ export const Map = styled.svg`
 `;
 
 export const Country = styled.path`
-  fill: ${ATLAS_THEME.colors.countryFill};
-  stroke: ${ATLAS_THEME.colors.countryStroke};
+  fill: ${theme.colors.countryFill};
+  stroke: ${theme.colors.countryStroke};
   stroke-width: ${rem(0.75)};
   stroke-linejoin: round;
   transition:
     fill 0.2s,
     stroke 0.2s;
   &[data-target='true'] {
-    fill: ${ATLAS_THEME.colors.targetFill};
-    stroke: ${ATLAS_THEME.colors.yellow};
+    fill: ${theme.colors.targetFill};
+    stroke: ${theme.colors.yellow};
     stroke-width: ${rem(2)};
-    filter: drop-shadow(0 0 ${rem(4)} ${ATLAS_THEME.colors.amber});
+    filter: drop-shadow(0 0 ${rem(4)} ${theme.colors.amber});
   }
   &[data-guessed='true'] {
-    fill: ${ATLAS_THEME.colors.cyanFill};
-    stroke: ${ATLAS_THEME.colors.cyan};
+    fill: ${theme.colors.cyanFill};
+    stroke: ${theme.colors.cyan};
   }
   &[role='button'] {
     cursor: pointer;
@@ -268,7 +265,7 @@ export const Country = styled.path`
     outline: none;
   }
   &:focus-visible {
-    stroke: ${ATLAS_THEME.colors.text};
+    stroke: ${theme.colors.text};
   }
   ${mb(null, { reducedMotion: true })} {
     transition-duration: 0.01ms;
@@ -279,16 +276,16 @@ export const PersistenceNotice = styled.p`
   position: relative;
   margin: ${rem(8)} 0 0;
   padding: ${rem(8)} ${rem(12)};
-  background: ${ATLAS_THEME.colors.noticeSurface};
-  border: ${rem(1)} solid ${ATLAS_THEME.colors.amber};
-  color: ${ATLAS_THEME.colors.text};
-  font-size: ${ATLAS_THEME.fontSizes.body};
+  background: ${theme.colors.noticeSurface};
+  border: ${rem(1)} solid ${theme.colors.amber};
+  color: ${theme.colors.text};
+  font-size: ${theme.fontSizes.body};
   line-height: 1.4;
   overflow-wrap: anywhere;
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'short' })} {
     margin-top: ${rem(4)};
     padding: ${rem(4)} ${rem(8)};
-    font-size: ${ATLAS_THEME.fontSizes.label};
+    font-size: ${theme.fontSizes.label};
   }
 `;
 
@@ -301,8 +298,8 @@ export const Command = styled.footer`
   width: min(${rem(740)}, 100%);
   margin: 0 auto;
   padding: ${rem(20)} ${rem(20)} ${rem(16)};
-  border: ${rem(1)} solid ${ATLAS_THEME.colors.cyanBorder};
-  background: ${ATLAS_THEME.colors.commandSurface};
+  border: ${rem(1)} solid ${theme.colors.cyanBorder};
+  background: ${theme.colors.commandSurface};
   ${mb('compact', { max: true })} {
     padding: ${rem(12)};
   }
@@ -328,9 +325,9 @@ export const AnswerForm = styled.form`
   input[aria-invalid='true'],
   input[aria-invalid='true']:hover,
   input[aria-invalid='true']:focus {
-    border-color: ${ATLAS_THEME.colors.danger};
-    box-shadow: inset 0 0 0 ${rem(2)} ${ATLAS_THEME.colors.danger};
-    color: ${ATLAS_THEME.colors.danger};
+    border-color: ${theme.colors.danger};
+    box-shadow: inset 0 0 0 ${rem(2)} ${theme.colors.danger};
+    color: ${theme.colors.danger};
   }
   &[data-mobile='true'] > button {
     display: none;
@@ -370,8 +367,8 @@ export const ScreenReaderOnly = styled.span`
 
 export const AnswerHint = styled.p`
   margin: 0;
-  color: ${ATLAS_THEME.colors.muted};
-  font-size: ${ATLAS_THEME.fontSizes.small};
+  color: ${theme.colors.muted};
+  font-size: ${theme.fontSizes.small};
 `;
 
 export const Overlay = styled.div`
@@ -381,7 +378,7 @@ export const Overlay = styled.div`
   display: grid;
   place-items: center;
   padding: ${rem(20)};
-  background: ${ATLAS_THEME.colors.overlay};
+  background: ${theme.colors.overlay};
 `;
 
 export const Eyebrow = styled.p``;
@@ -394,17 +391,17 @@ export const Panel = styled.section`
   ${mb('compact', { max: true })} {
     padding: ${rem(24)};
   }
-  border: ${rem(1)} solid ${ATLAS_THEME.colors.cyanBorderStrong};
+  border: ${rem(1)} solid ${theme.colors.cyanBorderStrong};
   background: linear-gradient(
     135deg,
-    ${ATLAS_THEME.colors.panelLight},
-    ${ATLAS_THEME.colors.panelDark} 75%
+    ${theme.colors.panelLight},
+    ${theme.colors.panelDark} 75%
   );
-  color: ${ATLAS_THEME.colors.text};
+  color: ${theme.colors.text};
   font: inherit;
-  box-shadow: 0 0 ${rem(60)} ${ATLAS_THEME.colors.panelGlow};
+  box-shadow: 0 0 ${rem(60)} ${theme.colors.panelGlow};
   &::backdrop {
-    background: ${ATLAS_THEME.colors.overlay};
+    background: ${theme.colors.overlay};
   }
   h1,
   h2 {
@@ -419,22 +416,22 @@ export const Panel = styled.section`
     letter-spacing: -0.065em;
   }
   h1 em {
-    color: ${ATLAS_THEME.colors.cyan};
+    color: ${theme.colors.cyan};
     font-style: normal;
   }
   p {
-    color: ${ATLAS_THEME.colors.secondary};
+    color: ${theme.colors.secondary};
     line-height: 1.7;
-    font-size: ${ATLAS_THEME.fontSizes.bodyBig};
+    font-size: ${theme.fontSizes.bodyBig};
     margin: ${rem(12)} 0;
     ${mb('compact', { max: true })} {
       margin: ${rem(8)} 0;
-      font-size: ${ATLAS_THEME.fontSizes.body};
+      font-size: ${theme.fontSizes.body};
     }
   }
   ${Eyebrow} {
-    color: ${ATLAS_THEME.colors.cyan};
-    font-size: ${ATLAS_THEME.fontSizes.caption};
+    color: ${theme.colors.cyan};
+    font-size: ${theme.fontSizes.caption};
     letter-spacing: 0.3em;
     text-transform: uppercase;
   }
@@ -444,20 +441,20 @@ export const Panel = styled.section`
     margin: ${rem(24)} 0 ${rem(12)};
     padding: ${rem(16)} 0;
     border: 0;
-    border-top: ${rem(1)} solid ${ATLAS_THEME.colors.cyanFaint};
+    border-top: ${rem(1)} solid ${theme.colors.cyanFaint};
   }
   legend {
-    color: ${ATLAS_THEME.colors.muted};
-    font-size: ${ATLAS_THEME.fontSizes.label};
+    color: ${theme.colors.muted};
+    font-size: ${theme.fontSizes.label};
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
   label {
-    font-size: ${ATLAS_THEME.fontSizes.small};
+    font-size: ${theme.fontSizes.small};
     cursor: pointer;
   }
   input {
-    accent-color: ${ATLAS_THEME.colors.cyan};
+    accent-color: ${theme.colors.cyan};
   }
 `;
 
@@ -514,7 +511,7 @@ export const Modal = styled.dialog`
   color: inherit;
   font: inherit;
   &::backdrop {
-    background: ${ATLAS_THEME.colors.overlay};
+    background: ${theme.colors.overlay};
   }
 `;
 
@@ -539,10 +536,10 @@ export const Results = styled.dl`
     gap: ${rem(8)};
   }
   padding: ${rem(20)} 0;
-  border-block: ${rem(1)} solid ${ATLAS_THEME.colors.cyanFaint};
+  border-block: ${rem(1)} solid ${theme.colors.cyanFaint};
   dt {
-    color: ${ATLAS_THEME.colors.muted};
-    font-size: ${ATLAS_THEME.fontSizes.caption};
+    color: ${theme.colors.muted};
+    font-size: ${theme.fontSizes.caption};
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
@@ -552,10 +549,10 @@ export const Results = styled.dl`
       margin: ${rem(4)} 0 0;
     }
     overflow-wrap: anywhere;
-    font-size: ${ATLAS_THEME.fontSizes.paragraphBig};
-    font-weight: ${ATLAS_THEME.fontWeights.bold};
+    font-size: ${theme.fontSizes.paragraphBig};
+    font-weight: ${theme.fontWeights.bold};
     ${mb('compact', { max: true })} {
-      font-size: ${ATLAS_THEME.fontSizes.paragraph};
+      font-size: ${theme.fontSizes.paragraph};
     }
   }
   ${mb('compact', { max: true })} {

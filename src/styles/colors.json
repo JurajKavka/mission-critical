@@ -1,0 +1,14 @@
+{
+  "void": "#02040b",
+  "space-blue": "#050b19",
+  "nebula-blue": "#0b1830",
+  "primary-text": "#f4feff",
+  "secondary-text": "#9db5c8",
+  "muted-text": "#8099ae",
+  "cyan": "#69fbff",
+  "violet": "#a176ff",
+  "magenta": "#ff65dc",
+  "amber": "#ffd35d",
+  "red": "#ff3b35",
+  "green": "#8eff94"
+}

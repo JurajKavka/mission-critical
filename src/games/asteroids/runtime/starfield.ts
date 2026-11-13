@@ -1,3 +1,5 @@
+import { COLORS, getColorRgb, withOpacity } from '../../../styles/colors';
+
 import { TAU } from './constants';
 import { graphicsConfig } from './graphics-config';
 import type { Star } from './types';
@@ -148,26 +150,32 @@ const drawGalaxyHaze = (
     bandThickness,
   );
   const armHazeOpacity = 0.13 * graphicsConfig.galaxy.armOpacityScale;
-  haze.addColorStop(0, 'rgba(228, 240, 255, 0)');
+  haze.addColorStop(0, withOpacity(COLORS['primary-text'], 0));
   haze.addColorStop(
     0.28,
-    `rgba(228, 240, 255, ${graphicsConfig.galaxy.hazeEdgeOpacity})`,
+    `rgba(${getColorRgb(COLORS['primary-text'])}, ${graphicsConfig.galaxy.hazeEdgeOpacity})`,
   );
   haze.addColorStop(
     0.43,
-    `rgba(238, 246, 255, ${graphicsConfig.galaxy.hazeShoulderOpacity})`,
+    `rgba(${getColorRgb(COLORS['primary-text'])}, ${graphicsConfig.galaxy.hazeShoulderOpacity})`,
   );
-  haze.addColorStop(0.49, `rgba(250, 252, 255, ${armHazeOpacity})`);
-  haze.addColorStop(0.51, `rgba(250, 252, 255, ${armHazeOpacity})`);
+  haze.addColorStop(
+    0.49,
+    `rgba(${getColorRgb(COLORS['primary-text'])}, ${armHazeOpacity})`,
+  );
+  haze.addColorStop(
+    0.51,
+    `rgba(${getColorRgb(COLORS['primary-text'])}, ${armHazeOpacity})`,
+  );
   haze.addColorStop(
     0.57,
-    `rgba(238, 246, 255, ${graphicsConfig.galaxy.hazeShoulderOpacity})`,
+    `rgba(${getColorRgb(COLORS['primary-text'])}, ${graphicsConfig.galaxy.hazeShoulderOpacity})`,
   );
   haze.addColorStop(
     0.72,
-    `rgba(228, 240, 255, ${graphicsConfig.galaxy.hazeEdgeOpacity})`,
+    `rgba(${getColorRgb(COLORS['primary-text'])}, ${graphicsConfig.galaxy.hazeEdgeOpacity})`,
   );
-  haze.addColorStop(1, 'rgba(228, 240, 255, 0)');
+  haze.addColorStop(1, withOpacity(COLORS['primary-text'], 0));
 
   context.fillStyle = haze;
   context.fillRect(
@@ -188,17 +196,17 @@ const drawGalaxyHaze = (
   const bulge = context.createRadialGradient(0, 0, 0, 0, 0, bulgeRadius);
   bulge.addColorStop(
     0,
-    `rgba(255, 255, 255, ${graphicsConfig.galaxy.coreOpacity})`,
+    `rgba(${getColorRgb(COLORS['primary-text'])}, ${graphicsConfig.galaxy.coreOpacity})`,
   );
   bulge.addColorStop(
     0.2,
-    `rgba(250, 252, 255, ${graphicsConfig.galaxy.innerOpacity})`,
+    `rgba(${getColorRgb(COLORS['primary-text'])}, ${graphicsConfig.galaxy.innerOpacity})`,
   );
   bulge.addColorStop(
     0.48,
-    `rgba(240, 247, 255, ${graphicsConfig.galaxy.outerOpacity})`,
+    `rgba(${getColorRgb(COLORS['primary-text'])}, ${graphicsConfig.galaxy.outerOpacity})`,
   );
-  bulge.addColorStop(1, 'rgba(228, 240, 255, 0)');
+  bulge.addColorStop(1, withOpacity(COLORS['primary-text'], 0));
   context.fillStyle = bulge;
   context.beginPath();
   context.arc(0, 0, bulgeRadius, 0, TAU);
@@ -223,9 +231,9 @@ const drawGalaxyDustLane = (
     0,
     laneHalfWidth,
   );
-  dustLane.addColorStop(0, 'rgba(1, 3, 9, 0)');
-  dustLane.addColorStop(0.5, 'rgba(1, 3, 9, 0.15)');
-  dustLane.addColorStop(1, 'rgba(1, 3, 9, 0)');
+  dustLane.addColorStop(0, withOpacity(COLORS['void'], 0));
+  dustLane.addColorStop(0.5, withOpacity(COLORS['void'], 0.15));
+  dustLane.addColorStop(1, withOpacity(COLORS['void'], 0));
   context.fillStyle = dustLane;
   context.fillRect(
     -bandLength,
@@ -244,12 +252,12 @@ const applyGalaxyEdgeFade = (
   const edgeMargin = graphicsConfig.galaxy.edgeMarginRatio;
   const fadeEnd = edgeMargin + graphicsConfig.galaxy.edgeFadeRatio;
   const galaxyMask = context.createLinearGradient(0, 0, width, 0);
-  galaxyMask.addColorStop(0, 'rgba(0, 0, 0, 0)');
-  galaxyMask.addColorStop(edgeMargin, 'rgba(0, 0, 0, 0)');
-  galaxyMask.addColorStop(fadeEnd, 'rgba(0, 0, 0, 1)');
-  galaxyMask.addColorStop(1 - fadeEnd, 'rgba(0, 0, 0, 1)');
-  galaxyMask.addColorStop(1 - edgeMargin, 'rgba(0, 0, 0, 0)');
-  galaxyMask.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  galaxyMask.addColorStop(0, withOpacity(COLORS['void'], 0));
+  galaxyMask.addColorStop(edgeMargin, withOpacity(COLORS['void'], 0));
+  galaxyMask.addColorStop(fadeEnd, withOpacity(COLORS['void'], 1));
+  galaxyMask.addColorStop(1 - fadeEnd, withOpacity(COLORS['void'], 1));
+  galaxyMask.addColorStop(1 - edgeMargin, withOpacity(COLORS['void'], 0));
+  galaxyMask.addColorStop(1, withOpacity(COLORS['void'], 0));
 
   context.save();
   context.globalCompositeOperation = 'destination-in';
@@ -274,7 +282,7 @@ export const renderGalaxyTexture = (
   drawGalaxyHaze(context, width, height);
 
   for (const star of createGalaxyStars(width, height)) {
-    context.fillStyle = `rgba(242, 247, 255, ${star.alpha})`;
+    context.fillStyle = `rgba(${getColorRgb(COLORS['primary-text'])}, ${star.alpha})`;
     context.fillRect(star.x, star.y, star.size, star.size);
   }
 
