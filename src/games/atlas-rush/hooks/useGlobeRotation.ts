@@ -20,7 +20,9 @@ export const useGlobeRotation = (
       currentCenter.current = next;
       setCenter(next);
     };
-    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const motionPreference = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    );
     if (motionPreference.matches) {
       updateCenter(destination);
       return;
@@ -46,7 +48,10 @@ export const useGlobeRotation = (
     frameId = requestAnimationFrame(rotate);
     return () => {
       cancelAnimationFrame(frameId);
-      motionPreference.removeEventListener('change', handleMotionPreferenceChange);
+      motionPreference.removeEventListener(
+        'change',
+        handleMotionPreferenceChange,
+      );
     };
   }, [destination, isPlaying]);
 

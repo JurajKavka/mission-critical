@@ -16,7 +16,8 @@ export const regionMetadata: Readonly<Record<RegionId, RegionMetadata>> = {
     targetName: 'country',
     code: 'WRL',
     hasIslandMarkers: true,
-    markerNote: 'Globe rotates to each target · Small countries shown as markers',
+    markerNote:
+      'Globe rotates to each target · Small countries shown as markers',
   },
   africa: {
     id: 'africa',

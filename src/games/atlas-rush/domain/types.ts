@@ -1,10 +1,5 @@
 export type RegionId =
-  | 'world'
-  | 'africa'
-  | 'south-america'
-  | 'usa'
-  | 'europe'
-  | 'asia';
+  'world' | 'africa' | 'south-america' | 'usa' | 'europe' | 'asia';
 export type LevelId = 'beginner' | 'middle' | 'expert';
 export type GamePhase = 'ready' | 'playing' | 'paused' | 'finished';
 export type FinishReason = 'completed' | 'timeout';

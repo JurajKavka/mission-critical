@@ -61,7 +61,9 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
     () => (geography ? getGlobeGeometry(geography, center, isZoomed) : null),
     [geography, center, isZoomed],
   );
-  const targetName = WORLD_TARGETS.find((country) => country.id === targetId)?.name;
+  const targetName = WORLD_TARGETS.find(
+    (country) => country.id === targetId,
+  )?.name;
   const targetGeometry = geometry?.countries.find(
     (country) => country.id === targetId,
   );
@@ -141,7 +143,9 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   };
 
   if (hasError) {
-    return <p role="alert">Globe could not be loaded. Please reload the page.</p>;
+    return (
+      <p role="alert">Globe could not be loaded. Please reload the page.</p>
+    );
   }
   if (!geometry) {
     return <p role="status">Loading world map…</p>;
