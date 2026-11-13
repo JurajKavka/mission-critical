@@ -1,3 +1,5 @@
+import { COLORS, getColorRgb, withOpacity } from '../../../styles/colors';
+
 import { TAU, WAVES_PER_MISSION } from './constants';
 import { graphicsConfig } from './graphics-config';
 import type { Asteroid, GameState, Pickup, PickupType, Ufo } from './types';
@@ -65,6 +67,7 @@ export const drawFrame = (state: GameState, time: number): void => {
       const tailX = bullet.x - directionX * trail;
       const tailY = bullet.y - directionY * trail;
 
+      context.globalCompositeOperation = 'source-over';
       context.strokeStyle = graphicsConfig.projectiles.rapidTrailColor;
       context.lineWidth = 7;
       context.beginPath();
@@ -72,17 +75,11 @@ export const drawFrame = (state: GameState, time: number): void => {
       context.lineTo(bullet.x, bullet.y);
       context.stroke();
 
-      context.strokeStyle = graphicsConfig.projectiles.rapidCoreColor;
-      context.lineWidth = 2.5;
-      context.beginPath();
-      context.moveTo(tailX, tailY);
-      context.lineTo(bullet.x, bullet.y);
-      context.stroke();
-
       context.fillStyle = graphicsConfig.projectiles.rapidTipColor;
       context.beginPath();
-      context.arc(bullet.x, bullet.y, 3.4, 0, TAU);
+      context.arc(bullet.x, bullet.y, 1.2, 0, TAU);
       context.fill();
+      context.globalCompositeOperation = 'lighter';
     } else {
       context.fillStyle = graphicsConfig.projectiles.playerColor;
       context.beginPath();
@@ -105,7 +102,7 @@ export const drawFrame = (state: GameState, time: number): void => {
   context.restore();
 
   if (state.nextWaveTimer > 0 && state.running) {
-    context.fillStyle = `rgba(202, 250, 255, ${Math.min(1, state.nextWaveTimer) * 0.7})`;
+    context.fillStyle = `rgba(${getColorRgb(COLORS['cyan'])}, ${Math.min(1, state.nextWaveTimer) * 0.7})`;
     context.font = '700 12px ui-monospace, monospace';
     context.textAlign = 'center';
     const transitionText =
@@ -116,7 +113,7 @@ export const drawFrame = (state: GameState, time: number): void => {
   }
 
   if (state.hyperspaceCooldown > 0 && state.running) {
-    context.fillStyle = 'rgba(167, 139, 205, .62)';
+    context.fillStyle = withOpacity(COLORS['violet'], 0.62);
     context.font = '10px ui-monospace, monospace';
     context.textAlign = 'right';
     context.fillText(
@@ -156,7 +153,7 @@ const drawBackground = (state: GameState, time: number): void => {
       (0.2 + Math.sin(time * 0.0016 + star.phase) * 0.13) *
         graphicsConfig.background.starOpacityScale,
     );
-    context.fillStyle = `rgba(170, 231, 255, ${alpha})`;
+    context.fillStyle = `rgba(${getColorRgb(COLORS['cyan'])}, ${alpha})`;
     context.fillRect(x, y, star.size, star.size);
   }
 
@@ -249,7 +246,8 @@ const drawShip = (state: GameState): void => {
   context.stroke();
 
   if (state.keys.has('KeyW') || state.keys.has('ArrowUp')) {
-    context.strokeStyle = Math.random() > 0.45 ? '#aa70ff' : '#5dfaff';
+    context.strokeStyle =
+      Math.random() > 0.45 ? COLORS['violet'] : COLORS['cyan'];
     context.beginPath();
     context.moveTo(-10, -6);
     context.lineTo(-22 - Math.random() * 10, 0);

@@ -27,6 +27,38 @@ const answerForCurrentTarget = (
 };
 
 describe('Atlas Rush store', () => {
+  it('restores prefix matching and rejects malformed comparison settings', () => {
+    const { store } = createHarness();
+    store.getState().startGame(
+      createConfig({
+        answerComparison: { mode: 'prefix', minimumCharacters: 4 },
+      }),
+    );
+    const snapshot = store.getState().session;
+    expect(store.getState().restoreGame(snapshot)).toBe(true);
+    expect(store.getState().session.config.answerComparison).toEqual({
+      mode: 'prefix',
+      minimumCharacters: 4,
+    });
+    [
+      null,
+      'prefix',
+      {},
+      { mode: 'unknown' },
+      { mode: 'prefix' },
+      { mode: 'prefix', minimumCharacters: 0 },
+      { mode: 'prefix', minimumCharacters: 2.5 },
+      { mode: 'prefix', minimumCharacters: '4' },
+    ].forEach((answerComparison) => {
+      expect(
+        store.getState().restoreGame({
+          ...snapshot,
+          config: { ...snapshot.config, answerComparison },
+        }),
+      ).toBe(false);
+    });
+  });
+
   it('tracks active time across wrong guesses, skips, pause and resume', () => {
     const { store, advance } = createHarness();
     store.getState().startGame();

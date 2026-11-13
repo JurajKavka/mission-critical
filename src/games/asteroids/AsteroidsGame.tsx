@@ -1,3 +1,5 @@
+import { COLORS } from '../../styles/colors';
+
 import { useEffect, useRef, useState } from 'react';
 import type * as React from 'react';
 import { ActionButton, Breadcrumbs } from '../../react-component-library';
@@ -113,7 +115,10 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
               Combo
               <strong
                 style={{
-                  color: hud.comboMultiplier > 1 ? '#ff9be8' : '#f4feff',
+                  color:
+                    hud.comboMultiplier > 1
+                      ? COLORS['magenta']
+                      : COLORS['primary-text'],
                 }}
               >
                 {hud.comboCount

@@ -1,3 +1,4 @@
+import { theme } from './theme';
 import type * as React from 'react';
 import { rem } from 'polished';
 import { styled } from 'styled-components';
@@ -11,21 +12,21 @@ const Button = styled.button`
   width: ${rem(32)};
   height: ${rem(32)};
   padding: 0;
-  border: ${rem(1)} solid rgba(157, 181, 200, 0.3);
+  border: ${rem(1)} solid ${theme.colors.secondaryBorder};
   background: transparent;
-  color: #9db5c8;
+  color: ${theme.colors.secondary};
   font: inherit;
   line-height: 1;
   cursor: pointer;
 
   &:focus-visible {
-    outline: ${rem(2)} solid #69fbff;
+    outline: ${rem(2)} solid ${theme.colors.cyan};
     outline-offset: ${rem(2)};
   }
 
   &:hover:not(:disabled) {
-    border-color: #69fbff;
-    color: #f4feff;
+    border-color: ${theme.colors.cyan};
+    color: ${theme.colors.text};
   }
 
   &:disabled {

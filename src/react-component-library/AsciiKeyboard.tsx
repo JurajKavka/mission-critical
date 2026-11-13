@@ -1,3 +1,4 @@
+import { theme } from './theme';
 import { rem } from 'polished';
 import * as React from 'react';
 import { styled } from 'styled-components';
@@ -39,9 +40,9 @@ const Key = styled.button<{ $isCommandKey?: boolean; $isSpaceKey?: boolean }>`
   min-width: ${({ $isCommandKey }) => ($isCommandKey ? 'max-content' : '1.5em')};
   min-height: ${rem(44)};
   padding: ${rem(4)};
-  border: ${rem(1)} solid rgba(105, 251, 255, 0.38);
-  background: #071827;
-  color: #f4feff;
+  border: ${rem(1)} solid ${theme.colors.keyboardBorder};
+  background: ${theme.colors['nebula-blue']};
+  color: ${theme.colors.text};
   font: inherit;
   font-size: clamp(${rem(11)}, 2.8vw, ${rem(14)});
   font-weight: 700;
@@ -50,12 +51,17 @@ const Key = styled.button<{ $isCommandKey?: boolean; $isSpaceKey?: boolean }>`
   -webkit-touch-callout: none;
 
   &:focus-visible {
-    outline: ${rem(2)} solid #69fbff;
+    outline: ${rem(2)} solid ${theme.colors.cyan};
     outline-offset: ${rem(1)};
   }
 
   &:active {
-    background: rgba(31, 142, 161, 0.55);
+    background: ${theme.colors.keyboardHover};
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
   }
 
   @media ${COMPACT_KEYBOARD_QUERY} {
@@ -69,13 +75,13 @@ const NativeToggle = styled.button`
   padding: ${rem(4)} 0;
   border: 0;
   background: transparent;
-  color: #9db5c8;
+  color: ${theme.colors.secondary};
   font: inherit;
   font-size: ${rem(11)};
   text-decoration: underline;
 
   &:focus-visible {
-    outline: ${rem(2)} solid #69fbff;
+    outline: ${rem(2)} solid ${theme.colors.cyan};
     outline-offset: ${rem(1)};
   }
 
@@ -90,6 +96,7 @@ type AsciiKeyboardProps = {
   onKey: (key: AsciiKey) => void;
   onToggleNative: () => void;
   usesNativeKeyboard: boolean;
+  disabled?: boolean;
 };
 
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
@@ -118,6 +125,7 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
   onKey,
   onToggleNative,
   usesNativeKeyboard,
+  disabled = false,
 }) => {
   console.log('remnder');
   return (
@@ -128,6 +136,7 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
             <Key
               key={letter}
               type="button"
+              disabled={disabled}
               onClick={() => {
                 onKey(letter);
               }}
@@ -145,6 +154,7 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
             $isCommandKey
             $isSpaceKey={key === 'Space'}
             type="button"
+            disabled={disabled}
             onClick={() => {
               onKey(key);
             }}
@@ -154,7 +164,7 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
           </Key>
         ))}
       </KeyRow>
-      <NativeToggle type="button" onClick={onToggleNative}>
+      <NativeToggle type="button" onClick={onToggleNative} disabled={disabled}>
         {usesNativeKeyboard ? 'Use on-screen keyboard' : 'Use native keyboard'}
       </NativeToggle>
     </Keyboard>

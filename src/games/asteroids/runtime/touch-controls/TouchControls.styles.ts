@@ -1,3 +1,4 @@
+import { theme } from '../../../../react-component-library/theme';
 import { rem } from 'polished';
 import { styled } from 'styled-components';
 
@@ -13,7 +14,7 @@ export const Controls = styled.div<{ $alwaysVisible: boolean }>`
   display: ${({ $alwaysVisible }) => ($alwaysVisible ? 'flex' : 'none')};
   align-items: end;
   justify-content: space-between;
-  color: #b8dce4;
+  color: ${theme.colors['secondary-text']};
   font:
     800 ${rem(10)} / 1 ui-monospace,
     'SFMono-Regular',
@@ -41,9 +42,9 @@ export const Stick = styled.div`
   width: ${rem(120)};
   height: ${rem(120)};
   place-items: center;
-  border: ${rem(1)} solid rgba(99, 248, 255, 0.55);
+  border: ${rem(1)} solid ${theme.colors.touchControlBorder};
   border-radius: 50%;
-  background: rgba(5, 22, 35, 0.58);
+  background: ${theme.colors.touchControlSurface};
   pointer-events: auto;
   touch-action: none;
 `;
@@ -51,9 +52,9 @@ export const Stick = styled.div`
 export const Knob = styled.div`
   width: ${rem(42)};
   height: ${rem(42)};
-  border: ${rem(1)} solid #69fbff;
+  border: ${rem(1)} solid ${theme.colors.cyan};
   border-radius: 50%;
-  background: rgba(99, 248, 255, 0.24);
+  background: ${theme.colors.touchControlFill};
   pointer-events: none;
 `;
 
@@ -68,9 +69,9 @@ export const Action = styled.button`
     min-width: ${rem(72)};
     min-height: ${rem(64)};
     padding: ${rem(10)};
-    border: ${rem(1)} solid rgba(105, 251, 255, 0.7);
-    background: rgba(5, 35, 48, 0.78);
-    color: #eaffff;
+    border: ${rem(1)} solid ${theme.colors.focusBorder};
+    background: ${theme.colors.touchButtonSurface};
+    color: ${theme.colors['primary-text']};
     font: inherit;
     letter-spacing: inherit;
     pointer-events: auto;
@@ -81,7 +82,7 @@ export const Action = styled.button`
     }
 
     &:active {
-      background: rgba(13, 73, 85, 0.96);
+      background: ${theme.colors.touchControlActive};
     }
 
     &:disabled {
@@ -89,7 +90,7 @@ export const Action = styled.button`
     }
 
     &:focus-visible {
-      outline: ${rem(2)} solid #f4feff;
+      outline: ${rem(2)} solid ${theme.colors.text};
       outline-offset: ${rem(2)};
     }
   }

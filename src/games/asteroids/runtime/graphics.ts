@@ -1,3 +1,5 @@
+import { COLORS } from '../../../styles/colors';
+
 import './graphics.css';
 
 import { drawFrame } from './renderer';
@@ -217,7 +219,7 @@ const graphicItems: GraphicItem[] = [
           life: 0.8,
           maxLife: 1,
           size: 7,
-          color: '#69fbff',
+          color: COLORS['cyan'],
         },
         {
           x: centerX + 7,
@@ -227,7 +229,7 @@ const graphicItems: GraphicItem[] = [
           life: 0.65,
           maxLife: 1,
           size: 5,
-          color: '#ff65dc',
+          color: COLORS['magenta'],
         },
       );
     },

@@ -1,4 +1,5 @@
 ---
+import { COLORS } from '../styles/colors';
 import { asset, home } from '../lib/url';
 import '../styles/global.css';
 
@@ -26,7 +27,7 @@ const socialImageUrl = new URL(asset('og-image.png'), getSocialImageBaseUrl())
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="theme-color" content="#02040b" />
+    <meta name="theme-color" content={COLORS.void} />
     <meta name="description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />

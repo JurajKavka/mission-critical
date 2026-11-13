@@ -1,19 +1,21 @@
+@import './colors.css';
+
 :root {
   color-scheme: dark;
   font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  --void: #02040b;
-  --deep-space: #010309;
-  --space-blue: #050b19;
-  --nebula-blue: #0b1830;
-  --primary: #f4feff;
-  --secondary: #9db5c8;
-  --muted: #8099ae;
-  --cyan: #69fbff;
-  --cyan-soft: rgba(105, 251, 255, 0.12);
-  --cyan-border: rgba(105, 251, 255, 0.34);
-  --violet: #a176ff;
-  --magenta: #ff65dc;
-  --green: #8eff94;
+  --void: var(--color-void);
+  --deep-space: var(--color-void);
+  --space-blue: var(--color-space-blue);
+  --nebula-blue: var(--color-nebula-blue);
+  --primary: var(--color-primary-text);
+  --secondary: var(--color-secondary-text);
+  --muted: var(--color-muted-text);
+  --cyan: var(--color-cyan);
+  --cyan-soft: rgba(var(--color-cyan-rgb), 0.12);
+  --cyan-border: rgba(var(--color-cyan-rgb), 0.34);
+  --violet: var(--color-violet);
+  --magenta: var(--color-magenta);
+  --green: var(--color-green);
   --page-inline: clamp(20px, 4vw, 58px);
   --page-width: 1420px;
 }
@@ -37,12 +39,12 @@ body {
   background:
     radial-gradient(
       circle at 78% 8%,
-      rgba(47, 43, 112, 0.22),
+      rgba(var(--color-violet-rgb), 0.22),
       transparent 29rem
     ),
     radial-gradient(
       circle at 14% 35%,
-      rgba(11, 83, 112, 0.12),
+      rgba(var(--color-cyan-rgb), 0.12),
       transparent 32rem
     ),
     var(--deep-space);
@@ -57,8 +59,15 @@ body::before {
   z-index: -1;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    linear-gradient(
+      rgba(var(--color-primary-text-rgb), 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--color-primary-text-rgb), 0.025) 1px,
+      transparent 1px
+    );
   background-size: 48px 48px;
   content: '';
   mask-image: linear-gradient(to bottom, black, transparent 88%);
@@ -73,7 +82,7 @@ body::after {
     to bottom,
     transparent 0,
     transparent 3px,
-    rgba(255, 255, 255, 0.013) 4px
+    rgba(var(--color-primary-text-rgb), 0.013) 4px
   );
   content: '';
   pointer-events: none;
@@ -131,7 +140,7 @@ a {
   min-height: 92px;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(105, 251, 255, 0.16);
+  border-bottom: 1px solid rgba(var(--color-cyan-rgb), 0.16);
 }
 
 .brand {
@@ -158,7 +167,7 @@ a {
   width: 28px;
   height: 28px;
   place-items: center;
-  border: 1px solid rgba(105, 251, 255, 0.46);
+  border: 1px solid rgba(var(--color-cyan-rgb), 0.46);
   transform: rotate(45deg);
 }
 
@@ -189,13 +198,13 @@ a {
   height: 5px;
   margin-right: 9px;
   background: var(--green);
-  box-shadow: 0 0 10px rgba(142, 255, 148, 0.8);
+  box-shadow: 0 0 10px rgba(var(--color-green-rgb), 0.8);
   animation: status-pulse 2.6s ease-in-out infinite;
 }
 
 .header-sector {
   padding-left: 24px;
-  border-left: 1px solid rgba(157, 181, 200, 0.18);
+  border-left: 1px solid rgba(var(--color-secondary-text-rgb), 0.18);
 }
 
 .hero {
@@ -232,7 +241,7 @@ a {
   width: 28px;
   height: 1px;
   background: var(--cyan);
-  box-shadow: 0 0 8px rgba(105, 251, 255, 0.7);
+  box-shadow: 0 0 8px rgba(var(--color-cyan-rgb), 0.7);
 }
 
 h1,
@@ -253,8 +262,8 @@ h1 {
 h1 em {
   color: transparent;
   font-style: normal;
-  -webkit-text-stroke: 1px rgba(105, 251, 255, 0.72);
-  text-shadow: 0 0 26px rgba(105, 251, 255, 0.1);
+  -webkit-text-stroke: 1px rgba(var(--color-cyan-rgb), 0.72);
+  text-shadow: 0 0 26px rgba(var(--color-cyan-rgb), 0.1);
 }
 
 .hero-description {
@@ -269,12 +278,12 @@ h1 em {
   max-width: 650px;
   margin-top: 30px;
   padding: 1px;
-  background: rgba(105, 251, 255, 0.4);
+  background: rgba(var(--color-cyan-rgb), 0.4);
   clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
 }
 
 .quick-launch-frame {
-  background: rgba(3, 16, 28, 0.96);
+  background: rgba(var(--color-nebula-blue-rgb), 0.96);
   clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 0 100%);
 }
 
@@ -284,7 +293,7 @@ h1 em {
   justify-content: space-between;
   min-height: 27px;
   padding-inline: 13px;
-  border-bottom: 1px solid rgba(105, 251, 255, 0.14);
+  border-bottom: 1px solid rgba(var(--color-cyan-rgb), 0.14);
   color: var(--muted);
   font-size: 8px;
   letter-spacing: 0.2em;
@@ -314,11 +323,11 @@ h1 em {
 }
 
 .quick-launch-game + .quick-launch-game {
-  border-top: 1px solid rgba(105, 251, 255, 0.14);
+  border-top: 1px solid rgba(var(--color-cyan-rgb), 0.14);
 }
 
 .quick-launch-game:hover {
-  background: rgba(31, 142, 161, 0.16);
+  background: rgba(var(--color-cyan-rgb), 0.16);
   box-shadow: inset 3px 0 var(--cyan);
 }
 
@@ -327,7 +336,7 @@ h1 em {
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 1px solid rgba(161, 118, 255, 0.45);
+  border: 1px solid rgba(var(--color-violet-rgb), 0.45);
   color: var(--violet);
   font-size: 10px;
   font-weight: 800;
@@ -389,7 +398,7 @@ h1 em {
 .system-readout {
   position: relative;
   padding: 1px;
-  background: rgba(105, 251, 255, 0.3);
+  background: rgba(var(--color-cyan-rgb), 0.3);
   clip-path: polygon(
     0 0,
     calc(100% - 26px) 0,
@@ -402,7 +411,7 @@ h1 em {
 
 .system-readout-frame {
   padding: 17px;
-  background: rgba(3, 10, 22, 0.9);
+  background: rgba(var(--color-space-blue-rgb), 0.9);
   clip-path: polygon(
     0 0,
     calc(100% - 25px) 0,
@@ -420,7 +429,7 @@ h1 em {
   width: 44px;
   height: 1px;
   background: var(--magenta);
-  box-shadow: 0 0 12px rgba(255, 101, 220, 0.8);
+  box-shadow: 0 0 12px rgba(var(--color-magenta-rgb), 0.8);
   content: '';
 }
 
@@ -446,27 +455,27 @@ h1 em {
   aspect-ratio: 1;
   margin: 24px auto;
   overflow: hidden;
-  border: 1px solid rgba(105, 251, 255, 0.28);
+  border: 1px solid rgba(var(--color-cyan-rgb), 0.28);
   border-radius: 50%;
   background:
     linear-gradient(
       90deg,
       transparent 49.7%,
-      rgba(105, 251, 255, 0.18) 50%,
+      rgba(var(--color-cyan-rgb), 0.18) 50%,
       transparent 50.3%
     ),
     linear-gradient(
       transparent 49.7%,
-      rgba(105, 251, 255, 0.18) 50%,
+      rgba(var(--color-cyan-rgb), 0.18) 50%,
       transparent 50.3%
     ),
     repeating-radial-gradient(
       circle,
       transparent 0 24%,
-      rgba(105, 251, 255, 0.13) 24.5% 25%,
+      rgba(var(--color-cyan-rgb), 0.13) 24.5% 25%,
       transparent 25.5% 49%
     ),
-    radial-gradient(circle, rgba(19, 78, 100, 0.15), transparent 68%);
+    radial-gradient(circle, rgba(var(--color-cyan-rgb), 0.15), transparent 68%);
 }
 
 .radar-sweep {
@@ -476,7 +485,7 @@ h1 em {
   background: conic-gradient(
     from 0deg,
     transparent 0 78%,
-    rgba(105, 251, 255, 0.26) 96%,
+    rgba(var(--color-cyan-rgb), 0.26) 96%,
     transparent 100%
   );
   animation: radar-sweep 5s linear infinite;
@@ -524,12 +533,12 @@ h1 em {
   grid-template-columns: repeat(3, 1fr);
   margin: 0;
   padding-top: 16px;
-  border-top: 1px solid rgba(105, 251, 255, 0.14);
+  border-top: 1px solid rgba(var(--color-cyan-rgb), 0.14);
 }
 
 .readout-data div {
   padding-inline: 12px;
-  border-right: 1px solid rgba(105, 251, 255, 0.12);
+  border-right: 1px solid rgba(var(--color-cyan-rgb), 0.12);
 }
 
 .readout-data div:first-child {
@@ -561,7 +570,7 @@ h1 em {
 
 .missions {
   padding-block: clamp(72px, 10vw, 130px);
-  border-top: 1px solid rgba(105, 251, 255, 0.16);
+  border-top: 1px solid rgba(var(--color-cyan-rgb), 0.16);
 }
 
 .section-header {
@@ -620,8 +629,8 @@ h1 em {
   grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.75fr);
   background: linear-gradient(
     135deg,
-    rgba(7, 22, 39, 0.88),
-    rgba(10, 6, 26, 0.92)
+    rgba(var(--color-nebula-blue-rgb), 0.88),
+    rgba(var(--color-nebula-blue-rgb), 0.92)
   );
   clip-path: polygon(
     0 0,
@@ -637,19 +646,19 @@ h1 em {
   position: relative;
   min-height: 470px;
   overflow: hidden;
-  border-right: 1px solid rgba(105, 251, 255, 0.18);
+  border-right: 1px solid rgba(var(--color-cyan-rgb), 0.18);
   background:
     radial-gradient(
       circle at 62% 48%,
-      rgba(73, 54, 145, 0.22),
+      rgba(var(--color-violet-rgb), 0.22),
       transparent 28%
     ),
     radial-gradient(
       circle at 45% 54%,
-      rgba(13, 77, 102, 0.16),
+      rgba(var(--color-cyan-rgb), 0.16),
       transparent 44%
     ),
-    #030814;
+    var(--color-space-blue);
   color: var(--cyan);
   text-decoration: none;
 }
@@ -658,8 +667,12 @@ h1 em {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(105, 251, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(105, 251, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(var(--color-cyan-rgb), 0.045) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      rgba(var(--color-cyan-rgb), 0.045) 1px,
+      transparent 1px
+    );
   background-size: 42px 42px;
   transform: perspective(500px) rotateX(62deg) scale(1.55) translateY(23%);
   transform-origin: center bottom;
@@ -667,7 +680,7 @@ h1 em {
 
 .orbit {
   position: absolute;
-  border: 1px solid rgba(105, 251, 255, 0.1);
+  border: 1px solid rgba(var(--color-cyan-rgb), 0.1);
   border-radius: 50%;
 }
 
@@ -690,8 +703,8 @@ h1 em {
 .asteroid {
   position: absolute;
   overflow: visible;
-  fill: rgba(118, 87, 217, 0.15);
-  filter: drop-shadow(0 0 8px rgba(161, 118, 255, 0.38));
+  fill: rgba(var(--color-violet-rgb), 0.15);
+  filter: drop-shadow(0 0 8px rgba(var(--color-violet-rgb), 0.38));
   stroke: var(--violet);
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -709,8 +722,8 @@ h1 em {
   right: 49%;
   bottom: 18%;
   width: clamp(56px, 7vw, 82px);
-  fill: rgba(255, 101, 220, 0.1);
-  filter: drop-shadow(0 0 7px rgba(255, 101, 220, 0.28));
+  fill: rgba(var(--color-magenta-rgb), 0.1);
+  filter: drop-shadow(0 0 7px rgba(var(--color-magenta-rgb), 0.28));
   stroke: var(--magenta);
   animation: asteroid-drift 7s ease-in-out -2.5s infinite reverse;
 }
@@ -734,15 +747,15 @@ h1 em {
   right: 0;
   width: 58px;
   height: 34px;
-  background: rgba(105, 251, 255, 0.14);
+  background: rgba(var(--color-cyan-rgb), 0.14);
   clip-path: polygon(100% 50%, 0 0, 16% 50%, 0 100%);
-  filter: drop-shadow(0 0 7px rgba(105, 251, 255, 0.55));
+  filter: drop-shadow(0 0 7px rgba(var(--color-cyan-rgb), 0.55));
 }
 
 .ship-body::after {
   position: absolute;
   inset: 2px;
-  background: #04101e;
+  background: var(--color-nebula-blue);
   clip-path: inherit;
   content: '';
 }
@@ -754,7 +767,7 @@ h1 em {
   width: 31px;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--cyan));
-  box-shadow: 0 0 8px rgba(105, 251, 255, 0.75);
+  box-shadow: 0 0 8px rgba(var(--color-cyan-rgb), 0.75);
   animation: trail-pulse 0.7s ease-in-out infinite;
 }
 
@@ -772,7 +785,7 @@ h1 em {
   position: absolute;
   right: 24px;
   bottom: -36px;
-  color: rgba(105, 251, 255, 0.045);
+  color: rgba(var(--color-cyan-rgb), 0.045);
   font-size: 170px;
   font-weight: 900;
   letter-spacing: -0.08em;
@@ -847,12 +860,12 @@ h1 em {
   grid-template-columns: 1fr 1fr;
   margin: 33px 0;
   padding: 20px 0;
-  border-block: 1px solid rgba(105, 251, 255, 0.12);
+  border-block: 1px solid rgba(var(--color-cyan-rgb), 0.12);
 }
 
 .mission-data div + div {
   padding-left: 20px;
-  border-left: 1px solid rgba(105, 251, 255, 0.12);
+  border-left: 1px solid rgba(var(--color-cyan-rgb), 0.12);
 }
 
 .launch-button {
@@ -861,8 +874,8 @@ h1 em {
   align-items: center;
   justify-content: space-between;
   padding: 0 8px 0 18px;
-  border: 1px solid rgba(105, 251, 255, 0.52);
-  background: rgba(21, 97, 116, 0.12);
+  border: 1px solid rgba(var(--color-cyan-rgb), 0.52);
+  background: rgba(var(--color-cyan-rgb), 0.12);
   color: var(--primary);
   font-size: 10px;
   font-weight: 800;
@@ -876,8 +889,8 @@ h1 em {
 }
 
 .launch-button:hover {
-  background: rgba(31, 142, 161, 0.2);
-  box-shadow: 0 0 24px rgba(105, 251, 255, 0.08);
+  background: rgba(var(--color-cyan-rgb), 0.2);
+  box-shadow: 0 0 24px rgba(var(--color-cyan-rgb), 0.08);
   transform: translateY(-2px);
 }
 
@@ -900,7 +913,7 @@ h1 em {
   align-items: end;
   gap: clamp(35px, 6vw, 90px);
   padding-block: clamp(80px, 10vw, 135px);
-  border-top: 1px solid rgba(105, 251, 255, 0.16);
+  border-top: 1px solid rgba(var(--color-cyan-rgb), 0.16);
 }
 
 .incoming h2 {
@@ -916,10 +929,10 @@ h1 em {
 .signal-line {
   position: relative;
   height: 42px;
-  border-block: 1px solid rgba(105, 251, 255, 0.1);
+  border-block: 1px solid rgba(var(--color-cyan-rgb), 0.1);
   background: repeating-linear-gradient(
     90deg,
-    rgba(105, 251, 255, 0.12) 0 1px,
+    rgba(var(--color-cyan-rgb), 0.12) 0 1px,
     transparent 1px 12px
   );
 }
@@ -930,7 +943,7 @@ h1 em {
   right: 0;
   left: 0;
   height: 1px;
-  background: rgba(105, 251, 255, 0.24);
+  background: rgba(var(--color-cyan-rgb), 0.24);
   content: '';
 }
 
@@ -951,7 +964,7 @@ h1 em {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  border-top: 1px solid rgba(105, 251, 255, 0.16);
+  border-top: 1px solid rgba(var(--color-cyan-rgb), 0.16);
   color: var(--muted);
   font-size: 9px;
   letter-spacing: 0.16em;
@@ -1047,7 +1060,7 @@ h1 em {
     justify-content: space-between;
     padding: 15px 0;
     border-right: 0;
-    border-bottom: 1px solid rgba(105, 251, 255, 0.12);
+    border-bottom: 1px solid rgba(var(--color-cyan-rgb), 0.12);
   }
 
   .readout-data dd {
@@ -1061,7 +1074,7 @@ h1 em {
   .game-visual {
     min-height: 410px;
     border-right: 0;
-    border-bottom: 1px solid rgba(105, 251, 255, 0.18);
+    border-bottom: 1px solid rgba(var(--color-cyan-rgb), 0.18);
   }
 
   .game-meta {
@@ -1125,7 +1138,7 @@ h1 em {
   .readout-data {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    border-top: 1px solid rgba(105, 251, 255, 0.12);
+    border-top: 1px solid rgba(var(--color-cyan-rgb), 0.12);
   }
 
   .readout-data div,
@@ -1133,7 +1146,7 @@ h1 em {
   .readout-data div:last-child {
     display: block;
     padding: 12px 8px;
-    border-right: 1px solid rgba(105, 251, 255, 0.12);
+    border-right: 1px solid rgba(var(--color-cyan-rgb), 0.12);
     border-bottom: 0;
   }
 
@@ -1179,7 +1192,7 @@ h1 em {
   .mission-data div + div {
     padding-top: 18px;
     padding-left: 0;
-    border-top: 1px solid rgba(105, 251, 255, 0.12);
+    border-top: 1px solid rgba(var(--color-cyan-rgb), 0.12);
     border-left: 0;
   }
 
@@ -1218,13 +1231,13 @@ h1 em {
   inset: 12% 0;
   width: 100%;
   height: 76%;
-  fill: rgba(118, 87, 217, 0.15);
-  stroke: rgba(161, 118, 255, 0.72);
+  fill: rgba(var(--color-violet-rgb), 0.15);
+  stroke: rgba(var(--color-violet-rgb), 0.72);
   stroke-width: 0.18;
-  filter: drop-shadow(0 0 8px rgba(105, 251, 255, 0.2));
+  filter: drop-shadow(0 0 8px rgba(var(--color-cyan-rgb), 0.2));
 }
 
 .atlas-visual .atlas-target {
-  fill: rgba(255, 211, 93, 0.65);
-  stroke: #ffe65f;
+  fill: rgba(var(--color-amber-rgb), 0.65);
+  stroke: var(--color-amber);
 }
