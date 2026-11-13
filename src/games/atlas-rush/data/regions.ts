@@ -10,6 +10,14 @@ export type RegionMetadata = {
 };
 
 export const regionMetadata: Readonly<Record<RegionId, RegionMetadata>> = {
+  world: {
+    id: 'world',
+    name: 'Whole world',
+    targetName: 'country',
+    code: 'WRL',
+    hasIslandMarkers: true,
+    markerNote: 'Globe rotates to each target · Small countries shown as markers',
+  },
   africa: {
     id: 'africa',
     name: 'Africa',

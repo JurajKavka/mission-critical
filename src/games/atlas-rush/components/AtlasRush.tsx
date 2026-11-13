@@ -20,6 +20,7 @@ import { createAtlasRushStore } from '../state/createAtlasRushStore';
 import { selectGuessedIds, selectPhase } from '../state/selectors';
 import { AnswerInput } from './AnswerInput';
 import { GameMap } from './GameMap';
+import { WorldGlobe } from './WorldGlobe';
 import { ModalDialog } from './ModalDialog';
 import { PauseDialog } from './PauseDialog';
 import { ResultsPanel } from '../../../react-component-library/ResultsPanel';
@@ -113,11 +114,15 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
             </UI.HudStats>
           </UI.MapHeading>
           <UI.MapSlot>
-            <GameMap
-              store={store}
-              regionId={regionId}
-              onReturnFocus={focusInput}
-            />
+            {regionId === 'world' ? (
+              <WorldGlobe store={store} onReturnFocus={focusInput} />
+            ) : (
+              <GameMap
+                store={store}
+                regionId={regionId}
+                onReturnFocus={focusInput}
+              />
+            )}
           </UI.MapSlot>
           <UI.MapKey>
             <span>

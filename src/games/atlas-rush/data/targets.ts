@@ -1,7 +1,9 @@
 import type { RegionId, Target } from '../domain/types';
+import { WORLD_TARGETS } from './world-targets';
 
 // Preserve legacy source order: it is part of challenge version 1.
 export const regionTargets: Readonly<Record<RegionId, readonly Target[]>> = {
+  world: WORLD_TARGETS,
   africa: [
     { id: 'DZA', name: 'Algeria' },
     { id: 'AGO', name: 'Angola' },
