@@ -20,7 +20,7 @@ body {
   margin: 0;
   overflow: hidden;
   background: ${theme.colors.void};
-  color: ${theme.colors['ice-effeff']};
+  color: ${theme.colors['primary-text']};
   user-select: none;
 }
 
@@ -47,7 +47,7 @@ canvas {
   .touch-instructions {
     display: block;
     margin-top: ${rem(25)};
-    color: ${theme.colors['cyan-b8dce4']};
+    color: ${theme.colors['secondary-text']};
     font-size: ${rem(10)};
     letter-spacing: 0.1em;
     line-height: 1.8;
@@ -110,7 +110,7 @@ canvas {
   height: 100%;
   background: linear-gradient(
     90deg,
-    ${theme.colors['cyan-bright']},
+    ${theme.colors['cyan']},
     ${theme.colors.magenta}
   );
 }
@@ -119,7 +119,7 @@ canvas {
   position: absolute;
   left: ${rem(22)};
   bottom: ${rem(22)};
-  color: ${theme.colors['blue-8da7ba']};
+  color: ${theme.colors['muted-text']};
   font-size: ${rem(10)};
   letter-spacing: 0.19em;
   text-transform: uppercase;
@@ -135,7 +135,7 @@ canvas {
   width: 0;
   height: 0;
   border-right: ${rem(7)} solid transparent;
-  border-bottom: ${rem(19)} solid ${theme.colors['cyan-68faff']};
+  border-bottom: ${rem(19)} solid ${theme.colors['cyan']};
   border-left: ${rem(7)} solid transparent;
   transform: rotate(90deg);
 }
@@ -157,7 +157,7 @@ canvas {
   padding: ${rem(8)} ${rem(13)};
   border: ${rem(1)} solid ${theme.colors.bonusBorder};
   background: ${theme.colors.bonusSurface};
-  color: ${theme.colors['magenta-light']};
+  color: ${theme.colors['magenta']};
   font-size: ${rem(10)};
   font-weight: 800;
   letter-spacing: 0.18em;

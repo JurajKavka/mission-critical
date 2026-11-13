@@ -17,7 +17,7 @@ const Input = styled.input<{ $isUsingCustomKeyboard: boolean }>`
   width: 100%;
   box-sizing: border-box;
   border: ${rem(1)} solid ${theme.colors.inputBorder};
-  background: ${theme.colors['space-020b16']};
+  background: ${theme.colors['space-blue']};
   color: ${theme.colors.text};
   padding: ${rem(12)} ${rem(56)} ${rem(12)} ${rem(16)};
   font: inherit;

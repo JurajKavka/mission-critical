@@ -117,7 +117,7 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
                 style={{
                   color:
                     hud.comboMultiplier > 1
-                      ? COLORS['magenta-light']
+                      ? COLORS['magenta']
                       : COLORS['primary-text'],
                 }}
               >

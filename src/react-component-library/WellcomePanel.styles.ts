@@ -10,7 +10,7 @@ export const Card = styled.div`
   padding: clamp(${rem(20)}, 6vw, ${rem(43)});
   border: 0;
   background: ${theme.colors.welcomeBorder};
-  color: ${theme.colors['ice-effeff']};
+  color: ${theme.colors['primary-text']};
   font:
     ${rem(16)} / normal ui-monospace,
     'SFMono-Regular',
@@ -53,7 +53,7 @@ export const Card = styled.div`
 export const Eyebrow = styled.span`
   display: block;
   margin-bottom: ${rem(13)};
-  color: ${theme.colors['violet-light']};
+  color: ${theme.colors['violet']};
   font-size: ${rem(10)};
   font-weight: normal;
   letter-spacing: 0.42em;
@@ -121,13 +121,13 @@ export const Controls = styled.div`
   justify-content: center;
   gap: ${rem(18)};
   margin-top: ${rem(25)};
-  color: ${theme.colors['blue-71899d']};
+  color: ${theme.colors['muted-text']};
   font-size: ${rem(9)};
   letter-spacing: 0.13em;
   text-transform: uppercase;
 
   span {
-    color: ${theme.colors['ice-dcfbff']};
+    color: ${theme.colors['primary-text']};
   }
 
   @media (any-pointer: coarse) {
@@ -141,7 +141,7 @@ export const TouchInstructions = styled.div`
   @media (any-pointer: coarse) {
     display: block;
     margin-top: ${rem(25)};
-    color: ${theme.colors['cyan-b8dce4']};
+    color: ${theme.colors['secondary-text']};
     font-size: ${rem(10)};
     letter-spacing: 0.1em;
     line-height: 1.8;

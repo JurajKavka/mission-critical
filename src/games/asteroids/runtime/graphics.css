@@ -17,8 +17,16 @@ body {
   margin: 0;
   background:
     linear-gradient(rgba(var(--color-cyan-rgb), 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(var(--color-cyan-rgb), 0.025) 1px, transparent 1px),
-    radial-gradient(circle at 50% 0%, var(--color-nebula-blue), var(--color-void) 48%);
+    linear-gradient(
+      90deg,
+      rgba(var(--color-cyan-rgb), 0.025) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 50% 0%,
+      var(--color-nebula-blue),
+      var(--color-void) 48%
+    );
   background-size:
     72px 72px,
     72px 72px,
@@ -68,7 +76,7 @@ body {
   overflow: hidden;
   margin-bottom: 32px;
   border: 1px solid rgba(var(--color-magenta-rgb), 0.34);
-  background: rgba(var(--color-space-040a17-rgb), 0.88);
+  background: rgba(var(--color-nebula-blue-rgb), 0.88);
   clip-path: polygon(
     0 0,
     calc(100% - 12px) 0,
@@ -118,7 +126,7 @@ body {
 .graphic-card {
   overflow: hidden;
   border: 1px solid rgba(var(--color-cyan-rgb), 0.24);
-  background: rgba(var(--color-space-040a17-rgb), 0.88);
+  background: rgba(var(--color-nebula-blue-rgb), 0.88);
   clip-path: polygon(
     0 0,
     calc(100% - 12px) 0,

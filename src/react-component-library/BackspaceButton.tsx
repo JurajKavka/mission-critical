@@ -29,7 +29,7 @@ const Button = styled.button`
   }
 
   &:disabled {
-    color: ${theme.colors['blue-526879']};
+    color: ${theme.colors['muted-text']};
     cursor: default;
   }
 `;

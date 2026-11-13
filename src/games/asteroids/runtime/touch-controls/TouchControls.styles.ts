@@ -14,7 +14,7 @@ export const Controls = styled.div<{ $alwaysVisible: boolean }>`
   display: ${({ $alwaysVisible }) => ($alwaysVisible ? 'flex' : 'none')};
   align-items: end;
   justify-content: space-between;
-  color: ${theme.colors['cyan-b8dce4']};
+  color: ${theme.colors['secondary-text']};
   font:
     800 ${rem(10)} / 1 ui-monospace,
     'SFMono-Regular',
@@ -71,7 +71,7 @@ export const Action = styled.button`
     padding: ${rem(10)};
     border: ${rem(1)} solid ${theme.colors.focusBorder};
     background: ${theme.colors.touchButtonSurface};
-    color: ${theme.colors['ice-eaffff']};
+    color: ${theme.colors['primary-text']};
     font: inherit;
     letter-spacing: inherit;
     pointer-events: auto;

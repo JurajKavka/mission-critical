@@ -41,7 +41,7 @@ const Key = styled.button<{ $isCommandKey?: boolean; $isSpaceKey?: boolean }>`
   min-height: ${rem(44)};
   padding: ${rem(4)};
   border: ${rem(1)} solid ${theme.colors.keyboardBorder};
-  background: ${theme.colors['space-071827']};
+  background: ${theme.colors['nebula-blue']};
   color: ${theme.colors.text};
   font: inherit;
   font-size: clamp(${rem(11)}, 2.8vw, ${rem(14)});

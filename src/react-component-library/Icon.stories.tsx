@@ -31,5 +31,5 @@ export const AllIcons: Story = {
 export const Default: Story = {};
 export const PresetSize: Story = { args: { size: 'xl' } };
 export const CustomSize: Story = { args: { size: 48 } };
-export const Color: Story = { args: { color: COLORS['cyan-bright'], size: 'xl' } };
+export const Color: Story = { args: { color: COLORS['cyan'], size: 'xl' } };
 export const AccessibleLabel: Story = { args: { title: 'Zoom in' } };

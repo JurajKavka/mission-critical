@@ -348,7 +348,7 @@ export const createGame = (
       state,
       noseX,
       noseY,
-      rapidFireActive ? COLORS['orange-ff9b32'] : COLORS['cyan-87ffff'],
+      rapidFireActive ? COLORS['amber'] : COLORS['cyan'],
       rapidFireActive ? 7 : 3,
       rapidFireActive ? 115 : 65,
     );
@@ -375,13 +375,13 @@ export const createGame = (
       return;
     }
 
-    burst(state, ship.x, ship.y, COLORS['violet-ad7dff'], 22, 210);
+    burst(state, ship.x, ship.y, COLORS['violet'], 22, 210);
     ship.x = Math.random() * state.width;
     ship.y = Math.random() * state.height;
     ship.shield = Math.max(ship.shield, 1.25);
     state.hyperspaceCooldown = 4;
     updateTouchCooldown();
-    burst(state, ship.x, ship.y, COLORS['cyan-6ffcff'], 22, 210);
+    burst(state, ship.x, ship.y, COLORS['cyan'], 22, 210);
     sound.tone(180, 0.3, 0.035, 'triangle', 720);
   };
 
@@ -440,7 +440,7 @@ export const createGame = (
       state,
       asteroid.x,
       asteroid.y,
-      asteroid.size === 1 ? COLORS['magenta-ff63c7'] : COLORS['blue-9b78ff'],
+      asteroid.size === 1 ? COLORS['magenta'] : COLORS['violet'],
       8 + asteroid.size * 8,
       110 + asteroid.size * 55,
     );
@@ -484,7 +484,7 @@ export const createGame = (
     state.bonusFlashText = '';
     resetCombo();
     state.shake = 24;
-    burst(state, ship.x, ship.y, COLORS['cyan-63f7ff'], 46, 330);
+    burst(state, ship.x, ship.y, COLORS['cyan'], 46, 330);
     sound.tone(150, 0.5, 0.06, 'sawtooth', 42);
     publish();
     if (state.lives <= 0) {
@@ -577,7 +577,7 @@ export const createGame = (
           life: 0.22 + Math.random() * 0.22,
           maxLife: 0.44,
           size: 1.5 + Math.random() * 2.5,
-          color: Math.random() > 0.45 ? COLORS['cyan-5dfaff'] : COLORS['violet-a56cff'],
+          color: Math.random() > 0.45 ? COLORS['cyan'] : COLORS['violet'],
         });
       }
     }
@@ -623,7 +623,7 @@ export const createGame = (
         life,
         maxLife: life,
         size: 1.2 + Math.random() * 2,
-        color: Math.random() > 0.45 ? COLORS['orange-ff9d66'] : COLORS['magenta-ff5fb7'],
+        color: Math.random() > 0.45 ? COLORS['amber'] : COLORS['magenta'],
       });
     }
   };
@@ -737,7 +737,7 @@ export const createGame = (
       if (Math.hypot(bullet.x - ufo.x, bullet.y - ufo.y) < ufo.radius + 3) {
         state.bullets.splice(bulletIndex, 1);
         ufo.health -= 1;
-        burst(state, bullet.x, bullet.y, COLORS['gold-ffd45f'], 8, 100);
+        burst(state, bullet.x, bullet.y, COLORS['amber'], 8, 100);
         sound.tone(390, 0.07, 0.015, 'square', 210);
         if (ufo.health <= 0) {
           destroyUfo(ufoIndex);
@@ -762,7 +762,7 @@ export const createGame = (
             state,
             bullet.x,
             bullet.y,
-            ship.shield > 0 ? COLORS['cyan-67faff'] : COLORS['red-orange'],
+            ship.shield > 0 ? COLORS['cyan'] : COLORS['red'],
             13,
             145,
           );

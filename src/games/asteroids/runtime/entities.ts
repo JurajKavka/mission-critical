@@ -217,22 +217,22 @@ export const splitAsteroid = (
 
 export const pickupColor = (type: PickupType): string => {
   if (type === 'shield') {
-    return COLORS['cyan-67faff'];
+    return COLORS['cyan'];
   }
   if (type === 'tri-shot') {
-    return COLORS['magenta-bright'];
+    return COLORS['magenta'];
   }
   if (type === 'rapid-fire') {
     return COLORS['amber'];
   }
   if (type === 'overdrive') {
-    return COLORS['yellow'];
+    return COLORS['amber'];
   }
   return COLORS['green'];
 };
 
 export const explodeUfo = (state: GameState, sound: Sound, ufo: Ufo): void => {
-  burst(state, ufo.x, ufo.y, COLORS['orange-ffb12f'], 42, 270);
-  burst(state, ufo.x, ufo.y, COLORS['magenta-ff3d6e'], 24, 190);
+  burst(state, ufo.x, ufo.y, COLORS['amber'], 42, 270);
+  burst(state, ufo.x, ufo.y, COLORS['magenta'], 24, 190);
   sound.tone(130, 0.42, 0.055, 'sawtooth', 45);
 };

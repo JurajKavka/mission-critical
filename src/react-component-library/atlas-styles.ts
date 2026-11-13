@@ -49,10 +49,7 @@ export const Wrapper = styled.div`
     inset: 0;
     pointer-events: none;
     background-image:
-      linear-gradient(
-        ${theme.colors.grid} ${rem(1)},
-        transparent ${rem(1)}
-      ),
+      linear-gradient(${theme.colors.grid} ${rem(1)}, transparent ${rem(1)}),
       linear-gradient(
         90deg,
         ${theme.colors.grid} ${rem(1)},
