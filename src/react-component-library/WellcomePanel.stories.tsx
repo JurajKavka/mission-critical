@@ -1,3 +1,4 @@
+import { theme } from './theme';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { rem } from 'polished';
 import { styled } from 'styled-components';
@@ -13,10 +14,10 @@ const Preview = styled.div`
   background:
     radial-gradient(
       circle at center,
-      rgba(8, 25, 43, 0.46),
-      rgba(1, 3, 9, 0.91)
+      ${theme.colors.welcomeBackdropGlow},
+      ${theme.colors.welcomeBackdrop}
     ),
-    #02040b;
+    ${theme.colors.void};
 `;
 
 const meta = {

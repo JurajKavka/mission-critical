@@ -1,9 +1,9 @@
 import type * as React from 'react';
 import { styled } from 'styled-components';
-import { ATLAS_THEME } from './theme';
+import { theme } from './theme';
 
 const Divider = styled.span`
-  color: ${ATLAS_THEME.colors.magenta};
+  color: ${theme.colors.magenta};
 `;
 
 export const BreadcrumbDivider: React.FC = () => (

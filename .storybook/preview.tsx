@@ -1,13 +1,13 @@
 import type { Preview } from '@storybook/react-vite';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyles } from '../src/react-component-library/atlas-styles';
-import { ATLAS_THEME } from '../src/react-component-library/theme';
+import { theme } from '../src/react-component-library/theme';
 import '../src/styles/global.css';
 
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <ThemeProvider theme={ATLAS_THEME}>
+      <ThemeProvider theme={theme}>
         <GlobalStyles />
         <Story />
       </ThemeProvider>

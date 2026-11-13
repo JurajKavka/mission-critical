@@ -1,3 +1,4 @@
+import { theme } from './theme';
 import { rem } from 'polished';
 import { useLayoutEffect, useRef, useState } from 'react';
 import type * as React from 'react';
@@ -19,9 +20,9 @@ const TooltipSurface = styled.div<{
   box-sizing: border-box;
   overflow-wrap: anywhere;
   padding: ${rem(8)} ${rem(12)};
-  border: ${rem(1)} solid rgba(105, 251, 255, 0.7);
-  background: #030d19;
-  color: #f4feff;
+  border: ${rem(1)} solid ${theme.colors.focusBorder};
+  background: ${theme.colors.noticeSurface};
+  color: ${theme.colors.text};
   font-size: ${rem(12)};
   pointer-events: none;
   text-transform: uppercase;

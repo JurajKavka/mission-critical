@@ -254,3 +254,23 @@ Sound effects should be quiet by default and triggered only after a user gesture
 - Controls work with keyboard and any pointer interaction the game advertises.
 - Narrow screens retain readable controls and selection panels.
 - Source remains modular.
+
+### Palette in code
+
+The complete inventory of colors used by the interface and game rendering lives
+in [`src/styles/colors.json`](./src/styles/colors.json). Shared foundation and
+signal colors have role-based names; additional shades retain their color family
+and hex value in the name so similar existing shades remain distinguishable.
+Opacity is specified at the point of use, not stored as a separate palette color.
+
+- In Astro and CSS, use `var(--color-cyan)` for a color or
+  `rgba(var(--color-cyan-rgb), 0.2)` for a translucent version. The generated
+  stylesheet is loaded by the site, game pages, graphics catalogs and Storybook.
+- In styled-components, import `theme` from
+  `src/react-component-library/theme.ts` and use its named colors, including
+  translucent colors. In other TypeScript, import `COLORS` from
+  `src/styles/colors.ts`; use `withOpacity(COLORS.cyan, 0.2)` when an actual
+  color string is needed, such as for canvas rendering.
+- After changing the palette, run `node scripts/generate-colors.mjs` and commit
+  the resulting `src/styles/colors.css` alongside the JSON. Do not edit the
+  generated stylesheet directly.

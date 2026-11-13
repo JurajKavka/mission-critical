@@ -1,4 +1,5 @@
 ---
+import { COLORS } from '../../../styles/colors';
 import RouteTransition from '../../../components/RouteTransition.astro';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
@@ -24,7 +25,7 @@ sheet.seal();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#02040b" />
+    <meta name="theme-color" content={COLORS.void} />
     <RouteTransition />
     <Fragment set:html={landingStyles} />
     <meta name="description" content={description} />

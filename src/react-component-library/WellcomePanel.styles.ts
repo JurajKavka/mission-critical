@@ -1,3 +1,4 @@
+import { theme } from './theme';
 import { rem } from 'polished';
 import { styled } from 'styled-components';
 
@@ -8,8 +9,8 @@ export const Card = styled.div`
   width: min(${rem(540)}, 100%);
   padding: clamp(${rem(20)}, 6vw, ${rem(43)});
   border: 0;
-  background: rgba(93, 239, 255, 0.48);
-  color: #effeff;
+  background: ${theme.colors.welcomeBorder};
+  color: ${theme.colors['ice-effeff']};
   font:
     ${rem(16)} / normal ui-monospace,
     'SFMono-Regular',
@@ -34,8 +35,8 @@ export const Card = styled.div`
     inset: ${rem(1)};
     background: linear-gradient(
       145deg,
-      rgba(9, 25, 42, 0.97),
-      rgba(5, 7, 18, 0.98)
+      ${theme.colors.welcomeGradientStart},
+      ${theme.colors.welcomeGradientEnd}
     );
     clip-path: polygon(
       ${rem(18.5)} 0,
@@ -52,7 +53,7 @@ export const Card = styled.div`
 export const Eyebrow = styled.span`
   display: block;
   margin-bottom: ${rem(13)};
-  color: #b89bff;
+  color: ${theme.colors['violet-light']};
   font-size: ${rem(10)};
   font-weight: normal;
   letter-spacing: 0.42em;
@@ -62,18 +63,18 @@ export const Eyebrow = styled.span`
 
 export const Title = styled.h1`
   margin: ${rem(13)} 0 ${rem(3)};
-  color: #f4feff;
+  color: ${theme.colors.text};
   font-size: clamp(${rem(43)}, 8vw, ${rem(72)});
   font-weight: 900;
   letter-spacing: -0.065em;
   line-height: 0.9;
   text-wrap: wrap;
-  text-shadow: ${rem(7)} ${rem(5)} 0 rgba(150, 60, 255, 0.28);
+  text-shadow: ${rem(7)} ${rem(5)} 0 ${theme.colors.welcomeTitleShadow};
 `;
 
 export const Subtitle = styled.p`
   margin: ${rem(17)} auto ${rem(26)};
-  color: #9db5c8;
+  color: ${theme.colors.secondary};
   font-size: ${rem(12)};
   line-height: 1.7;
   text-wrap: wrap;
@@ -82,9 +83,9 @@ export const Subtitle = styled.p`
 export const LaunchButton = styled.button`
   box-sizing: border-box;
   min-width: ${rem(190)};
-  border: ${rem(1)} solid #69fbff;
-  background: rgba(21, 97, 116, 0.2);
-  color: #f4feff;
+  border: ${rem(1)} solid ${theme.colors.cyan};
+  background: ${theme.colors.actionSurface};
+  color: ${theme.colors.text};
   padding: ${rem(12)} ${rem(16)};
   font: inherit;
   font-size: ${rem(10)};
@@ -95,13 +96,13 @@ export const LaunchButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background: rgba(31, 142, 161, 0.35);
+    background: ${theme.colors.actionHover};
   }
 
   &:focus-visible {
-    border-color: #69fbff;
+    border-color: ${theme.colors.cyan};
     outline: none;
-    box-shadow: inset 0 0 0 ${rem(2)} #69fbff;
+    box-shadow: inset 0 0 0 ${rem(2)} ${theme.colors.cyan};
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -110,7 +111,7 @@ export const LaunchButton = styled.button`
 `;
 
 export const Arrow = styled.span`
-  color: #69fbff;
+  color: ${theme.colors.cyan};
   margin-left: ${rem(8)};
 `;
 
@@ -120,13 +121,13 @@ export const Controls = styled.div`
   justify-content: center;
   gap: ${rem(18)};
   margin-top: ${rem(25)};
-  color: #71899d;
+  color: ${theme.colors['blue-71899d']};
   font-size: ${rem(9)};
   letter-spacing: 0.13em;
   text-transform: uppercase;
 
   span {
-    color: #dcfbff;
+    color: ${theme.colors['ice-dcfbff']};
   }
 
   @media (any-pointer: coarse) {
@@ -140,7 +141,7 @@ export const TouchInstructions = styled.div`
   @media (any-pointer: coarse) {
     display: block;
     margin-top: ${rem(25)};
-    color: #b8dce4;
+    color: ${theme.colors['cyan-b8dce4']};
     font-size: ${rem(10)};
     letter-spacing: 0.1em;
     line-height: 1.8;

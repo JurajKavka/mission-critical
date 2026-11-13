@@ -1,6 +1,8 @@
+@import '../../../styles/colors.css';
+
 :root {
-  color: #f4feff;
-  background: #02040b;
+  color: var(--color-primary-text);
+  background: var(--color-void);
   font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   font-synthesis: none;
 }
@@ -14,9 +16,9 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    linear-gradient(rgba(105, 251, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(105, 251, 255, 0.025) 1px, transparent 1px),
-    radial-gradient(circle at 50% 0%, #0b1830, #02040b 48%);
+    linear-gradient(rgba(var(--color-cyan-rgb), 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--color-cyan-rgb), 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0%, var(--color-nebula-blue), var(--color-void) 48%);
   background-size:
     72px 72px,
     72px 72px,
@@ -36,7 +38,7 @@ body {
 
 .catalog-eyebrow {
   margin: 0 0 12px;
-  color: #69fbff;
+  color: var(--color-cyan);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.32em;
@@ -53,20 +55,20 @@ body {
 
 .catalog-header > p:last-child {
   margin: 20px 0 0;
-  color: #9db5c8;
+  color: var(--color-secondary-text);
   font-size: 12px;
   line-height: 1.7;
 }
 
 .catalog-header code {
-  color: #69fbff;
+  color: var(--color-cyan);
 }
 
 .message-preview {
   overflow: hidden;
   margin-bottom: 32px;
-  border: 1px solid rgba(255, 101, 220, 0.34);
-  background: rgba(4, 10, 23, 0.88);
+  border: 1px solid rgba(var(--color-magenta-rgb), 0.34);
+  background: rgba(var(--color-space-040a17-rgb), 0.88);
   clip-path: polygon(
     0 0,
     calc(100% - 12px) 0,
@@ -79,13 +81,13 @@ body {
 
 .message-preview-header {
   padding: 15px 17px;
-  border-bottom: 1px solid rgba(255, 101, 220, 0.22);
+  border-bottom: 1px solid rgba(var(--color-magenta-rgb), 0.22);
 }
 
 .message-preview-header span {
   display: block;
   margin-bottom: 7px;
-  color: #8099ae;
+  color: var(--color-muted-text);
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -93,7 +95,7 @@ body {
 
 .message-preview-header h2 {
   margin: 0;
-  color: #f4feff;
+  color: var(--color-primary-text);
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -104,7 +106,7 @@ body {
   width: 100%;
   height: min(680px, 76vh);
   border: 0;
-  background: #02040b;
+  background: var(--color-void);
 }
 
 .catalog-grid {
@@ -115,8 +117,8 @@ body {
 
 .graphic-card {
   overflow: hidden;
-  border: 1px solid rgba(105, 251, 255, 0.24);
-  background: rgba(4, 10, 23, 0.88);
+  border: 1px solid rgba(var(--color-cyan-rgb), 0.24);
+  background: rgba(var(--color-space-040a17-rgb), 0.88);
   clip-path: polygon(
     0 0,
     calc(100% - 12px) 0,
@@ -131,7 +133,7 @@ body {
   display: block;
   width: 100%;
   height: 170px;
-  border-bottom: 1px solid rgba(105, 251, 255, 0.16);
+  border-bottom: 1px solid rgba(var(--color-cyan-rgb), 0.16);
 }
 
 .graphic-details {
@@ -142,7 +144,7 @@ body {
 .graphic-index {
   display: block;
   margin-bottom: 7px;
-  color: #8099ae;
+  color: var(--color-muted-text);
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -150,7 +152,7 @@ body {
 
 .graphic-name {
   margin: 0;
-  color: #f4feff;
+  color: var(--color-primary-text);
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
