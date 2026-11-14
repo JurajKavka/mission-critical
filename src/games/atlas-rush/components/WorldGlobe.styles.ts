@@ -3,8 +3,14 @@ import { styled } from 'styled-components';
 import { theme } from '../../../react-component-library/theme';
 import { Map } from '../../../react-component-library/atlas-styles';
 
-export const Globe = styled(Map)`
+export const Globe = styled(Map)<{ $draggable: boolean }>`
   overflow: hidden;
+  touch-action: ${({ $draggable }) => ($draggable ? 'none' : 'auto')};
+  cursor: ${({ $draggable }) => ($draggable ? 'grab' : 'auto')};
+
+  &:active {
+    cursor: ${({ $draggable }) => ($draggable ? 'grabbing' : 'auto')};
+  }
 
   .globe-ocean {
     stroke: ${theme.colors.countryStroke};

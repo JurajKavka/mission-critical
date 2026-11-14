@@ -4,7 +4,11 @@ import { useStore } from 'zustand';
 import { Tooltip } from '../../../react-component-library';
 import * as UI from '../../../react-component-library/atlas-styles';
 import { WORLD_TARGETS } from '../data/world-targets';
-import { getGlobeGeometry } from '../geometry/globe';
+import {
+  getGlobeGeometry,
+  GLOBE_RADIUS,
+  GLOBE_ZOOM_SCALE,
+} from '../geometry/globe';
 import { useGlobeRotation } from '../hooks/useGlobeRotation';
 import {
   getCountryCenter,
@@ -33,6 +37,17 @@ type TargetTooltip = {
   top: number;
 };
 
+type GlobeDrag = {
+  pointerId: number;
+  startX: number;
+  startY: number;
+  lastX: number;
+  lastY: number;
+  isDragging: boolean;
+};
+
+const DRAG_THRESHOLD_PX = 5;
+
 export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   store,
   onReturnFocus,
@@ -47,6 +62,8 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   const [tooltip, setTooltip] = useState<TargetTooltip | null>(null);
   const [aspectRatio, setAspectRatio] = useState(1);
   const globeRef = useRef<SVGSVGElement>(null);
+  const drag = useRef<GlobeDrag | null>(null);
+  const suppressClick = useRef(false);
   const clipId = useId();
   const isPlaying = phase === 'playing';
   const canReveal = isPlaying && isLearning;
@@ -58,7 +75,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
     () => (currentCountry ? getCountryCenter(currentCountry) : null),
     [currentCountry],
   );
-  const center = useGlobeRotation(destination, isPlaying);
+  const { center, rotateBy } = useGlobeRotation(destination, isPlaying);
   const geometry = useMemo(
     () => (geography ? getGlobeGeometry(geography, center, isZoomed) : null),
     [geography, center, isZoomed],
@@ -93,6 +110,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
 
   useEffect(() => {
     setTooltip(null);
+    drag.current = null;
   }, [targetId, phase]);
 
   useEffect(() => {
@@ -131,6 +149,64 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   const handleZoomClick = () => {
     setZoomedTargetId(isZoomed ? null : targetId);
     onReturnFocus();
+  };
+  const handlePointerDown = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (!isPlaying || !event.isPrimary || event.button !== 0) {
+      return;
+    }
+    suppressClick.current = false;
+    drag.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      isDragging: false,
+    };
+  };
+  const handlePointerMove = (event: React.PointerEvent<SVGSVGElement>) => {
+    const activeDrag = drag.current;
+    if (!isPlaying || !activeDrag || activeDrag.pointerId !== event.pointerId) {
+      return;
+    }
+    if (!activeDrag.isDragging) {
+      const distance = Math.hypot(
+        event.clientX - activeDrag.startX,
+        event.clientY - activeDrag.startY,
+      );
+      if (distance < DRAG_THRESHOLD_PX) {
+        return;
+      }
+      activeDrag.isDragging = true;
+      suppressClick.current = true;
+      setTooltip(null);
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    const { width, height } = event.currentTarget.getBoundingClientRect();
+    const globeHeight = isZoomed ? height : Math.min(width, height);
+    if (globeHeight > 0) {
+      const degreesPerPixel =
+        ((180 / Math.PI) * (500 / globeHeight)) /
+        (GLOBE_RADIUS * (isZoomed ? GLOBE_ZOOM_SCALE : 1));
+      rotateBy(
+        -(event.clientX - activeDrag.lastX) * degreesPerPixel,
+        (event.clientY - activeDrag.lastY) * degreesPerPixel,
+      );
+    }
+    activeDrag.lastX = event.clientX;
+    activeDrag.lastY = event.clientY;
+  };
+  const handlePointerEnd = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (drag.current?.pointerId === event.pointerId) {
+      drag.current = null;
+    }
+  };
+  const handleClickCapture = (event: React.MouseEvent<SVGSVGElement>) => {
+    if (event.detail !== 0 && suppressClick.current) {
+      event.preventDefault();
+      event.stopPropagation();
+      suppressClick.current = false;
+    }
   };
   const revealCountry = (
     element: SVGGElement,
@@ -181,9 +257,16 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
       />
       <Globe
         ref={globeRef}
+        $draggable={isPlaying}
         viewBox={`${viewX} 0 ${viewWidth} 500`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+        onLostPointerCapture={handlePointerEnd}
+        onClickCapture={handleClickCapture}
         role={canReveal ? 'group' : 'img'}
-        aria-label={`World globe. Identify the highlighted country.${canReveal ? ' Select the highlighted country to reveal its name.' : ''}`}
+        aria-label={`World globe. Drag to rotate. Identify the highlighted country.${canReveal ? ' Select the highlighted country to reveal its name.' : ''}`}
       >
         <defs>
           <radialGradient id={`${clipId}-ocean`} cx="35%" cy="30%" r="75%">

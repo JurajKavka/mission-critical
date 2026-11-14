@@ -18,7 +18,8 @@ type GlobeGeometry = {
 };
 
 const GRATICULE = geoGraticule10();
-const GLOBE_RADIUS = 222;
+export const GLOBE_RADIUS = 222;
+export const GLOBE_ZOOM_SCALE = 2.2;
 const GLOBE_MIDPOINT = 250;
 
 export const getGlobeGeometry = (
@@ -28,7 +29,7 @@ export const getGlobeGeometry = (
 ): GlobeGeometry => {
   const projection = geoOrthographic()
     .translate([GLOBE_MIDPOINT, GLOBE_MIDPOINT])
-    .scale(GLOBE_RADIUS * (isZoomed ? 2.2 : 1))
+    .scale(GLOBE_RADIUS * (isZoomed ? GLOBE_ZOOM_SCALE : 1))
     .rotate([-center[0], -center[1]])
     .clipAngle(90)
     .precision(0.4);

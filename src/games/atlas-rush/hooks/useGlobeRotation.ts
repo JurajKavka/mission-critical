@@ -8,9 +8,13 @@ const ROTATION_DURATION_MS = 1100;
 export const useGlobeRotation = (
   destination: GlobeCenter | null,
   isPlaying: boolean,
-): GlobeCenter => {
+): {
+  center: GlobeCenter;
+  rotateBy: (longitude: number, latitude: number) => void;
+} => {
   const [center, setCenter] = useState<GlobeCenter>(INITIAL_CENTER);
   const currentCenter = useRef<GlobeCenter>(INITIAL_CENTER);
+  const animationFrame = useRef<number | null>(null);
 
   useEffect(() => {
     if (!destination || !isPlaying) {
@@ -29,25 +33,32 @@ export const useGlobeRotation = (
     }
     const interpolate = geoInterpolate(currentCenter.current, destination);
     const startedAt = performance.now();
-    let frameId = 0;
     const rotate = (now: number) => {
       const progress = Math.min(1, (now - startedAt) / ROTATION_DURATION_MS);
       const easedProgress = progress * progress * (3 - 2 * progress);
       updateCenter(interpolate(easedProgress));
       if (progress < 1) {
-        frameId = requestAnimationFrame(rotate);
+        animationFrame.current = requestAnimationFrame(rotate);
+      } else {
+        animationFrame.current = null;
       }
     };
     const handleMotionPreferenceChange = () => {
       if (motionPreference.matches) {
-        cancelAnimationFrame(frameId);
+        if (animationFrame.current !== null) {
+          cancelAnimationFrame(animationFrame.current);
+          animationFrame.current = null;
+        }
         updateCenter(destination);
       }
     };
     motionPreference.addEventListener('change', handleMotionPreferenceChange);
-    frameId = requestAnimationFrame(rotate);
+    animationFrame.current = requestAnimationFrame(rotate);
     return () => {
-      cancelAnimationFrame(frameId);
+      if (animationFrame.current !== null) {
+        cancelAnimationFrame(animationFrame.current);
+        animationFrame.current = null;
+      }
       motionPreference.removeEventListener(
         'change',
         handleMotionPreferenceChange,
@@ -55,5 +66,18 @@ export const useGlobeRotation = (
     };
   }, [destination, isPlaying]);
 
-  return center;
+  const rotateBy = (longitude: number, latitude: number) => {
+    if (animationFrame.current !== null) {
+      cancelAnimationFrame(animationFrame.current);
+      animationFrame.current = null;
+    }
+    const next: GlobeCenter = [
+      ((((currentCenter.current[0] + longitude) % 360) + 540) % 360) - 180,
+      Math.max(-90, Math.min(90, currentCenter.current[1] + latitude)),
+    ];
+    currentCenter.current = next;
+    setCenter(next);
+  };
+
+  return { center, rotateBy };
 };
