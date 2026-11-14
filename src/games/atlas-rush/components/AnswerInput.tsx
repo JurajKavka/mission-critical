@@ -23,7 +23,7 @@ const getAnswerHint = (comparison: AnswerComparison | undefined): string => {
   if (comparison?.mode === 'prefix') {
     return `Speed mode / First ${comparison.minimumCharacters} letters auto-identify.`;
   }
-  return 'Full names auto-identify. Enter to check an answer.';
+  return 'Full names auto-identify.';
 };
 
 const getAnswerFeedback = (
@@ -297,12 +297,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
       return;
     }
     setIsIncorrect(false);
-    if (
-      !isMobile ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.altKey
-    ) {
+    if (!isMobile || event.ctrlKey || event.metaKey || event.altKey) {
       return;
     }
     if (event.key === 'Backspace' || event.key === 'Enter') {
@@ -364,8 +359,8 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
       )}
       {isMobile && (
         <UI.ScreenReaderOnly as="p" id="keyboard-help">
-          Use the on-screen keyboard or a connected physical keyboard to enter an
-          answer.
+          Use the on-screen keyboard or a connected physical keyboard to enter
+          an answer.
         </UI.ScreenReaderOnly>
       )}
     </UI.Command>

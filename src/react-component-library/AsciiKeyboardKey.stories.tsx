@@ -17,6 +17,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const Command: Story = {
-  args: { keyValue: 'Enter', children: 'Enter ↵', isCommandKey: true },
+  args: { keyValue: 'Skip', children: 'Skip →', isCommandKey: true },
 };
 export const Disabled: Story = { args: { disabled: true } };

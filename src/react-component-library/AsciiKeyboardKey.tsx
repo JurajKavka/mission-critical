@@ -16,7 +16,7 @@ const Button = styled.button<{
   align-items: center;
   justify-content: center;
   gap: ${rem(8)};
-  flex: ${({ $isSpaceKey }) => ($isSpaceKey ? '2 1 0' : '1 1 0')};
+  flex: ${({ $isSpaceKey }) => ($isSpaceKey ? '3 1 0' : '1 1 0')};
   min-width: ${({ $isCommandKey }) => ($isCommandKey ? 'max-content' : '1.5em')};
   min-height: ${rem(44)};
   padding: ${rem(4)};

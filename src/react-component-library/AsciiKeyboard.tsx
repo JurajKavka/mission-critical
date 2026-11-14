@@ -39,14 +39,6 @@ const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 
 const KEY_LABELS = {
   Space: 'Space',
-  Enter: (
-    <>
-      Enter{' '}
-      <span aria-hidden="true" style={{ marginBottom: rem(4) }}>
-        ↵
-      </span>
-    </>
-  ),
   Skip: (
     <>
       Skip <span aria-hidden="true">→</span>
@@ -75,7 +67,7 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
         </KeyRow>
       ))}
       <KeyRow>
-        {(['Skip', 'Space', 'Enter'] as const).map((key) => (
+        {(['Space', 'Skip'] as const).map((key) => (
           <AsciiKeyboardKey
             key={key}
             keyValue={key}

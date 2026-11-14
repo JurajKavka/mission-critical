@@ -23,7 +23,7 @@ export const Default: Story = {
         setAnswer((current) => current.slice(0, -1));
       } else if (key === 'Space') {
         setAnswer((current) => `${current} `);
-      } else if (key === 'Enter' || key === 'Skip') {
+      } else if (key === 'Skip') {
         setAnswer('');
       } else {
         setAnswer((current) => current + key);
