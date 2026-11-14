@@ -217,13 +217,103 @@ export const MapKey = styled.div`
   }
 `;
 
-export const MapSlot = styled.div`
+export const MapSlot = styled.div<{ $space?: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 0;
   flex: 1 1 auto;
+  ${({ $space }) =>
+    $space &&
+    css`
+      background-image:
+        radial-gradient(
+          circle at 8% 18%,
+          ${theme.colors.secondary} 0 ${rem(1)},
+          transparent ${rem(1.5)}
+        ),
+        radial-gradient(
+          circle at 12% 52%,
+          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 17% 91%,
+          ${theme.colors.secondary} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 21% 31%,
+          ${theme.colors.secondary} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 23% 72%,
+          ${theme.colors.cyanBorderStrong} 0 ${rem(1)},
+          transparent ${rem(1.5)}
+        ),
+        radial-gradient(
+          circle at 34% 9%,
+          ${theme.colors.secondary} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 37% 79%,
+          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 47% 88%,
+          ${theme.colors.secondary} 0 ${rem(1)},
+          transparent ${rem(1.5)}
+        ),
+        radial-gradient(
+          circle at 53% 5%,
+          ${theme.colors.secondary} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 64% 13%,
+          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 69% 91%,
+          ${theme.colors.secondary} 0 ${rem(1)},
+          transparent ${rem(1.5)}
+        ),
+        radial-gradient(
+          circle at 81% 24%,
+          ${theme.colors.secondary} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 78% 80%,
+          ${theme.colors.secondary} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 91% 32%,
+          ${theme.colors.secondary} 0 ${rem(1)},
+          transparent ${rem(1.5)}
+        ),
+        radial-gradient(
+          circle at 86% 56%,
+          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 91% 93%,
+          ${theme.colors.secondary} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        ),
+        radial-gradient(
+          circle at 95% 68%,
+          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
+          transparent ${rem(1.2)}
+        );
+    `}
 `;
 
 export const Map = styled.svg`

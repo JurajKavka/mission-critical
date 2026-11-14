@@ -13,6 +13,7 @@ import { takeLandingSettings } from '../infrastructure/landing-settings';
 import * as UI from '../../../react-component-library/atlas-styles';
 
 const REGIONS = [
+  regionMetadata.world,
   regionMetadata.africa,
   regionMetadata['south-america'],
   regionMetadata.usa,
@@ -22,7 +23,7 @@ const REGIONS = [
 
 export const Landing: React.FC = () => {
   const [isReady, setIsReady] = useState(false);
-  const [regionId, setRegionId] = useState<RegionId>('africa');
+  const [regionId, setRegionId] = useState<RegionId>('world');
   const [selectedLevel, setSelectedLevel] = useState<LevelId>('beginner');
   const [isLearning, setIsLearning] = useState(false);
   const [isSpeedMode, setIsSpeedMode] = useState(false);

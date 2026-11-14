@@ -26,7 +26,7 @@ describe('geometry-free metadata', () => {
   it('retains all countries, states, marker locations and special European locations', () => {
     expect(
       Object.values(regionTargets).map((targets) => targets.length),
-    ).toEqual([54, 12, 50, 47, 64]);
+    ).toEqual([197, 54, 12, 50, 47, 64]);
     expect(regionTargets.africa.map((target) => target.id)).toEqual(
       expect.arrayContaining(['CPV', 'COM', 'MUS', 'STP', 'SYC']),
     );
