@@ -2,9 +2,7 @@ import { theme } from './theme';
 import { rem } from 'polished';
 import * as React from 'react';
 import { styled } from 'styled-components';
-
-const COMPACT_KEYBOARD_QUERY =
-  '(pointer: coarse) and (max-width: 1024px) and (max-height: 360px)';
+import { AsciiKeyboardKey, COMPACT_KEYBOARD_QUERY } from './AsciiKeyboardKey';
 
 const Keyboard = styled.div`
   display: grid;
@@ -28,44 +26,6 @@ const KeyRow = styled.div`
 
   @media ${COMPACT_KEYBOARD_QUERY} {
     gap: ${rem(3)};
-  }
-`;
-
-const Key = styled.button<{ $isCommandKey?: boolean; $isSpaceKey?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: ${rem(8)};
-  flex: ${({ $isSpaceKey }) => ($isSpaceKey ? '2 1 0' : '1 1 0')};
-  min-width: ${({ $isCommandKey }) => ($isCommandKey ? 'max-content' : '1.5em')};
-  min-height: ${rem(44)};
-  padding: ${rem(4)};
-  border: ${rem(1)} solid ${theme.colors.keyboardBorder};
-  background: ${theme.colors['nebula-blue']};
-  color: ${theme.colors.text};
-  font: inherit;
-  font-size: clamp(${rem(11)}, 2.8vw, ${rem(14)});
-  font-weight: 700;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-touch-callout: none;
-
-  &:focus-visible {
-    outline: ${rem(2)} solid ${theme.colors.cyan};
-    outline-offset: ${rem(1)};
-  }
-
-  &:active {
-    background: ${theme.colors.keyboardHover};
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: default;
-  }
-
-  @media ${COMPACT_KEYBOARD_QUERY} {
-    min-height: ${rem(36)};
   }
 `;
 
@@ -101,24 +61,21 @@ type AsciiKeyboardProps = {
 
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 
-const getKeyLabel = (key: 'Space' | 'Enter' | 'Skip') => {
-  if (key === 'Enter') {
-    return (
-      <>
-        Enter{' '}
-        <span aria-hidden="true" style={{ marginBottom: rem(4) }}>
-          ↵
-        </span>
-      </>
-    );
-  } else if (key === 'Skip') {
-    return (
-      <>
-        Skip <span aria-hidden="true">→</span>
-      </>
-    );
-  }
-  return key;
+const KEY_LABELS = {
+  Space: 'Space',
+  Enter: (
+    <>
+      Enter{' '}
+      <span aria-hidden="true" style={{ marginBottom: rem(4) }}>
+        ↵
+      </span>
+    </>
+  ),
+  Skip: (
+    <>
+      Skip <span aria-hidden="true">→</span>
+    </>
+  ),
 };
 
 const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
@@ -127,41 +84,28 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
   usesNativeKeyboard,
   disabled = false,
 }) => {
-  console.log('remnder');
   return (
     <Keyboard role="group" aria-label="On-screen keyboard">
       {ROWS.map((row) => (
         <KeyRow key={row}>
           {Array.from(row).map((letter) => (
-            <Key
-              key={letter}
-              type="button"
-              disabled={disabled}
-              onClick={() => {
-                onKey(letter);
-              }}
-              aria-label={letter}
-            >
+            <AsciiKeyboardKey key={letter} keyValue={letter} disabled={disabled} onKey={onKey}>
               {letter}
-            </Key>
+            </AsciiKeyboardKey>
           ))}
         </KeyRow>
       ))}
       <KeyRow>
         {(['Skip', 'Space', 'Enter'] as const).map((key) => (
-          <Key
+          <AsciiKeyboardKey
             key={key}
-            $isCommandKey
-            $isSpaceKey={key === 'Space'}
-            type="button"
+            keyValue={key}
+            isCommandKey
             disabled={disabled}
-            onClick={() => {
-              onKey(key);
-            }}
-            aria-label={key}
+            onKey={onKey}
           >
-            {getKeyLabel(key)}
-          </Key>
+            {KEY_LABELS[key]}
+          </AsciiKeyboardKey>
         ))}
       </KeyRow>
       <NativeToggle type="button" onClick={onToggleNative} disabled={disabled}>
