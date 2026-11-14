@@ -1,4 +1,3 @@
-import { theme } from './theme';
 import { rem } from 'polished';
 import * as React from 'react';
 import { styled } from 'styled-components';
@@ -29,33 +28,10 @@ const KeyRow = styled.div`
   }
 `;
 
-const NativeToggle = styled.button`
-  justify-self: end;
-  min-height: ${rem(32)};
-  padding: ${rem(4)} 0;
-  border: 0;
-  background: transparent;
-  color: ${theme.colors.secondary};
-  font: inherit;
-  font-size: ${rem(11)};
-  text-decoration: underline;
-
-  &:focus-visible {
-    outline: ${rem(2)} solid ${theme.colors.cyan};
-    outline-offset: ${rem(1)};
-  }
-
-  @media ${COMPACT_KEYBOARD_QUERY} {
-    min-height: ${rem(28)};
-  }
-`;
-
 export type AsciiKey = 'Backspace' | 'Enter' | 'Skip' | 'Space' | string;
 
 type AsciiKeyboardProps = {
   onKey: (key: AsciiKey) => void;
-  onToggleNative: () => void;
-  usesNativeKeyboard: boolean;
   disabled?: boolean;
 };
 
@@ -80,8 +56,6 @@ const KEY_LABELS = {
 
 const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
   onKey,
-  onToggleNative,
-  usesNativeKeyboard,
   disabled = false,
 }) => {
   return (
@@ -89,7 +63,12 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
       {ROWS.map((row) => (
         <KeyRow key={row}>
           {Array.from(row).map((letter) => (
-            <AsciiKeyboardKey key={letter} keyValue={letter} disabled={disabled} onKey={onKey}>
+            <AsciiKeyboardKey
+              key={letter}
+              keyValue={letter}
+              disabled={disabled}
+              onKey={onKey}
+            >
               {letter}
             </AsciiKeyboardKey>
           ))}
@@ -108,9 +87,6 @@ const _AsciiKeyboard: React.FC<AsciiKeyboardProps> = ({
           </AsciiKeyboardKey>
         ))}
       </KeyRow>
-      <NativeToggle type="button" onClick={onToggleNative} disabled={disabled}>
-        {usesNativeKeyboard ? 'Use on-screen keyboard' : 'Use native keyboard'}
-      </NativeToggle>
     </Keyboard>
   );
 };

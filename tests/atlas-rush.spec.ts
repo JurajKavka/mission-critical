@@ -144,7 +144,7 @@ test.describe('mobile keyboard', () => {
     await expect(input).toHaveValue('QQ');
   });
 
-  test('keeps controls below the answer, supports editing and the native fallback', async ({
+  test('keeps controls below the answer and edits only at the end on mobile', async ({
     page,
   }) => {
     await page.goto('/games/atlas-rush/africa/?learning=1&seed=Mobile_1');
@@ -170,23 +170,19 @@ test.describe('mobile keyboard', () => {
     await expect(input).toHaveValue('AB');
     await keyboard.getByRole('button', { name: 'Skip', exact: true }).click();
     await expect(input).toHaveValue('');
-    await keyboard.getByRole('button', { name: 'Use native keyboard' }).click();
-    await expect(input).not.toHaveAttribute('readonly', '');
-    await input.fill('test');
-    await expect(input).toHaveValue('test');
+    await input.focus();
+    await page.keyboard.type('test');
     await input.evaluate((element: HTMLInputElement) =>
       element.setSelectionRange(1, 3),
     );
     await page.getByRole('button', { name: 'Backspace', exact: true }).click();
-    await expect(input).toHaveValue('tt');
-    await input.fill('test');
-    await keyboard
-      .getByRole('button', { name: 'Use on-screen keyboard' })
-      .click();
+    await expect(input).toHaveValue('tes');
+    await expect(input).toHaveAttribute('readonly', '');
+    await expect(input).toHaveAttribute('inputmode', 'none');
     await keyboard.getByRole('button', { name: 'A', exact: true }).click();
-    await expect(input).toHaveValue('testA');
+    await expect(input).toHaveValue('tesA');
     await page.getByRole('button', { name: 'Backspace', exact: true }).click();
-    await expect(input).toHaveValue('test');
+    await expect(input).toHaveValue('tes');
     const backspace = page.getByRole('button', {
       name: 'Backspace',
       exact: true,
