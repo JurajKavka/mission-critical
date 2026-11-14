@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type * as React from 'react';
 import { useStore } from 'zustand';
 import { Tooltip } from '../../../react-component-library';
@@ -45,6 +45,8 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   const [hasError, setHasError] = useState(false);
   const [zoomedTargetId, setZoomedTargetId] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<TargetTooltip | null>(null);
+  const [aspectRatio, setAspectRatio] = useState(1);
+  const globeRef = useRef<SVGSVGElement>(null);
   const clipId = useId();
   const isPlaying = phase === 'playing';
   const canReveal = isPlaying && isLearning;
@@ -70,6 +72,8 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   const marker = destination && geometry?.projectMarker(destination);
   const hasTargetMarker =
     isPlaying && targetGeometry !== undefined && targetGeometry.area < 45;
+  const viewWidth = isZoomed ? 500 * aspectRatio : 500;
+  const viewX = (500 - viewWidth) / 2;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -90,6 +94,21 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   useEffect(() => {
     setTooltip(null);
   }, [targetId, phase]);
+
+  useEffect(() => {
+    const globe = globeRef.current;
+    if (!globe) {
+      return;
+    }
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      if (width > 0 && height > 0) {
+        setAspectRatio(width / height);
+      }
+    });
+    observer.observe(globe);
+    return () => observer.disconnect();
+  }, [geography]);
 
   useEffect(() => {
     if (!tooltip) {
@@ -161,7 +180,8 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
         onClick={handleZoomClick}
       />
       <Globe
-        viewBox="0 0 500 500"
+        ref={globeRef}
+        viewBox={`${viewX} 0 ${viewWidth} 500`}
         role={canReveal ? 'group' : 'img'}
         aria-label={`World globe. Identify the highlighted country.${canReveal ? ' Select the highlighted country to reveal its name.' : ''}`}
       >
@@ -171,7 +191,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
             <stop className="globe-ocean-edge" offset="100%" />
           </radialGradient>
           <clipPath id={clipId}>
-            <rect width="500" height="500" />
+            <rect x={viewX} width={viewWidth} height="500" />
           </clipPath>
         </defs>
         <g clipPath={`url(#${clipId})`}>
