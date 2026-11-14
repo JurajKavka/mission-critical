@@ -341,9 +341,9 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           disabled={phase !== 'playing' || isCompleting}
         />
       </UI.AnswerForm>
-      <UI.AnswerHint id="feedback" aria-live="polite">
+      <UI.ScreenReaderOnly as="p" id="feedback" aria-live="polite">
         {feedback}
-      </UI.AnswerHint>
+      </UI.ScreenReaderOnly>
       {phase === 'playing' && isMobile && (
         <AsciiKeyboard onKey={handleKey} disabled={isCompleting} />
       )}
