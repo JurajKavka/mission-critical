@@ -280,6 +280,16 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
       setIsDragging(false);
     }
   };
+  const handleLostPointerCapture = (
+    event: React.PointerEvent<SVGSVGElement>,
+  ) => {
+    // Touch capture transfers from the touched path to the SVG when dragging
+    // starts. The path's bubbling capture-loss event must not end the drag.
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+    handlePointerEnd(event);
+  };
   const handleClickCapture = (event: React.MouseEvent<SVGSVGElement>) => {
     if (event.detail !== 0 && suppressClick.current) {
       event.preventDefault();
@@ -343,7 +353,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
-        onLostPointerCapture={handlePointerEnd}
+        onLostPointerCapture={handleLostPointerCapture}
         onClickCapture={handleClickCapture}
         role={canReveal ? 'group' : 'img'}
         aria-label={`World globe. Drag to rotate. Identify the highlighted country.${canReveal ? ' Select the highlighted country to reveal its name.' : ''}`}
