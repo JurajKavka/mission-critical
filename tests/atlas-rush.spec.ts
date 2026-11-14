@@ -138,16 +138,18 @@ test.describe('mobile keyboard', () => {
     const keyboard = page.getByRole('group', { name: 'On-screen keyboard' });
     await expect(input).toBeEnabled();
     await keyboard.getByRole('button', { name: 'Q', exact: true }).click();
-    await keyboard.getByRole('button', { name: 'Enter', exact: true }).click();
+    await input.press('Enter');
     await expect(input).toBeFocused();
     await keyboard.getByRole('button', { name: 'Q', exact: true }).click();
     await expect(input).toHaveValue('QQ');
   });
 
-  test('keeps controls below the answer, supports editing and the native fallback', async ({
+  test('keeps controls below the answer and edits only at the end on mobile', async ({
     page,
   }) => {
+    page.setDefaultTimeout(5000);
     await page.goto('/games/atlas-rush/africa/?learning=1&seed=Mobile_1');
+    await page.addStyleTag({ content: 'astro-dev-toolbar { display: none; }' });
     const keyboard = page.getByRole('group', { name: 'On-screen keyboard' });
     const input = page.getByLabel('country name');
     await expect(keyboard).toBeVisible();
@@ -159,34 +161,34 @@ test.describe('mobile keyboard', () => {
     expect(
       (inputBounds?.y ?? 0) + (inputBounds?.height ?? 0),
     ).toBeLessThanOrEqual(keyboardBounds?.y ?? 0);
-    await keyboard.getByRole('button', { name: 'A', exact: true }).click();
-    await expect(input).toHaveValue('A');
-    await keyboard.getByRole('button', { name: 'Space', exact: true }).click();
-    await expect(input).toHaveValue('A ');
-    await page.getByRole('button', { name: 'Backspace', exact: true }).click();
-    await expect(input).toHaveValue('A');
-    await input.focus();
-    await page.keyboard.type('B');
-    await expect(input).toHaveValue('AB');
-    await keyboard.getByRole('button', { name: 'Skip', exact: true }).click();
-    await expect(input).toHaveValue('');
-    await keyboard.getByRole('button', { name: 'Use native keyboard' }).click();
-    await expect(input).not.toHaveAttribute('readonly', '');
-    await input.fill('test');
-    await expect(input).toHaveValue('test');
-    await input.evaluate((element: HTMLInputElement) =>
-      element.setSelectionRange(1, 3),
-    );
-    await page.getByRole('button', { name: 'Backspace', exact: true }).click();
-    await expect(input).toHaveValue('tt');
-    await input.fill('test');
-    await keyboard
-      .getByRole('button', { name: 'Use on-screen keyboard' })
-      .click();
-    await keyboard.getByRole('button', { name: 'A', exact: true }).click();
-    await expect(input).toHaveValue('testA');
-    await page.getByRole('button', { name: 'Backspace', exact: true }).click();
-    await expect(input).toHaveValue('test');
+    await test.step('type and delete using the touch keyboard', async () => {
+      await keyboard.getByRole('button', { name: 'A', exact: true }).tap();
+      await expect(input).toHaveValue('A');
+      await keyboard.getByRole('button', { name: 'Space', exact: true }).tap();
+      await expect(input).toHaveValue('A ');
+      await page.getByRole('button', { name: 'Backspace', exact: true }).tap();
+      await expect(input).toHaveValue('A');
+    });
+    await test.step('accept a connected physical keyboard and skip', async () => {
+      await input.pressSequentially('B');
+      await expect(input).toHaveValue('AB');
+      await keyboard.getByRole('button', { name: 'Skip', exact: true }).tap();
+      await expect(input).toHaveValue('');
+    });
+    await test.step('keep edits at the end after selecting text', async () => {
+      await input.pressSequentially('test');
+      await input.evaluate((element: HTMLInputElement) =>
+        element.setSelectionRange(1, 3),
+      );
+      await page.getByRole('button', { name: 'Backspace', exact: true }).tap();
+      await expect(input).toHaveValue('tes');
+      await expect(input).toHaveAttribute('readonly', '');
+      await expect(input).toHaveAttribute('inputmode', 'none');
+      await keyboard.getByRole('button', { name: 'A', exact: true }).tap();
+      await expect(input).toHaveValue('tesA');
+      await page.getByRole('button', { name: 'Backspace', exact: true }).tap();
+      await expect(input).toHaveValue('tes');
+    });
     const backspace = page.getByRole('button', {
       name: 'Backspace',
       exact: true,
