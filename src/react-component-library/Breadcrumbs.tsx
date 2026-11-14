@@ -65,7 +65,7 @@ export type BreadcrumbsProps = {
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => (
   <BreadcrumbsWrapper as="nav" aria-label="Game location">
     <a href={home()} aria-label="Mission Critical">
-      <HomeBreadcrumbMobile>MSN CRTCL</HomeBreadcrumbMobile>
+      <HomeBreadcrumbMobile>MSN&nbsp;CRTCL</HomeBreadcrumbMobile>
       <HomeBreadcrumb>Mission Critical</HomeBreadcrumb>
     </a>
     {breadcrumbs.map((breadcrumb, index) => (
