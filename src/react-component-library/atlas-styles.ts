@@ -455,16 +455,6 @@ export const ScreenReaderOnly = styled.span`
   border: 0;
 `;
 
-export const AnswerHint = styled.p`
-  margin: 0;
-  color: ${theme.colors.muted};
-  font-size: ${theme.fontSizes.small};
-
-  &:empty {
-    display: none;
-  }
-`;
-
 export const Overlay = styled.div`
   position: fixed;
   z-index: 5;
