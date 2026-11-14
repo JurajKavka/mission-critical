@@ -254,11 +254,13 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
       updateAnswer(edit.value);
       requestAnimationFrame(() => {
         if (input?.isConnected) {
-          if (isMobile) {
+          if (isMobile && document.activeElement !== input) {
             input.focus({ preventScroll: true });
           }
           const caret = isMobile ? input.value.length : edit.caret;
-          input.setSelectionRange(caret, caret);
+          if (input.selectionStart !== caret || input.selectionEnd !== caret) {
+            input.setSelectionRange(caret, caret);
+          }
           input.scrollLeft = input.scrollWidth;
         }
       });

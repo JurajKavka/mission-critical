@@ -1,19 +1,20 @@
 import { geoDistance, geoGraticule10, geoOrthographic, geoPath } from 'd3-geo';
 import type {
   GlobeCenter,
+  WorldCountry,
   WorldGeography,
 } from '../infrastructure/world-geography';
 
 type GlobeCountryGeometry = {
   id: string;
   path: string;
-  area: number;
 };
 
 type GlobeGeometry = {
   ocean: string;
   grid: string;
   countries: readonly GlobeCountryGeometry[];
+  targetArea: number | null;
   projectMarker: (location: GlobeCenter) => [number, number] | null;
 };
 
@@ -26,22 +27,24 @@ export const getGlobeGeometry = (
   geography: WorldGeography,
   center: GlobeCenter,
   isZoomed: boolean,
+  target: WorldCountry | undefined,
+  isMoving: boolean,
 ): GlobeGeometry => {
   const projection = geoOrthographic()
     .translate([GLOBE_MIDPOINT, GLOBE_MIDPOINT])
     .scale(GLOBE_RADIUS * (isZoomed ? GLOBE_ZOOM_SCALE : 1))
     .rotate([-center[0], -center[1]])
     .clipAngle(90)
-    .precision(0.4);
+    .precision(isMoving ? 1.5 : 0.4);
   const path = geoPath(projection);
   return {
     ocean: path({ type: 'Sphere' }) ?? '',
     grid: path(GRATICULE) ?? '',
     countries: geography.features.map((country) => ({
       id: String(country.id),
-      path: path(country) ?? '',
-      area: path.area(country),
+      path: path(target && country.id === target.id ? target : country) ?? '',
     })),
+    targetArea: target ? path.area(target) : null,
     projectMarker: (location: GlobeCenter) => {
       if (geoDistance(center, location) >= Math.PI / 2) {
         return null;

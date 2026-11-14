@@ -9,6 +9,7 @@ import {
   GLOBE_RADIUS,
   GLOBE_ZOOM_SCALE,
 } from '../geometry/globe';
+import { simplifyGlobeGeography } from '../geometry/simplify-globe';
 import { useGlobeRotation } from '../hooks/useGlobeRotation';
 import {
   getCountryCenter,
@@ -47,6 +48,8 @@ type GlobeDrag = {
 };
 
 const DRAG_THRESHOLD_PX = 5;
+const MOBILE_POINTER_QUERY = '(pointer: coarse) and (max-width: 1024px)';
+const MOBILE_DRAG_INTERVAL_MS = 1000 / 30 - 1;
 
 export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   store,
@@ -61,8 +64,14 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   const [zoomedTargetId, setZoomedTargetId] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<TargetTooltip | null>(null);
   const [aspectRatio, setAspectRatio] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const globeRef = useRef<SVGSVGElement>(null);
+  const globeSize = useRef({ width: 0, height: 0 });
   const drag = useRef<GlobeDrag | null>(null);
+  const dragFrame = useRef<number | null>(null);
+  const lastDragRender = useRef(-Infinity);
+  const pendingDrag = useRef({ longitude: 0, latitude: 0 });
   const suppressClick = useRef(false);
   const clipId = useId();
   const isPlaying = phase === 'playing';
@@ -75,20 +84,42 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
     () => (currentCountry ? getCountryCenter(currentCountry) : null),
     [currentCountry],
   );
-  const { center, rotateBy } = useGlobeRotation(destination, isPlaying);
-  const geometry = useMemo(
-    () => (geography ? getGlobeGeometry(geography, center, isZoomed) : null),
-    [geography, center, isZoomed],
+  const { center, isAnimating, rotateBy } = useGlobeRotation(
+    destination,
+    isPlaying,
   );
+  const isMoving = isAnimating || isDragging;
+  const simplifiedGeography = useMemo(
+    () => (geography && isMobile ? simplifyGlobeGeography(geography) : null),
+    [geography, isMobile],
+  );
+  const geometry = useMemo(() => {
+    if (!geography) {
+      return null;
+    }
+    const movingGeography = isMobile && isMoving ? simplifiedGeography : null;
+    return getGlobeGeometry(
+      movingGeography ?? geography,
+      center,
+      isZoomed,
+      currentCountry,
+      isMobile && isMoving,
+    );
+  }, [
+    geography,
+    simplifiedGeography,
+    center,
+    isZoomed,
+    currentCountry,
+    isMobile,
+    isMoving,
+  ]);
   const targetName = WORLD_TARGETS.find(
     (country) => country.id === targetId,
   )?.name;
-  const targetGeometry = geometry?.countries.find(
-    (country) => country.id === targetId,
-  );
   const marker = destination && geometry?.projectMarker(destination);
   const hasTargetMarker =
-    isPlaying && targetGeometry !== undefined && targetGeometry.area < 45;
+    isPlaying && geometry?.targetArea != null && geometry.targetArea < 45;
   const viewWidth = isZoomed ? 500 * aspectRatio : 500;
   const viewX = (500 - viewWidth) / 2;
 
@@ -109,8 +140,28 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   }, []);
 
   useEffect(() => {
+    const media = window.matchMedia(MOBILE_POINTER_QUERY);
+    const update = () => setIsMobile(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  useEffect(() => {
     setTooltip(null);
     drag.current = null;
+    setIsDragging(false);
+    if (dragFrame.current !== null) {
+      cancelAnimationFrame(dragFrame.current);
+      dragFrame.current = null;
+    }
+    pendingDrag.current = { longitude: 0, latitude: 0 };
+    return () => {
+      if (dragFrame.current !== null) {
+        cancelAnimationFrame(dragFrame.current);
+        dragFrame.current = null;
+      }
+    };
   }, [targetId, phase]);
 
   useEffect(() => {
@@ -121,6 +172,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
     const observer = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
       if (width > 0 && height > 0) {
+        globeSize.current = { width, height };
         setAspectRatio(width / height);
       }
     });
@@ -155,6 +207,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
       return;
     }
     suppressClick.current = false;
+    lastDragRender.current = -Infinity;
     drag.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -178,27 +231,53 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
         return;
       }
       activeDrag.isDragging = true;
+      setIsDragging(true);
       suppressClick.current = true;
       setTooltip(null);
       event.currentTarget.setPointerCapture(event.pointerId);
     }
-    const { width, height } = event.currentTarget.getBoundingClientRect();
+    const { width, height } = globeSize.current;
     const globeHeight = isZoomed ? height : Math.min(width, height);
     if (globeHeight > 0) {
       const degreesPerPixel =
         ((180 / Math.PI) * (500 / globeHeight)) /
         (GLOBE_RADIUS * (isZoomed ? GLOBE_ZOOM_SCALE : 1));
-      rotateBy(
-        -(event.clientX - activeDrag.lastX) * degreesPerPixel,
-        (event.clientY - activeDrag.lastY) * degreesPerPixel,
-      );
+      pendingDrag.current.longitude -=
+        (event.clientX - activeDrag.lastX) * degreesPerPixel;
+      pendingDrag.current.latitude +=
+        (event.clientY - activeDrag.lastY) * degreesPerPixel;
+      if (dragFrame.current === null) {
+        const renderDrag = (now: number) => {
+          if (
+            isMobile &&
+            now - lastDragRender.current < MOBILE_DRAG_INTERVAL_MS
+          ) {
+            dragFrame.current = requestAnimationFrame(renderDrag);
+            return;
+          }
+          dragFrame.current = null;
+          lastDragRender.current = now;
+          const { longitude, latitude } = pendingDrag.current;
+          pendingDrag.current = { longitude: 0, latitude: 0 };
+          rotateBy(longitude, latitude);
+        };
+        dragFrame.current = requestAnimationFrame(renderDrag);
+      }
     }
     activeDrag.lastX = event.clientX;
     activeDrag.lastY = event.clientY;
   };
   const handlePointerEnd = (event: React.PointerEvent<SVGSVGElement>) => {
     if (drag.current?.pointerId === event.pointerId) {
+      if (dragFrame.current !== null) {
+        cancelAnimationFrame(dragFrame.current);
+        dragFrame.current = null;
+        const { longitude, latitude } = pendingDrag.current;
+        pendingDrag.current = { longitude: 0, latitude: 0 };
+        rotateBy(longitude, latitude);
+      }
       drag.current = null;
+      setIsDragging(false);
     }
   };
   const handleClickCapture = (event: React.MouseEvent<SVGSVGElement>) => {
@@ -258,6 +337,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
       <Globe
         ref={globeRef}
         $draggable={isPlaying}
+        $moving={isMoving}
         viewBox={`${viewX} 0 ${viewWidth} 500`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
