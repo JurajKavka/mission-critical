@@ -35,7 +35,6 @@ export const startGame = (root: HTMLElement): void => {
   const learningHint = root.querySelector<HTMLElement>('#learning-hint')!;
   const regionLabel = root.querySelector<HTMLElement>('#region-label')!;
   const regionCode = root.querySelector<HTMLElement>('#region-code')!;
-  const islandMarkers = root.querySelector<HTMLElement>('#island-markers')!;
   const startPanel = root.querySelector<HTMLElement>('.start-panel')!;
   const breadcrumb = overlay.querySelector<HTMLElement>('.game-breadcrumb')!;
   const exitButton = root.querySelector<HTMLButtonElement>('#exit-game')!;
@@ -222,8 +221,6 @@ export const startGame = (root: HTMLElement): void => {
     learning.setRegion(region);
     regionLabel.textContent = `Sector 01 / ${region.name}`;
     regionCode.textContent = `${region.code} · ${region.countries.length}`;
-    islandMarkers.hidden = !region.hasIslandMarkers;
-    islandMarkers.textContent = region.markerNote ?? '';
     guessed.clear();
     roundSeconds = getRoundSeconds(selectedRegion, selectedLevel);
     updateTimer(timer, roundSeconds);
