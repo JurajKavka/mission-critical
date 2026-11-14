@@ -113,7 +113,7 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
               />
             </UI.HudStats>
           </UI.MapHeading>
-          <UI.MapSlot>
+          <UI.MapSlot $space={regionId === 'world'}>
             {regionId === 'world' ? (
               <WorldGlobe store={store} onReturnFocus={focusInput} />
             ) : (
