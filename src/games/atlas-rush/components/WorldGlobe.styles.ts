@@ -7,8 +7,7 @@ export const Globe = styled(Map)`
   overflow: hidden;
 
   .globe-ocean {
-    stroke: ${theme.colors.cyan};
-    stroke-opacity: 0.6;
+    stroke: ${theme.colors.countryStroke};
     stroke-width: ${rem(1)};
   }
 

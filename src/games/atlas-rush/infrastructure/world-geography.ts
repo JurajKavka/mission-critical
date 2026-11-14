@@ -1,9 +1,21 @@
 import { geoArea, geoCentroid } from 'd3-geo';
-import type { Feature, FeatureCollection, MultiPolygon } from 'geojson';
+import type {
+  Feature,
+  FeatureCollection,
+  MultiPolygon,
+  Position,
+} from 'geojson';
 
 export type WorldCountry = Feature<MultiPolygon, { name: string }>;
 export type WorldGeography = FeatureCollection<MultiPolygon, { name: string }>;
 export type GlobeCenter = [longitude: number, latitude: number];
+
+const orientPolygon = (polygon: Position[][]): Position[][] => {
+  if (geoArea({ type: 'Polygon', coordinates: polygon }) > 2 * Math.PI) {
+    return polygon.map((ring) => [...ring].reverse());
+  }
+  return polygon;
+};
 
 // Focus the largest landmass rather than averaging distant overseas territories.
 export const getCountryCenter = (country: WorldCountry): GlobeCenter => {
@@ -27,5 +39,15 @@ export const loadWorldGeography = async (
   if (!response.ok) {
     throw new Error('World geography could not be loaded.');
   }
-  return response.json();
+  const geography: WorldGeography = await response.json();
+  return {
+    ...geography,
+    features: geography.features.map((country) => ({
+      ...country,
+      geometry: {
+        ...country.geometry,
+        coordinates: country.geometry.coordinates.map(orientPolygon),
+      },
+    })),
+  };
 };
