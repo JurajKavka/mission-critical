@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type * as React from 'react';
-import { useStore } from 'zustand';
 import {
   AnswerTextInput,
   AsciiKeyboard,
@@ -9,9 +8,8 @@ import {
 import type { AsciiKey } from '../../../react-component-library';
 import { regionTargets } from '../data/targets';
 import { getMatchedTargetName } from '../domain/answers';
-import type { AnswerComparison, GamePhase } from '../domain/types';
+import type { GamePhase } from '../domain/types';
 import { useAnswerCompletion } from '../hooks/useAnswerCompletion';
-import { selectConfig } from '../state/selectors';
 import { getAnswerCompletionSuffix } from './answer-completion';
 import { editAnswerText } from './answer-edit';
 import * as UI from '../../../react-component-library/atlas-styles';
@@ -19,15 +17,7 @@ import type { AtlasRushStore } from './types';
 
 const MOBILE_KEYBOARD_QUERY = '(pointer: coarse) and (max-width: 1024px)';
 
-const getAnswerHint = (comparison: AnswerComparison | undefined): string => {
-  if (comparison?.mode === 'prefix') {
-    return `Speed mode / First ${comparison.minimumCharacters} letters auto-identify.`;
-  }
-  return 'Full names auto-identify.';
-};
-
 const getAnswerFeedback = (
-  hint: string,
   identifiedName: string,
   isIncorrect: boolean,
 ): string => {
@@ -36,7 +26,7 @@ const getAnswerFeedback = (
   } else if (identifiedName) {
     return `${identifiedName} identified.`;
   }
-  return hint;
+  return '';
 };
 
 type AnswerInputProps = {
@@ -63,9 +53,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   const previousIsCompleting = useRef(false);
   const isComposing = useRef(false);
   const compositionFrame = useRef<number | null>(null);
-  const config = useStore(store, selectConfig);
-  const answerHint = getAnswerHint(config.answerComparison);
-  const feedback = getAnswerFeedback(answerHint, identifiedName, isIncorrect);
+  const feedback = getAnswerFeedback(identifiedName, isIncorrect);
   const focusInput = useCallback(
     () => inputRef.current?.focus({ preventScroll: true }),
     [inputRef],

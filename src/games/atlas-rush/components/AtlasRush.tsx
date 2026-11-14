@@ -131,13 +131,6 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
             <span>
               <i className="keyGuessed" aria-hidden="true" /> Identified
             </span>
-            {region.markerNote && <UI.MapHint>{region.markerNote}</UI.MapHint>}
-            {phase === 'playing' &&
-              store.getState().session.config.learning && (
-                <UI.MapHint>
-                  Learning mode / Select the highlighted area to reveal its name
-                </UI.MapHint>
-              )}
           </UI.MapKey>
         </UI.Playfield>
         <AnswerInput

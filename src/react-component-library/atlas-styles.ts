@@ -459,6 +459,10 @@ export const AnswerHint = styled.p`
   margin: 0;
   color: ${theme.colors.muted};
   font-size: ${theme.fontSizes.small};
+
+  &:empty {
+    display: none;
+  }
 `;
 
 export const Overlay = styled.div`
@@ -647,11 +651,5 @@ export const Results = styled.dl`
   }
   ${mb('compact', { max: true })} {
     grid-template-columns: repeat(2, 1fr);
-  }
-`;
-
-export const MapHint = styled.span`
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'short' })} {
-    display: none;
   }
 `;

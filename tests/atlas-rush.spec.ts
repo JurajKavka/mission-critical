@@ -261,9 +261,10 @@ test('restores Speed mode progress with the same matching settings', async ({
     .click();
   await expectIdentifiedCount(page, 1, 12);
   await expect(target).toHaveAttribute('data-country', nextId ?? '');
-  await expect(page.locator('#feedback')).toHaveText(
-    'Speed mode / First 4 letters auto-identify.',
-  );
+  await target.focus();
+  const nextAnswer = await page.getByRole('status').last().textContent();
+  await page.getByLabel('country name').fill((nextAnswer ?? '').slice(0, 4));
+  await expectIdentifiedCount(page, 2, 12);
 });
 
 test('landing starts the selected region with a shareable challenge', async ({
