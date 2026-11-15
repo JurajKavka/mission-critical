@@ -8,11 +8,13 @@ const FOCUSABLE_ELEMENTS_QUERY =
 type ModalDialogProps = {
   labelledBy: string;
   children: React.ReactNode;
+  isFullScreen?: boolean;
 };
 
 export const ModalDialog: React.FC<ModalDialogProps> = ({
   labelledBy,
   children,
+  isFullScreen = false,
 }) => {
   const dialog = useRef<HTMLDialogElement>(null);
 
@@ -58,6 +60,7 @@ export const ModalDialog: React.FC<ModalDialogProps> = ({
 
   return (
     <UI.Modal
+      $fullScreen={isFullScreen}
       ref={dialog}
       aria-labelledby={labelledBy}
       onCancel={handleCancel}

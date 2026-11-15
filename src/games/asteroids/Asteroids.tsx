@@ -23,9 +23,13 @@ export const Asteroids: React.FC = () => {
     <>
       <UI.GlobalStyles />
       <UI.LandingWrapper>
-        <Breadcrumbs
-          breadcrumbs={[{ label: 'Neon Asteroids', link: '/games/asteroids/' }]}
-        />
+        <UI.TopBar>
+          <Breadcrumbs
+            breadcrumbs={[
+              { label: 'Neon Asteroids', link: '/games/asteroids/' },
+            ]}
+          />
+        </UI.TopBar>
         <WellcomePanel
           title={
             <>

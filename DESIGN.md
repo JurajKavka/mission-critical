@@ -82,13 +82,25 @@ Use a compact spacing vocabulary derived from the existing interface:
 - `4–6px`: relationship between a label and its value or meter.
 - `8–9px`: tightly grouped status elements.
 - `13–18px`: control padding and component gaps.
-- `22–24px`: viewport HUD inset and major horizontal gaps.
+- `24px`: desktop horizontal viewport inset and major horizontal gaps.
 - `30–32px`: modal shell and panel padding.
 - `43px`: spacious hero-card padding.
 
-The default viewport inset is `22px`. Keep HUD elements aligned to this shared edge.
+The desktop viewport inset is `8px` vertically and `24px` horizontally. Use `4px` on every side on mobile. Keep top bars and game content aligned to these shared edges.
 
 ## Layout
+
+### Screen shell and top bar
+
+- Use the same outer padding for welcome, gameplay, and results screens: `8px` vertically with `24px` on each side on desktop, and `4px` on every side on mobile.
+- Apply mobile sizing at the shared compact-screen breakpoint and on coarse-pointer screens up to the shared `l` breakpoint.
+- At the mobile-keyboard breakpoint (coarse pointer and width up to `1024px`), give the shared HUD header bar `8px` of internal padding on the left and right. Keep the screen wrapper's padding at `4px` on every side.
+- Use a vertical flex layout that fills `100dvh`, with an `8px` gap between its main sections. Prevent document scrolling in either direction.
+- Reuse the shared `TopBar` styles on welcome, gameplay, and results screens. The bar is `52px` high on desktop and `48px` on mobile, cannot shrink, and uses flex to center its contents vertically without wrapping.
+- Allow breadcrumbs within the bar to wrap with `flex-wrap: wrap`; do not truncate breadcrumb text or force its navigation container onto a single line.
+- Keep the bar in normal document flow, with the shared subtle bottom border and a maximum width of `740px`. Do not absolutely position breadcrumbs or reserve space for them using large top padding.
+- Welcome screens show only breadcrumbs in the bar, followed directly by the settings panel. Results screens place their report panel directly below the bar. Center panels horizontally rather than vertically centering the whole screen.
+- During gameplay, keep the HUD, input, and mobile keyboard from shrinking; let the map take the remaining height and shrink as needed. Settings and report panels may scroll internally when their content exceeds the available height.
 
 ### Playfield
 
@@ -103,12 +115,12 @@ The default viewport inset is `22px`. Keep HUD elements aligned to this shared e
 - Place reserves or health at the lower left.
 - Place control hints at the lower right.
 - Place temporary bonuses at the lower center.
-- Set the HUD container to `pointer-events: none` so it cannot interfere with play.
+- Set overlaid telemetry containers to `pointer-events: none` so they cannot interfere with play; keep top-bar navigation and controls interactive.
 - Display labels above or beside larger numeric values.
 
 ### Modal overlays
 
-- Center modal content with CSS Grid.
+- Use flex layouts for screen-level welcome and results panels, positioned immediately below the shared top bar. Center temporary pause and confirmation dialogs over the playfield.
 - Dim the playfield using a dark translucent or radial veil.
 - Use opacity transitions around `200–240ms`.
 - Hidden overlays must also disable visibility and pointer events.
@@ -116,8 +128,8 @@ The default viewport inset is `22px`. Keep HUD elements aligned to this shared e
 
 ### Responsive behavior
 
-- Allow primary cards to occupy no more than `92vw`.
-- Allow wide panels to occupy no more than `94vw`.
+- Keep primary cards within the screen shell's padded content area, up to `540px` wide.
+- Keep wide panels within the same padded content area, up to `820px` wide.
 - Collapse three-column selections to one column at `700px` or below.
 - Remove fixed card heights when options stack vertically.
 - Preserve the canvas as the visual background at every viewport size.
@@ -151,6 +163,20 @@ Meters are thin horizontal tracks, usually `2px` high. Use a low-opacity neutral
 - Use a thin, subdued border and a dark background.
 - On hover or focus, show a single thicker cyan border without changing the input's size or position.
 - Keep focus clearly visible for both keyboard and pointer interaction; avoid a separate outline that creates a double border.
+
+### Radio buttons and checkboxes
+
+- Use the shared `RadioButton` and `CheckboxButton` components with native form inputs wrapped in semantic labels.
+- Keep label styling inside these components; do not add option-specific classes such as `learning` or `mode-option` to labels.
+- Set labels to `display: flex` and `align-items: center`.
+- Apply a `2px` top margin to the label text span to align it visually with the control.
+- Separate the input and label text with a flex `gap` of `8px` on both desktop and mobile.
+- Do not insert literal spaces or `{' '}` between an input and its label text.
+- Preserve the existing label font size and weight when extracting or reusing these controls. Atlas Rush settings use the shared `small` font size (`11px`) and inherit the font weight.
+- Keep spacing between options in their parent layout rather than in option-specific label classes.
+- Keep React form controls compatible with server rendering: render native inputs and labels without depending on browser APIs or client effects for their markup and styles.
+- Astro welcome screens must include form markup and the design manual's styles in their server-rendered HTML. Hydration should add interactivity to that existing form.
+- Provide Storybook stories for each shared form control, including default, checked, and disabled states, plus grouped radio-button behavior.
 
 ### Upgrade option
 

@@ -9,14 +9,25 @@ describe('Atlas Rush settings page', () => {
     try {
       const html = renderToString(sheet.collectStyles(<Landing />));
       const styles = sheet.getStyleTags();
-      expect(html).toContain('Select a region');
       expect(html).toContain('Start survey');
-      expect(html).toContain('disabled');
-      expect(html.match(/<fieldset disabled=""/g)).toHaveLength(2);
-      expect(html).toMatch(
-        /<input\b(?=[^>]*\bname="learning")(?=[^>]*\bdisabled="")[^>]*>/,
-      );
-      expect(styles).toContain('padding:4.375rem 1.125rem 1.875rem');
+      const fieldsets =
+        html.match(/<fieldset\b[^>]*>[\s\S]*?<\/fieldset>/g) ?? [];
+      const settingsGroups = [
+        { legend: 'Select a region', inputNames: ['region'] },
+        { legend: 'Select a level', inputNames: ['level'] },
+        { legend: 'Select a mode', inputNames: ['learning', 'speed'] },
+      ];
+      settingsGroups.forEach(({ legend, inputNames }) => {
+        const fieldset = fieldsets.find((markup) =>
+          markup.includes(`<legend>${legend}</legend>`),
+        );
+        expect(fieldset).toMatch(/^<fieldset\b[^>]*\bdisabled=""/);
+        inputNames.forEach((inputName) => {
+          expect(fieldset).toContain(`name="${inputName}"`);
+        });
+      });
+      expect(styles).toContain('padding:0.5rem 1.5rem;');
+      expect(styles).toContain('padding:0.25rem;');
       expect(styles).toContain('padding:2rem;');
     } finally {
       sheet.seal();

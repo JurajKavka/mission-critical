@@ -12,6 +12,30 @@ const SPACE_BACKGROUND = css`
   );
 `;
 
+const SCREEN_LAYOUT = css`
+  height: 100dvh;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: ${rem(8)};
+  padding: ${rem(8)} ${rem(24)};
+  overflow: hidden;
+
+  > section {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  ${mb('compact', { max: true })} {
+    padding: ${rem(4)};
+  }
+  ${mb('l', { max: true, pointer: 'coarse' })} {
+    padding: ${rem(4)};
+  }
+`;
+
 export const GlobalStyles = createGlobalStyle`
   :root {
     color-scheme: dark;
@@ -33,14 +57,20 @@ export const GlobalStyles = createGlobalStyle`
   }
 `;
 
+export const GameplayStyles = createGlobalStyle`
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    min-width: 0;
+  }
+`;
+
 export const Wrapper = styled.div`
-  min-height: 100dvh;
-  display: flex;
-  align-items: center;
-  gap: ${rem(8)};
-  flex-direction: column;
-  padding: ${rem(24)};
-  overflow: hidden;
+  ${SCREEN_LAYOUT}
   position: relative;
   ${SPACE_BACKGROUND}
   &::before {
@@ -58,34 +88,12 @@ export const Wrapper = styled.div`
     background-size: ${rem(42)} ${rem(42)};
     mask-image: radial-gradient(ellipse, black, transparent 80%);
   }
-  ${mb('compact', { max: true })} {
-    padding: ${rem(12)};
-  }
-  ${mb('l', { max: true, pointer: 'coarse' })} {
-    height: 100dvh;
-    min-height: 0;
-    grid-template-rows: auto minmax(0, 1fr) minmax(0, auto);
-    padding: ${rem(8)} ${rem(12)};
-  }
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    grid-template-columns: minmax(0, 1fr) minmax(${rem(280)}, 48%);
-    grid-template-rows: auto minmax(0, 1fr);
-    column-gap: ${rem(12)};
-  }
 `;
 
 export const LandingWrapper = styled.main`
-  min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  padding: ${rem(70)} ${rem(18)} ${rem(30)};
+  ${SCREEN_LAYOUT}
   ${SPACE_BACKGROUND}
 
-  nav {
-    position: absolute;
-    top: ${rem(22)};
-    left: ${rem(22)};
-  }
   :focus-visible {
     outline: ${rem(2)} solid ${theme.colors.cyan};
     outline-offset: ${rem(3)};
@@ -94,10 +102,8 @@ export const LandingWrapper = styled.main`
 
 export const StatusBar = styled.div`
   min-width: 0;
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    grid-column: 1;
-    grid-row: 1;
-  }
+  max-width: 100%;
+  flex-shrink: 0;
 `;
 
 export const Label = styled.p`
@@ -116,6 +122,7 @@ export const Label = styled.p`
 
 export const HudStats = styled.div`
   display: flex;
+  flex-shrink: 0;
   gap: clamp(${rem(25)}, 5vw, ${rem(70)});
   align-items: center;
   ${mb('compact', { max: true })} {
@@ -160,174 +167,61 @@ export const HudMetric = styled.div`
 export const Playfield = styled.main`
   position: relative;
   z-index: 1;
+  min-width: 0;
   min-height: 0;
   width: min(${rem(740)}, 100%);
-  flex: 1 0 auto;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    grid-column: 1;
-    grid-row: 2;
-    grid-template-rows: auto minmax(0, 1fr) auto auto;
-  }
 `;
 
-export const MapHeading = styled.div`
+export const TopBar = styled.header`
+  width: min(${rem(740)}, 100%);
+  min-width: 0;
+  margin-inline: auto;
+  height: ${rem(52)};
   color: ${theme.colors.muted};
   font-size: ${theme.fontSizes.caption};
   letter-spacing: 0.15em;
   text-transform: uppercase;
   display: flex;
+  flex-shrink: 0;
   justify-content: space-between;
   gap: ${rem(12)};
   align-items: center;
-  padding-bottom: ${rem(8)};
   border-bottom: ${rem(1)} solid ${theme.colors.cyanSubtle};
-`;
 
-export const MapKey = styled.div`
-  color: ${theme.colors.muted};
-  font-size: ${theme.fontSizes.caption};
-  text-transform: uppercase;
-  display: flex;
-  gap: ${rem(12)};
-  justify-content: center;
-  flex-wrap: wrap;
-  letter-spacing: 0.08em;
-  span {
-    display: inline-flex;
-    align-items: center;
-    gap: ${rem(7)};
+  > nav {
+    min-width: 0;
   }
-  i {
-    width: ${rem(7)};
-    height: ${rem(7)};
-    background: ${theme.colors.yellow};
-  }
-  .keyGuessed {
-    background: ${theme.colors.cyan};
-  }
+
   ${mb('compact', { max: true })} {
-    font-size: ${theme.fontSizes.tiny};
+    height: ${rem(48)};
   }
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    gap: ${rem(4)} ${rem(8)};
-    font-size: ${theme.fontSizes.tiny};
-    letter-spacing: 0.08em;
+  ${mb('l', { max: true, pointer: 'coarse' })} {
+    height: ${rem(48)};
+    padding-inline: ${rem(8)};
   }
 `;
 
-export const MapSlot = styled.div<{ $space?: boolean }>`
+export const MapSlot = styled.div`
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
   min-height: 0;
-  flex: 1 1 auto;
-  ${({ $space }) =>
-    $space &&
-    css`
-      background-image:
-        radial-gradient(
-          circle at 8% 18%,
-          ${theme.colors.secondary} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 12% 52%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 17% 91%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 21% 31%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 23% 72%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 34% 9%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 37% 79%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 47% 88%,
-          ${theme.colors.secondary} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 53% 5%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 64% 13%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 69% 91%,
-          ${theme.colors.secondary} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 81% 24%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 78% 80%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 91% 32%,
-          ${theme.colors.secondary} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 86% 56%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 91% 93%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 95% 68%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        );
-    `}
+  flex: 1 1 0;
+  overflow: hidden;
 `;
 
 export const Map = styled.svg`
   display: block;
+  min-width: 0;
+  min-height: 0;
   width: 100%;
   height: 100%;
-  max-height: 60vh;
   overflow: visible;
-  ${mb('compact', { max: true })} {
-    max-height: 48vh;
-  }
-  ${mb(null, { maxHeight: 'low' })} {
-    max-height: 42vh;
-  }
 `;
 
 export const Country = styled.path`
@@ -383,8 +277,10 @@ export const Command = styled.footer`
   position: relative;
   z-index: 1;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: ${rem(8)};
+  min-width: 0;
   width: min(${rem(740)}, 100%);
   margin: 0 auto;
   padding: ${rem(20)} ${rem(20)} ${rem(16)};
@@ -394,16 +290,7 @@ export const Command = styled.footer`
     padding: ${rem(12)};
   }
   ${mb('l', { max: true, pointer: 'coarse' })} {
-    min-height: 0;
-    max-height: 100%;
-    overflow-y: auto;
     padding: ${rem(8)};
-  }
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    grid-column: 2;
-    grid-row: 1 / -1;
-    align-self: end;
-    margin: 0;
   }
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'short' })} {
     gap: ${rem(4)};
@@ -431,6 +318,7 @@ export const AnswerForm = styled.form`
     }
   }
   display: flex;
+  flex-shrink: 0;
   gap: ${rem(8)};
   ${mb('compact', { max: true })} {
     flex-wrap: wrap;
@@ -496,6 +384,7 @@ export const Panel = styled.section`
     letter-spacing: -0.04em;
   }
   h1 {
+    margin-top: 0;
     font-size: clamp(${rem(43)}, 8vw, ${rem(72)});
     letter-spacing: -0.065em;
   }
@@ -557,24 +446,6 @@ export const SettingsForm = styled.form`
     grid-auto-flow: column;
     gap: ${rem(12)} ${rem(16)};
   }
-  label {
-    display: flex;
-    align-items: center;
-    gap: ${rem(10)};
-    letter-spacing: 0.08em;
-  }
-  input {
-    flex: none;
-    width: ${rem(16)};
-    height: ${rem(16)};
-    margin: 0;
-  }
-  .learning,
-  .mode-option {
-    align-items: flex-start;
-    margin-top: ${rem(20)};
-    letter-spacing: normal;
-  }
   .start-action button {
     min-width: ${rem(190)};
     margin-top: ${rem(12)};
@@ -585,7 +456,7 @@ export const SettingsForm = styled.form`
   }
 `;
 
-export const Modal = styled.dialog`
+export const Modal = styled.dialog<{ $fullScreen?: boolean }>`
   width: min(${rem(540)}, calc(100vw - ${rem(36)}));
   max-width: none;
   max-height: calc(100dvh - ${rem(36)});
@@ -597,6 +468,18 @@ export const Modal = styled.dialog`
   &::backdrop {
     background: ${theme.colors.overlay};
   }
+  ${({ $fullScreen }) =>
+    $fullScreen &&
+    css`
+      inset: 0;
+      margin: 0;
+
+      &[open] {
+        ${SCREEN_LAYOUT}
+        ${SPACE_BACKGROUND}
+        max-height: none;
+      }
+    `}
 `;
 
 export const Actions = styled.div`
