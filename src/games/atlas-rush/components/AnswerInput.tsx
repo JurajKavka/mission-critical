@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { flushSync } from 'react-dom';
 import type * as React from 'react';
-import { useStore } from 'zustand';
 import {
   AnswerTextInput,
   AsciiKeyboard,
@@ -10,9 +8,8 @@ import {
 import type { AsciiKey } from '../../../react-component-library';
 import { regionTargets } from '../data/targets';
 import { getMatchedTargetName } from '../domain/answers';
-import type { AnswerComparison, GamePhase } from '../domain/types';
+import type { GamePhase } from '../domain/types';
 import { useAnswerCompletion } from '../hooks/useAnswerCompletion';
-import { selectConfig } from '../state/selectors';
 import { getAnswerCompletionSuffix } from './answer-completion';
 import { editAnswerText } from './answer-edit';
 import * as UI from '../../../react-component-library/atlas-styles';
@@ -20,15 +17,7 @@ import type { AtlasRushStore } from './types';
 
 const MOBILE_KEYBOARD_QUERY = '(pointer: coarse) and (max-width: 1024px)';
 
-const getAnswerHint = (comparison: AnswerComparison | undefined): string => {
-  if (comparison?.mode === 'prefix') {
-    return `Speed mode / First ${comparison.minimumCharacters} letters auto-identify.`;
-  }
-  return 'Full names auto-identify. Enter to check an answer.';
-};
-
 const getAnswerFeedback = (
-  hint: string,
   identifiedName: string,
   isIncorrect: boolean,
 ): string => {
@@ -37,7 +26,7 @@ const getAnswerFeedback = (
   } else if (identifiedName) {
     return `${identifiedName} identified.`;
   }
-  return hint;
+  return '';
 };
 
 type AnswerInputProps = {
@@ -57,7 +46,6 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   const [isIncorrect, setIsIncorrect] = useState(false);
   const [identifiedName, setIdentifiedName] = useState('');
   const [isMobile, setIsMobile] = useState(false);
-  const [usesNativeKeyboard, setUsesNativeKeyboard] = useState(false);
   const { completionValue, isCompleting, startCompletion } =
     useAnswerCompletion(phase);
 
@@ -65,9 +53,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   const previousIsCompleting = useRef(false);
   const isComposing = useRef(false);
   const compositionFrame = useRef<number | null>(null);
-  const config = useStore(store, selectConfig);
-  const answerHint = getAnswerHint(config.answerComparison);
-  const feedback = getAnswerFeedback(answerHint, identifiedName, isIncorrect);
+  const feedback = getAnswerFeedback(identifiedName, isIncorrect);
   const focusInput = useCallback(
     () => inputRef.current?.focus({ preventScroll: true }),
     [inputRef],
@@ -103,7 +89,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!isMobile || usesNativeKeyboard) {
+    if (!isMobile) {
       return;
     }
     const handleResize = () => {
@@ -114,7 +100,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [inputRef, isMobile, usesNativeKeyboard]);
+  }, [inputRef, isMobile]);
 
   useEffect(() => {
     if (phase === 'ready') {
@@ -243,25 +229,31 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
   }, [focusInput, isCompleting, store]);
 
   const editAnswer = useCallback(
-    (text: string, isBackspace: boolean, useCaret = false) => {
+    (text: string, isBackspace: boolean) => {
       const input = inputRef.current;
       const answer = input?.value ?? '';
-      const selectedStart = input?.selectionStart ?? answer.length;
-      const selectedEnd = input?.selectionEnd ?? answer.length;
-      const hasSelection = selectedStart !== selectedEnd;
-      const start = hasSelection || useCaret ? selectedStart : answer.length;
-      const end = hasSelection || useCaret ? selectedEnd : answer.length;
+      const start = isMobile
+        ? answer.length
+        : (input?.selectionStart ?? answer.length);
+      const end = isMobile
+        ? answer.length
+        : (input?.selectionEnd ?? answer.length);
       const edit = editAnswerText(answer, start, end, text, isBackspace);
       updateAnswer(edit.value);
       requestAnimationFrame(() => {
         if (input?.isConnected) {
-          const caret = useCaret ? edit.caret : input.value.length;
-          input.setSelectionRange(caret, caret);
+          if (isMobile && document.activeElement !== input) {
+            input.focus({ preventScroll: true });
+          }
+          const caret = isMobile ? input.value.length : edit.caret;
+          if (input.selectionStart !== caret || input.selectionEnd !== caret) {
+            input.setSelectionRange(caret, caret);
+          }
           input.scrollLeft = input.scrollWidth;
         }
       });
     },
-    [inputRef, updateAnswer],
+    [inputRef, isMobile, updateAnswer],
   );
 
   const handleKey = useCallback(
@@ -295,13 +287,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
       return;
     }
     setIsIncorrect(false);
-    if (
-      !isMobile ||
-      usesNativeKeyboard ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.altKey
-    ) {
+    if (!isMobile || event.ctrlKey || event.metaKey || event.altKey) {
       return;
     }
     if (event.key === 'Backspace' || event.key === 'Enter') {
@@ -312,18 +298,6 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
       editAnswer(event.key, false);
     }
   };
-
-  const toggleNativeKeyboard = useCallback(() => {
-    const nextUsesNativeKeyboard = !usesNativeKeyboard;
-    inputRef.current?.blur();
-    flushSync(() => setUsesNativeKeyboard(nextUsesNativeKeyboard));
-    focusInput();
-    if (!nextUsesNativeKeyboard && inputRef.current) {
-      const input = inputRef.current;
-      input.setSelectionRange(input.value.length, input.value.length);
-      input.scrollLeft = input.scrollWidth;
-    }
-  }, [focusInput, inputRef, usesNativeKeyboard]);
 
   return (
     <UI.Command>
@@ -337,7 +311,6 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           {targetName} name
         </UI.ScreenReaderOnly>
         <AnswerTextInput
-          key={usesNativeKeyboard ? 'native' : 'on-screen'}
           ref={inputRef}
           id="answer"
           value={completionValue ?? answer}
@@ -350,7 +323,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           onClick={() => setIsIncorrect(false)}
           onBackspace={() => {
             setIsIncorrect(false);
-            editAnswer('', true, true);
+            editAnswer('', true);
           }}
           onClear={() => {
             updateAnswer('');
@@ -359,7 +332,7 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           placeholder={`Enter ${targetName} name in English`}
           feedbackId="feedback"
           keyboardHelpId="keyboard-help"
-          isUsingCustomKeyboard={isMobile && !usesNativeKeyboard}
+          isUsingCustomKeyboard={isMobile}
           required
           disabled={phase !== 'playing' || isCompleting}
         />
@@ -368,22 +341,16 @@ export const AnswerInput: React.FC<AnswerInputProps> = ({
           disabled={phase !== 'playing' || isCompleting}
         />
       </UI.AnswerForm>
-      <UI.AnswerHint id="feedback" aria-live="polite">
+      <UI.ScreenReaderOnly as="p" id="feedback" aria-live="polite">
         {feedback}
-      </UI.AnswerHint>
+      </UI.ScreenReaderOnly>
       {phase === 'playing' && isMobile && (
-        <AsciiKeyboard
-          onKey={handleKey}
-          onToggleNative={toggleNativeKeyboard}
-          usesNativeKeyboard={usesNativeKeyboard}
-          disabled={isCompleting}
-        />
+        <AsciiKeyboard onKey={handleKey} disabled={isCompleting} />
       )}
-      {isMobile && !usesNativeKeyboard && (
+      {isMobile && (
         <UI.ScreenReaderOnly as="p" id="keyboard-help">
           Use the on-screen keyboard or a connected physical keyboard to enter
-          an answer. Select Use native keyboard to type with your device
-          keyboard.
+          an answer.
         </UI.ScreenReaderOnly>
       )}
     </UI.Command>

@@ -20,6 +20,7 @@ import { createAtlasRushStore } from '../state/createAtlasRushStore';
 import { selectGuessedIds, selectPhase } from '../state/selectors';
 import { AnswerInput } from './AnswerInput';
 import { GameMap } from './GameMap';
+import { WorldGlobe } from './WorldGlobe';
 import { ModalDialog } from './ModalDialog';
 import { PauseDialog } from './PauseDialog';
 import { ResultsPanel } from '../../../react-component-library/ResultsPanel';
@@ -78,19 +79,10 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
   return (
     <>
       <UI.GlobalStyles />
+      <UI.GameplayStyles />
       <UI.Wrapper>
-        {persistence.initialization === 'ready' &&
-          persistence.notice &&
-          phase !== 'paused' && (
-            <UI.StatusBar>
-              <UI.PersistenceNotice role="status">
-                {persistence.notice}
-              </UI.PersistenceNotice>
-            </UI.StatusBar>
-          )}
-
         <UI.Playfield>
-          <UI.MapHeading>
+          <UI.TopBar>
             <Breadcrumbs
               breadcrumbs={[
                 { label: region.name, link: `/games/atlas-rush/${regionId}/` },
@@ -111,29 +103,27 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
                 onClick={store.getState().pauseGame}
               />
             </UI.HudStats>
-          </UI.MapHeading>
+          </UI.TopBar>
+          {persistence.initialization === 'ready' &&
+            persistence.notice &&
+            phase !== 'paused' && (
+              <UI.StatusBar>
+                <UI.PersistenceNotice role="status">
+                  {persistence.notice}
+                </UI.PersistenceNotice>
+              </UI.StatusBar>
+            )}
           <UI.MapSlot>
-            <GameMap
-              store={store}
-              regionId={regionId}
-              onReturnFocus={focusInput}
-            />
+            {regionId === 'world' ? (
+              <WorldGlobe store={store} onReturnFocus={focusInput} />
+            ) : (
+              <GameMap
+                store={store}
+                regionId={regionId}
+                onReturnFocus={focusInput}
+              />
+            )}
           </UI.MapSlot>
-          <UI.MapKey>
-            <span>
-              <i aria-hidden="true" /> Identify
-            </span>
-            <span>
-              <i className="keyGuessed" aria-hidden="true" /> Identified
-            </span>
-            {region.markerNote && <UI.MapHint>{region.markerNote}</UI.MapHint>}
-            {phase === 'playing' &&
-              store.getState().session.config.learning && (
-                <UI.MapHint>
-                  Learning mode / Select the highlighted area to reveal its name
-                </UI.MapHint>
-              )}
-          </UI.MapKey>
         </UI.Playfield>
         <AnswerInput
           store={store}
@@ -188,7 +178,7 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
           </ModalDialog>
         )}
         {result && (
-          <ModalDialog labelledBy="results-title">
+          <ModalDialog labelledBy="results-title" isFullScreen>
             <ResultsPanel
               result={result}
               onPlayAgain={replay}

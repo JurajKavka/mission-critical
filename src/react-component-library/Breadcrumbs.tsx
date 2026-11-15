@@ -16,6 +16,7 @@ export const BreadcrumbsWrapper = styled.div`
   font-weight: ${theme.fontWeights.heavy};
   letter-spacing: 0.25em;
   text-transform: uppercase;
+  flex-wrap: wrap;
 
   span {
     flex: 0 0 auto;
@@ -30,7 +31,6 @@ export const BreadcrumbsWrapper = styled.div`
   }
   ${mb('compact', { max: true })} {
     gap: ${rem(4)};
-    font-size: ${theme.fontSizes.caption};
     letter-spacing: 0.12em;
   }
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
@@ -65,7 +65,7 @@ export type BreadcrumbsProps = {
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => (
   <BreadcrumbsWrapper as="nav" aria-label="Game location">
     <a href={home()} aria-label="Mission Critical">
-      <HomeBreadcrumbMobile>MSN CRTCL</HomeBreadcrumbMobile>
+      <HomeBreadcrumbMobile>MSN&nbsp;CRTCL</HomeBreadcrumbMobile>
       <HomeBreadcrumb>Mission Critical</HomeBreadcrumb>
     </a>
     {breadcrumbs.map((breadcrumb, index) => (

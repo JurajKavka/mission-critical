@@ -147,7 +147,7 @@ test('results receive focus and keep keyboard navigation inside the report', asy
 test.describe('mobile review regressions', () => {
   test.use({ hasTouch: true, isMobile: true });
 
-  test('places the custom caret at the end when switching keyboards', async ({
+  test('keeps the custom caret and mobile edits at the end', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -155,19 +155,10 @@ test.describe('mobile review regressions', () => {
     const input = await expectReadyInput(page);
     const keyboard = page.getByRole('group', { name: 'On-screen keyboard' });
     const caret = page.locator('[data-answer-input] [data-custom-caret]');
-    await keyboard.getByRole('button', { name: 'Use native keyboard' }).click();
-    await input.fill('CANADA');
+    await input.focus();
+    await input.pressSequentially('CANADA');
     await input.press('ArrowLeft');
-    await input.press('ArrowLeft');
-    await input.press('ArrowLeft');
-    await expect
-      .poll(() =>
-        input.evaluate((element: HTMLInputElement) => element.selectionStart),
-      )
-      .toBe(3);
-    await keyboard
-      .getByRole('button', { name: 'Use on-screen keyboard' })
-      .click();
+    await input.click();
     await expect(input).toBeFocused();
     await expect
       .poll(() =>
@@ -194,9 +185,9 @@ test.describe('mobile review regressions', () => {
       element.setSelectionRange(1, 4),
     );
     await keyboard.getByRole('button', { name: 'Q', exact: true }).click();
-    await expect(input).toHaveValue('CQDAB');
+    await expect(input).toHaveValue('CANADABQ');
     await expectCaretAtSelection(input);
-    await keyboard.getByRole('button', { name: 'Use native keyboard' }).focus();
+    await keyboard.getByRole('button', { name: 'Q', exact: true }).focus();
     await expect(caret).toBeHidden();
     await input.focus();
     await expect(caret).toBeVisible();
@@ -229,8 +220,9 @@ test.describe('mobile review regressions', () => {
       await expect(input).toBeFocused();
       await page.getByRole('button', { name: 'A', exact: true }).tap();
       await expect(input).toHaveValue('A');
-      await page.getByRole('button', { name: 'Use native keyboard' }).tap();
-      await expect(input).not.toHaveAttribute('readonly', '');
+      await input.tap();
+      await expect(input).toHaveAttribute('readonly', '');
+      await expect(input).toHaveAttribute('inputmode', 'none');
     });
   }
 });

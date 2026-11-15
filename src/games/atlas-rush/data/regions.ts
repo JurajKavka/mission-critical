@@ -6,17 +6,22 @@ export type RegionMetadata = {
   readonly name: string;
   readonly targetName: 'country' | 'state';
   readonly hasIslandMarkers: boolean;
-  readonly markerNote?: string;
 };
 
 export const regionMetadata: Readonly<Record<RegionId, RegionMetadata>> = {
+  world: {
+    id: 'world',
+    name: 'Whole world',
+    targetName: 'country',
+    code: 'WRL',
+    hasIslandMarkers: true,
+  },
   africa: {
     id: 'africa',
     name: 'Africa',
     targetName: 'country',
     code: 'AFR',
     hasIslandMarkers: true,
-    markerNote: 'Island nations shown as markers',
   },
   'south-america': {
     id: 'south-america',
@@ -38,7 +43,6 @@ export const regionMetadata: Readonly<Record<RegionId, RegionMetadata>> = {
     targetName: 'country',
     code: 'EUR',
     hasIslandMarkers: true,
-    markerNote: 'Small countries shown as markers',
   },
   asia: {
     id: 'asia',
@@ -46,6 +50,5 @@ export const regionMetadata: Readonly<Record<RegionId, RegionMetadata>> = {
     targetName: 'country',
     code: 'ASI',
     hasIslandMarkers: true,
-    markerNote: 'Small countries shown as markers',
   },
 };

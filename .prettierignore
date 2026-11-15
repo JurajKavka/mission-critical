@@ -5,3 +5,6 @@ dist-storybook-check
 package-lock.json
 AGENTS.md
 www
+
+# Generated, simplified world boundary data
+public/games/atlas-rush/world.geo.json

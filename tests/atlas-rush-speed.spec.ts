@@ -15,6 +15,7 @@ test('starts Speed mode with the code-defined prefix and retains the mode in set
   page,
 }) => {
   await page.goto('/games/atlas-rush/');
+  await page.getByLabel('Africa', { exact: true }).check();
   await page.getByLabel('Speed mode', { exact: true }).check();
   await expect(page.getByLabel('Matching letters')).toHaveCount(0);
   await page.getByRole('button', { name: 'Start survey' }).click();

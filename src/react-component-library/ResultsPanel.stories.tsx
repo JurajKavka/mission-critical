@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { defaultSeed } from '../games/atlas-rush/domain/shuffle';
 import type { GameResults } from '../games/atlas-rush/domain/types';
 import { ResultsPanel } from './ResultsPanel';
+import { LandingWrapper } from './atlas-styles';
 
 const TIMEOUT_RESULT: GameResults = {
   challengeVersion: 1,
@@ -22,6 +23,14 @@ const TIMEOUT_RESULT: GameResults = {
 const meta = {
   title: 'Atlas Rush/Results Panel',
   component: ResultsPanel,
+  parameters: { layout: 'fullscreen' },
+  decorators: [
+    (Story) => (
+      <LandingWrapper>
+        <Story />
+      </LandingWrapper>
+    ),
+  ],
   args: {
     result: TIMEOUT_RESULT,
     onPlayAgain: () => {},

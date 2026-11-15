@@ -4,13 +4,15 @@ import { rem } from 'polished';
 import { styled } from 'styled-components';
 import { Icon } from './Icon';
 import type { IconName } from './Icon';
+import { mb } from './media-breakpoints';
 
 const Button = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: ${rem(32)};
-  height: ${rem(32)};
+  width: ${rem(44)};
+  height: ${rem(44)};
+  flex: 0 0 ${rem(44)};
   padding: 0;
   border: ${rem(1)} solid ${theme.colors.secondaryBorder};
   background: transparent;
@@ -32,6 +34,17 @@ const Button = styled.button`
   &:disabled {
     opacity: 0.45;
     cursor: default;
+  }
+
+  ${mb('l', { max: true, pointer: 'coarse' })} {
+    width: ${rem(36)};
+    height: ${rem(36)};
+    flex-basis: ${rem(36)};
+
+    svg {
+      width: ${rem(20)};
+      height: ${rem(20)};
+    }
   }
 `;
 

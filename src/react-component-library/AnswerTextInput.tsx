@@ -19,7 +19,9 @@ const Input = styled.input<{ $isUsingCustomKeyboard: boolean }>`
   border: ${rem(1)} solid ${theme.colors.inputBorder};
   background: ${theme.colors['space-blue']};
   color: ${theme.colors.text};
-  padding: ${rem(12)} ${rem(56)} ${rem(12)} ${rem(16)};
+  padding: ${rem(12)}
+    ${({ $isUsingCustomKeyboard }) => rem($isUsingCustomKeyboard ? 60 : 56)}
+    ${rem(12)} ${rem(16)};
   font: inherit;
   font-size: ${rem(14)};
   text-transform: uppercase;
@@ -129,10 +131,26 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
   const describedBy = [feedbackId, isUsingCustomKeyboard && keyboardHelpId]
     .filter(Boolean)
     .join(' ');
-  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+  const moveCaretToEnd = (input: HTMLInputElement) => {
     if (isUsingCustomKeyboard) {
-      event.currentTarget.scrollLeft = event.currentTarget.scrollWidth;
+      if (
+        input.selectionStart !== input.value.length ||
+        input.selectionEnd !== input.value.length
+      ) {
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+      input.scrollLeft = input.scrollWidth;
     }
+  };
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    moveCaretToEnd(event.currentTarget);
+  };
+  const handleSelect = (event: React.SyntheticEvent<HTMLInputElement>) => {
+    moveCaretToEnd(event.currentTarget);
+  };
+  const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
+    moveCaretToEnd(event.currentTarget);
+    onClick?.(event);
   };
 
   return (
@@ -146,8 +164,9 @@ export const AnswerTextInput: React.FC<AnswerTextInputProps> = ({
         onCompositionStart={onCompositionStart}
         onCompositionEnd={onCompositionEnd}
         onKeyDown={onKeyDown}
-        onClick={onClick}
+        onClick={handleClick}
         onFocus={handleFocus}
+        onSelect={handleSelect}
         onScroll={(event) => setScrollLeft(event.currentTarget.scrollLeft)}
         placeholder={placeholder}
         aria-label={ariaLabel}

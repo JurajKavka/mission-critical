@@ -2,6 +2,11 @@ import { FULL_NAME_COMPARISON, isValidPrefixLength } from './answer-comparison';
 import type { AnswerComparison, Target } from './types';
 
 const ALIASES: Readonly<Record<string, readonly string[]>> = {
+  USA: ['United States of America', 'US', 'USA', 'America'],
+  BHS: ['The Bahamas'],
+  KNA: ['St Kitts and Nevis'],
+  LCA: ['St Lucia'],
+  VCT: ['St Vincent and the Grenadines'],
   COG: ['Congo', 'Congo Brazzaville', 'Republic of Congo'],
   COD: ['DR Congo', 'DRC', 'Congo Kinshasa', 'Democratic Republic of Congo'],
   CIV: ['Côte d’Ivoire', 'Cote dIvoire', 'Ivory Coast'],

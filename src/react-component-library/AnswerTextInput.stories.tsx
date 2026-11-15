@@ -36,3 +36,17 @@ export const CustomKeyboard: Story = {
 export const CustomKeyboardEmpty: Story = {
   args: { isUsingCustomKeyboard: true, value: '' },
 };
+
+export const CustomKeyboardLongAnswer: Story = {
+  args: {
+    isUsingCustomKeyboard: true,
+    value: 'A long answer that scrolls to keep the blinking caret visible',
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: 'min(100%, 320px)' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
