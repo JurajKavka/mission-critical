@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import type * as React from 'react';
 import { ActionButton } from '../../../react-component-library/ActionButton';
 import { Breadcrumbs } from '../../../react-component-library/Breadcrumbs';
+import { CheckboxButton } from '../../../react-component-library/CheckboxButton';
+import { RadioButton } from '../../../react-component-library/RadioButton';
 import { StartGamePanel } from '../../../react-component-library/StartGamePanel';
 import { regionMetadata } from '../data/regions';
 import { levels } from '../domain/levels';
@@ -62,9 +64,11 @@ export const Landing: React.FC = () => {
     <>
       <UI.GlobalStyles />
       <UI.LandingWrapper>
-        <Breadcrumbs
-          breadcrumbs={[{ label: 'Atlas Rush', link: '/games/atlas-rush/' }]}
-        />
+        <UI.TopBar>
+          <Breadcrumbs
+            breadcrumbs={[{ label: 'Atlas Rush', link: '/games/atlas-rush/' }]}
+          />
+        </UI.TopBar>
         <StartGamePanel
           title={
             <>
@@ -78,54 +82,45 @@ export const Landing: React.FC = () => {
               <legend>Select a region</legend>
               <div className="regions">
                 {REGIONS.map((region) => (
-                  <label key={region.id}>
-                    <input
-                      type="radio"
-                      name="region"
-                      value={region.id}
-                      checked={regionId === region.id}
-                      onChange={() => setRegionId(region.id)}
-                    />{' '}
-                    {region.name}
-                  </label>
+                  <RadioButton
+                    key={region.id}
+                    label={region.name}
+                    name="region"
+                    value={region.id}
+                    checked={regionId === region.id}
+                    onChange={() => setRegionId(region.id)}
+                  />
                 ))}
               </div>
             </fieldset>
             <fieldset disabled={!isReady}>
               <legend>Select a level</legend>
               {levels.map((level) => (
-                <label key={level.id}>
-                  <input
-                    type="radio"
-                    name="level"
-                    value={level.id}
-                    checked={selectedLevel === level.id}
-                    onChange={() => setSelectedLevel(level.id)}
-                  />{' '}
-                  {level.label}
-                </label>
+                <RadioButton
+                  key={level.id}
+                  label={level.label}
+                  name="level"
+                  value={level.id}
+                  checked={selectedLevel === level.id}
+                  onChange={() => setSelectedLevel(level.id)}
+                />
               ))}
             </fieldset>
-            <label className="learning">
-              <input
-                type="checkbox"
+            <fieldset disabled={!isReady}>
+              <legend>Select a mode</legend>
+              <CheckboxButton
+                label="Learning mode"
                 name="learning"
-                disabled={!isReady}
                 checked={isLearning}
                 onChange={(event) => setIsLearning(event.target.checked)}
-              />{' '}
-              Learning mode
-            </label>
-            <label className="mode-option">
-              <input
-                type="checkbox"
+              />
+              <CheckboxButton
+                label="Speed mode"
                 name="speed"
-                disabled={!isReady}
                 checked={isSpeedMode}
                 onChange={(event) => setIsSpeedMode(event.target.checked)}
-              />{' '}
-              Speed mode
-            </label>
+              />
+            </fieldset>
             <div className="start-action">
               <ActionButton
                 label="Start survey"

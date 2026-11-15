@@ -12,6 +12,30 @@ const SPACE_BACKGROUND = css`
   );
 `;
 
+const SCREEN_LAYOUT = css`
+  height: 100dvh;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: ${rem(8)};
+  padding: ${rem(8)} ${rem(24)};
+  overflow: hidden;
+
+  > section {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  ${mb('compact', { max: true })} {
+    padding: ${rem(4)};
+  }
+  ${mb('l', { max: true, pointer: 'coarse' })} {
+    padding: ${rem(4)};
+  }
+`;
+
 export const GlobalStyles = createGlobalStyle`
   :root {
     color-scheme: dark;
@@ -46,15 +70,7 @@ export const GameplayStyles = createGlobalStyle`
 `;
 
 export const Wrapper = styled.div`
-  height: 100dvh;
-  min-height: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: ${rem(8)};
-  flex-direction: column;
-  padding: ${rem(24)};
-  overflow: hidden;
+  ${SCREEN_LAYOUT}
   position: relative;
   ${SPACE_BACKGROUND}
   &::before {
@@ -72,26 +88,12 @@ export const Wrapper = styled.div`
     background-size: ${rem(42)} ${rem(42)};
     mask-image: radial-gradient(ellipse, black, transparent 80%);
   }
-  ${mb('compact', { max: true })} {
-    padding: ${rem(12)};
-  }
-  ${mb('l', { max: true, pointer: 'coarse' })} {
-    padding: ${rem(8)} ${rem(12)};
-  }
 `;
 
 export const LandingWrapper = styled.main`
-  min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  padding: ${rem(70)} ${rem(18)} ${rem(30)};
+  ${SCREEN_LAYOUT}
   ${SPACE_BACKGROUND}
 
-  nav {
-    position: absolute;
-    top: ${rem(22)};
-    left: ${rem(22)};
-  }
   :focus-visible {
     outline: ${rem(2)} solid ${theme.colors.cyan};
     outline-offset: ${rem(3)};
@@ -173,7 +175,10 @@ export const Playfield = styled.main`
   flex-direction: column;
 `;
 
-export const MapHeading = styled.div`
+export const TopBar = styled.header`
+  width: min(${rem(740)}, 100%);
+  min-width: 0;
+  margin-inline: auto;
   height: ${rem(52)};
   color: ${theme.colors.muted};
   font-size: ${theme.fontSizes.caption};
@@ -184,18 +189,10 @@ export const MapHeading = styled.div`
   justify-content: space-between;
   gap: ${rem(12)};
   align-items: center;
-  white-space: nowrap;
   border-bottom: ${rem(1)} solid ${theme.colors.cyanSubtle};
 
   > nav {
     min-width: 0;
-    overflow: hidden;
-
-    > span[aria-current='page'] {
-      flex-shrink: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
   }
 
   ${mb('compact', { max: true })} {
@@ -203,10 +200,11 @@ export const MapHeading = styled.div`
   }
   ${mb('l', { max: true, pointer: 'coarse' })} {
     height: ${rem(48)};
+    padding-inline: ${rem(8)};
   }
 `;
 
-export const MapSlot = styled.div<{ $space?: boolean }>`
+export const MapSlot = styled.div`
   position: relative;
   display: flex;
   align-items: center;
@@ -215,96 +213,6 @@ export const MapSlot = styled.div<{ $space?: boolean }>`
   min-height: 0;
   flex: 1 1 0;
   overflow: hidden;
-  ${({ $space }) =>
-    $space &&
-    css`
-      background-image:
-        radial-gradient(
-          circle at 8% 18%,
-          ${theme.colors.secondary} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 12% 52%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 17% 91%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 21% 31%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 23% 72%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 34% 9%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 37% 79%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 47% 88%,
-          ${theme.colors.secondary} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 53% 5%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 64% 13%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 69% 91%,
-          ${theme.colors.secondary} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 81% 24%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 78% 80%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 91% 32%,
-          ${theme.colors.secondary} 0 ${rem(1)},
-          transparent ${rem(1.5)}
-        ),
-        radial-gradient(
-          circle at 86% 56%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 91% 93%,
-          ${theme.colors.secondary} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        ),
-        radial-gradient(
-          circle at 95% 68%,
-          ${theme.colors.cyanBorderStrong} 0 ${rem(0.7)},
-          transparent ${rem(1.2)}
-        );
-    `}
 `;
 
 export const Map = styled.svg`
@@ -476,6 +384,7 @@ export const Panel = styled.section`
     letter-spacing: -0.04em;
   }
   h1 {
+    margin-top: 0;
     font-size: clamp(${rem(43)}, 8vw, ${rem(72)});
     letter-spacing: -0.065em;
   }
@@ -537,24 +446,6 @@ export const SettingsForm = styled.form`
     grid-auto-flow: column;
     gap: ${rem(12)} ${rem(16)};
   }
-  label {
-    display: flex;
-    align-items: center;
-    gap: ${rem(10)};
-    letter-spacing: 0.08em;
-  }
-  input {
-    flex: none;
-    width: ${rem(16)};
-    height: ${rem(16)};
-    margin: 0;
-  }
-  .learning,
-  .mode-option {
-    align-items: flex-start;
-    margin-top: ${rem(20)};
-    letter-spacing: normal;
-  }
   .start-action button {
     min-width: ${rem(190)};
     margin-top: ${rem(12)};
@@ -565,7 +456,7 @@ export const SettingsForm = styled.form`
   }
 `;
 
-export const Modal = styled.dialog`
+export const Modal = styled.dialog<{ $fullScreen?: boolean }>`
   width: min(${rem(540)}, calc(100vw - ${rem(36)}));
   max-width: none;
   max-height: calc(100dvh - ${rem(36)});
@@ -577,6 +468,18 @@ export const Modal = styled.dialog`
   &::backdrop {
     background: ${theme.colors.overlay};
   }
+  ${({ $fullScreen }) =>
+    $fullScreen &&
+    css`
+      inset: 0;
+      margin: 0;
+
+      &[open] {
+        ${SCREEN_LAYOUT}
+        ${SPACE_BACKGROUND}
+        max-height: none;
+      }
+    `}
 `;
 
 export const Actions = styled.div`
