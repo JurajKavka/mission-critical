@@ -33,8 +33,22 @@ export const GlobalStyles = createGlobalStyle`
   }
 `;
 
+export const GameplayStyles = createGlobalStyle`
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    min-width: 0;
+  }
+`;
+
 export const Wrapper = styled.div`
-  min-height: 100dvh;
+  height: 100dvh;
+  min-height: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   gap: ${rem(8)};
@@ -62,15 +76,7 @@ export const Wrapper = styled.div`
     padding: ${rem(12)};
   }
   ${mb('l', { max: true, pointer: 'coarse' })} {
-    height: 100dvh;
-    min-height: 0;
-    grid-template-rows: auto minmax(0, 1fr) minmax(0, auto);
     padding: ${rem(8)} ${rem(12)};
-  }
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    grid-template-columns: minmax(0, 1fr) minmax(${rem(280)}, 48%);
-    grid-template-rows: auto minmax(0, 1fr);
-    column-gap: ${rem(12)};
   }
 `;
 
@@ -94,10 +100,8 @@ export const LandingWrapper = styled.main`
 
 export const StatusBar = styled.div`
   min-width: 0;
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    grid-column: 1;
-    grid-row: 1;
-  }
+  max-width: 100%;
+  flex-shrink: 0;
 `;
 
 export const Label = styled.p`
@@ -116,6 +120,7 @@ export const Label = styled.p`
 
 export const HudStats = styled.div`
   display: flex;
+  flex-shrink: 0;
   gap: clamp(${rem(25)}, 5vw, ${rem(70)});
   align-items: center;
   ${mb('compact', { max: true })} {
@@ -160,60 +165,44 @@ export const HudMetric = styled.div`
 export const Playfield = styled.main`
   position: relative;
   z-index: 1;
+  min-width: 0;
   min-height: 0;
   width: min(${rem(740)}, 100%);
-  flex: 1 0 auto;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    grid-column: 1;
-    grid-row: 2;
-    grid-template-rows: auto minmax(0, 1fr) auto auto;
-  }
 `;
 
 export const MapHeading = styled.div`
+  height: ${rem(52)};
   color: ${theme.colors.muted};
   font-size: ${theme.fontSizes.caption};
   letter-spacing: 0.15em;
   text-transform: uppercase;
   display: flex;
+  flex-shrink: 0;
   justify-content: space-between;
   gap: ${rem(12)};
   align-items: center;
-  padding-bottom: ${rem(8)};
+  white-space: nowrap;
   border-bottom: ${rem(1)} solid ${theme.colors.cyanSubtle};
-`;
 
-export const MapKey = styled.div`
-  color: ${theme.colors.muted};
-  font-size: ${theme.fontSizes.caption};
-  text-transform: uppercase;
-  display: flex;
-  gap: ${rem(12)};
-  justify-content: center;
-  flex-wrap: wrap;
-  letter-spacing: 0.08em;
-  span {
-    display: inline-flex;
-    align-items: center;
-    gap: ${rem(7)};
+  > nav {
+    min-width: 0;
+    overflow: hidden;
+
+    > span[aria-current='page'] {
+      flex-shrink: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
-  i {
-    width: ${rem(7)};
-    height: ${rem(7)};
-    background: ${theme.colors.yellow};
-  }
-  .keyGuessed {
-    background: ${theme.colors.cyan};
-  }
+
   ${mb('compact', { max: true })} {
-    font-size: ${theme.fontSizes.tiny};
+    height: ${rem(48)};
   }
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    gap: ${rem(4)} ${rem(8)};
-    font-size: ${theme.fontSizes.tiny};
-    letter-spacing: 0.08em;
+  ${mb('l', { max: true, pointer: 'coarse' })} {
+    height: ${rem(48)};
   }
 `;
 
@@ -222,8 +211,10 @@ export const MapSlot = styled.div<{ $space?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
   min-height: 0;
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  overflow: hidden;
   ${({ $space }) =>
     $space &&
     css`
@@ -318,16 +309,11 @@ export const MapSlot = styled.div<{ $space?: boolean }>`
 
 export const Map = styled.svg`
   display: block;
+  min-width: 0;
+  min-height: 0;
   width: 100%;
   height: 100%;
-  max-height: 60vh;
   overflow: visible;
-  ${mb('compact', { max: true })} {
-    max-height: 48vh;
-  }
-  ${mb(null, { maxHeight: 'low' })} {
-    max-height: 42vh;
-  }
 `;
 
 export const Country = styled.path`
@@ -383,8 +369,10 @@ export const Command = styled.footer`
   position: relative;
   z-index: 1;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: ${rem(8)};
+  min-width: 0;
   width: min(${rem(740)}, 100%);
   margin: 0 auto;
   padding: ${rem(20)} ${rem(20)} ${rem(16)};
@@ -394,16 +382,7 @@ export const Command = styled.footer`
     padding: ${rem(12)};
   }
   ${mb('l', { max: true, pointer: 'coarse' })} {
-    min-height: 0;
-    max-height: 100%;
-    overflow-y: auto;
     padding: ${rem(8)};
-  }
-  ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
-    grid-column: 2;
-    grid-row: 1 / -1;
-    align-self: end;
-    margin: 0;
   }
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'short' })} {
     gap: ${rem(4)};
@@ -431,6 +410,7 @@ export const AnswerForm = styled.form`
     }
   }
   display: flex;
+  flex-shrink: 0;
   gap: ${rem(8)};
   ${mb('compact', { max: true })} {
     flex-wrap: wrap;

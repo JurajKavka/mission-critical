@@ -4,14 +4,12 @@ import { styled } from 'styled-components';
 import { AsciiKeyboardKey, COMPACT_KEYBOARD_QUERY } from './AsciiKeyboardKey';
 
 const Keyboard = styled.div`
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
   gap: ${rem(4)};
   min-width: 0;
-  min-height: 0;
   padding: ${rem(2)};
-  overflow: auto;
-  overscroll-behavior: contain;
 
   @media ${COMPACT_KEYBOARD_QUERY} {
     gap: ${rem(3)};
@@ -20,6 +18,7 @@ const Keyboard = styled.div`
 
 const KeyRow = styled.div`
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   gap: ${rem(4)};
 

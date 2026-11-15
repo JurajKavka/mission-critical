@@ -79,6 +79,7 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
   return (
     <>
       <UI.GlobalStyles />
+      <UI.GameplayStyles />
       <UI.Wrapper>
         {persistence.initialization === 'ready' &&
           persistence.notice &&
@@ -124,14 +125,6 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
               />
             )}
           </UI.MapSlot>
-          <UI.MapKey>
-            <span>
-              <i aria-hidden="true" /> Identify
-            </span>
-            <span>
-              <i className="keyGuessed" aria-hidden="true" /> Identified
-            </span>
-          </UI.MapKey>
         </UI.Playfield>
         <AnswerInput
           store={store}
