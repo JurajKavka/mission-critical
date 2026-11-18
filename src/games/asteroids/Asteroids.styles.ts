@@ -1,7 +1,7 @@
 import { theme } from '../../react-component-library/theme';
 import { createGlobalStyle, styled } from 'styled-components';
 import { rem } from 'polished';
-import { Panel } from '../../react-component-library/atlas-styles';
+import { Panel, SiteShell } from '../../react-component-library/atlas-styles';
 
 export const GlobalStyles = createGlobalStyle`
 :root {
@@ -62,9 +62,8 @@ canvas {
 }
 
 .hud {
-  position: fixed;
-  inset: 0;
-  width: 100%;
+  position: absolute;
+  inset: 0 ${rem(16)};
   max-width: ${rem(1024)};
   margin: 0 auto;
   padding: ${rem(22)};
@@ -177,6 +176,11 @@ canvas {
 @media (any-pointer: coarse) {
   .lives, .bonus-status { bottom: ${rem(180)}; }
 }
+`;
+
+export const GameShell = styled(SiteShell)`
+  position: relative;
+  height: 100dvh;
 `;
 
 export const GameCanvas = styled.canvas``;

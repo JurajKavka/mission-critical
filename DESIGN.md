@@ -82,24 +82,24 @@ Use a compact spacing vocabulary derived from the existing interface:
 - `4–6px`: relationship between a label and its value or meter.
 - `8–9px`: tightly grouped status elements.
 - `13–18px`: control padding and component gaps.
-- `24px`: desktop horizontal viewport inset and major horizontal gaps.
+- `24px`: major horizontal gaps.
 - `30–32px`: modal shell and panel padding.
 - `43px`: spacious hero-card padding.
 
-The desktop viewport inset is `8px` vertically and `24px` horizontally. Use `4px` on every side on mobile. Keep top bars and game content aligned to these shared edges.
+The shared site shell has a maximum width of `77rem` (`1232px` at the default root size), `padding: 0 1rem`, and a base font size of `1rem` on desktop and mobile. Center it horizontally and keep top bars and game content aligned within these shared edges.
 
 ## Layout
 
 ### Screen shell and top bar
 
-- Use the same outer padding for welcome, gameplay, and results screens: `8px` vertically with `24px` on each side on desktop, and `4px` on every side on mobile.
-- Apply mobile sizing at the shared compact-screen breakpoint and on coarse-pointer screens up to the shared `l` breakpoint.
-- At the mobile-keyboard breakpoint (coarse pointer and width up to `1024px`), give the shared HUD header bar `8px` of internal padding on the left and right. Keep the screen wrapper's padding at `4px` on every side.
+- Use the shared site shell for welcome, gameplay, and results screens, with the same maximum width, outer padding, and base font size on desktop and mobile. Use `.site-shell` for the static site and the shared styled `SiteShell` for both games.
+- Apply mobile component sizing at the shared compact-screen breakpoint and on coarse-pointer screens up to the shared `l` breakpoint; retain the shell's dimensions at these breakpoints.
+- At the mobile-keyboard breakpoint (coarse pointer and width up to `1024px`), give the shared HUD header bar `8px` of internal padding on the left and right. Keep the screen wrapper's padding at `0 1rem`.
 - Use a vertical flex layout that fills `100dvh`, with an `8px` gap between its main sections. Prevent document scrolling in either direction.
 - Reuse the shared `TopBar` styles on welcome, gameplay, and results screens. The bar is `52px` high on desktop and `48px` on mobile, cannot shrink, and uses flex to center its contents vertically without wrapping.
 - Allow breadcrumbs within the bar to wrap with `flex-wrap: wrap`; do not truncate breadcrumb text or force its navigation container onto a single line.
-- Keep the bar in normal document flow, with the shared subtle bottom border and a maximum width of `740px`. Do not absolutely position breadcrumbs or reserve space for them using large top padding.
-- Welcome screens show only breadcrumbs in the bar, followed directly by the settings panel. Results screens place their report panel directly below the bar. Center panels horizontally rather than vertically centering the whole screen.
+- Keep the bar in normal document flow, with the shared subtle bottom border and a width of `100%` of its container. Do not absolutely position breadcrumbs or reserve space for them using large top padding.
+- Welcome screens show only breadcrumbs in the bar, followed by a content wrapper that fills the remaining height. Use the shared `WellcomePanel`, centered horizontally with a `52px` top margin on desktop and `36px` at the compact breakpoint. Results screens place their report panel directly below the bar.
 - During gameplay, keep the HUD, input, and mobile keyboard from shrinking; let the map take the remaining height and shrink as needed. Settings and report panels may scroll internally when their content exceeds the available height.
 
 ### Playfield

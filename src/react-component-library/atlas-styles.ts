@@ -3,6 +3,19 @@ import { createGlobalStyle, css, styled } from 'styled-components';
 import { mb } from './media-breakpoints';
 import { theme } from './theme';
 
+const SITE_SHELL_STYLES = css`
+  box-sizing: border-box;
+  width: 100%;
+  max-width: ${rem(1232)};
+  margin-inline: auto;
+  padding: 0 ${rem(16)};
+  font-size: ${rem(16)};
+`;
+
+export const SiteShell = styled.div`
+  ${SITE_SHELL_STYLES}
+`;
+
 const SPACE_BACKGROUND = css`
   background: radial-gradient(
     ellipse at 50% 44%,
@@ -15,24 +28,15 @@ const SPACE_BACKGROUND = css`
 const SCREEN_LAYOUT = css`
   height: 100dvh;
   min-height: 0;
-  width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
   gap: ${rem(8)};
-  padding: ${rem(8)} ${rem(24)};
   overflow: hidden;
 
   > section {
     min-height: 0;
     overflow-y: auto;
-  }
-
-  ${mb('compact', { max: true })} {
-    padding: ${rem(4)};
-  }
-  ${mb('l', { max: true, pointer: 'coarse' })} {
-    padding: ${rem(4)};
   }
 `;
 
@@ -69,7 +73,7 @@ export const GameplayStyles = createGlobalStyle`
   }
 `;
 
-export const Wrapper = styled.div`
+export const Wrapper = styled(SiteShell)`
   ${SCREEN_LAYOUT}
   position: relative;
   ${SPACE_BACKGROUND}
@@ -90,7 +94,7 @@ export const Wrapper = styled.div`
   }
 `;
 
-export const LandingWrapper = styled.main`
+export const LandingWrapper = styled(SiteShell).attrs({ as: 'main' })`
   ${SCREEN_LAYOUT}
   ${SPACE_BACKGROUND}
 
@@ -176,9 +180,8 @@ export const Playfield = styled.main`
 `;
 
 export const TopBar = styled.header`
-  width: min(${rem(740)}, 100%);
+  width: 100%;
   min-width: 0;
-  margin-inline: auto;
   height: ${rem(52)};
   color: ${theme.colors.muted};
   font-size: ${theme.fontSizes.caption};
@@ -200,7 +203,6 @@ export const TopBar = styled.header`
   }
   ${mb('l', { max: true, pointer: 'coarse' })} {
     height: ${rem(48)};
-    padding-inline: ${rem(8)};
   }
 `;
 
@@ -432,9 +434,21 @@ export const Panel = styled.section`
 `;
 
 export const SettingsForm = styled.form`
+  text-align: left;
+
   fieldset {
+    display: grid;
+    gap: ${rem(12)};
+    margin: ${rem(24)} 0 ${rem(12)};
     padding: ${rem(15)} 0;
+    border: 0;
+    border-top: ${rem(1)} solid ${theme.colors.cyanFaint};
     text-transform: uppercase;
+  }
+  legend {
+    color: ${theme.colors.muted};
+    font-size: ${theme.fontSizes.label};
+    letter-spacing: 0.12em;
   }
   fieldset + fieldset {
     margin-top: ${rem(12)};
@@ -449,6 +463,9 @@ export const SettingsForm = styled.form`
   .start-action button {
     min-width: ${rem(190)};
     margin-top: ${rem(12)};
+  }
+  .start-action {
+    text-align: center;
   }
   .start-action button:disabled {
     opacity: 0.6;
@@ -475,6 +492,7 @@ export const Modal = styled.dialog<{ $fullScreen?: boolean }>`
       margin: 0;
 
       &[open] {
+        ${SITE_SHELL_STYLES}
         ${SCREEN_LAYOUT}
         ${SPACE_BACKGROUND}
         max-height: none;

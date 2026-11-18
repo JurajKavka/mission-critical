@@ -89,7 +89,7 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
   const score = preview && phase === 'ready' ? 128400 : hud.score;
 
   return (
-    <>
+    <S.GameShell>
       <S.GlobalStyles />
       <S.GameCanvas ref={canvas} aria-label="Neon Asteroids game field" />
       {phase === 'playing' && (
@@ -204,6 +204,6 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
           </S.GamePanel>
         </ModalDialog>
       )}
-    </>
+    </S.GameShell>
   );
 };

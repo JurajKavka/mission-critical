@@ -4,7 +4,7 @@ import * as UI from './WellcomePanel.styles';
 
 type WellcomePanelProps = {
   title: React.ReactNode;
-  subtitle: React.ReactNode;
+  subtitle?: React.ReactNode;
   children: React.ReactNode;
 };
 
@@ -18,7 +18,7 @@ export const WellcomePanel: React.FC<WellcomePanelProps> = ({
   return (
     <UI.Card as="section" aria-labelledby={titleId}>
       <UI.Title id={titleId}>{title}</UI.Title>
-      <UI.Subtitle>{subtitle}</UI.Subtitle>
+      {subtitle && <UI.Subtitle>{subtitle}</UI.Subtitle>}
       {children}
     </UI.Card>
   );

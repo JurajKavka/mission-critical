@@ -1,3 +1,4 @@
+import { WellcomeScreenContentWrapper } from '../../react-component-library/WellcomeScreenContentWrapper';
 import { useState } from 'react';
 import type * as React from 'react';
 import { Breadcrumbs, WellcomePanel } from '../../react-component-library';
@@ -30,58 +31,60 @@ export const Asteroids: React.FC = () => {
             ]}
           />
         </UI.TopBar>
-        <WellcomePanel
-          title={
-            <>
-              <WelcomeUI.Eyebrow>Deep-space relay online</WelcomeUI.Eyebrow>
-              NEON
-              <br />
-              ASTEROIDS
-            </>
-          }
-          subtitle={
-            <>
-              Break the incoming field into fragments and survive.
-              <br />
-              No drag: momentum persists up to the speed limit. Weapon cores
-              last {WEAPON_BONUS_DURATION} seconds. Chain hits before the combo
-              meter drains.
-            </>
-          }
-        >
-          <WelcomeUI.LaunchButton
-            type="button"
-            onClick={() => setHasLaunched(true)}
+        <WellcomeScreenContentWrapper>
+          <WellcomePanel
+            title={
+              <>
+                <WelcomeUI.Eyebrow>Deep-space relay online</WelcomeUI.Eyebrow>
+                NEON
+                <br />
+                ASTEROIDS
+              </>
+            }
+            subtitle={
+              <>
+                Break the incoming field into fragments and survive.
+                <br />
+                No drag: momentum persists up to the speed limit. Weapon cores
+                last {WEAPON_BONUS_DURATION} seconds. Chain hits before the
+                combo meter drains.
+              </>
+            }
           >
-            <span data-action-label>Launch</span>
-            <WelcomeUI.Arrow aria-hidden="true">↗</WelcomeUI.Arrow>
-          </WelcomeUI.LaunchButton>
-          <WelcomeUI.Controls>
-            <div>
-              <span>A / D</span> rotate
-            </div>
-            <div>
-              <span>W</span> thrust
-            </div>
-            <div>
-              <span>S</span> brake
-            </div>
-            <div>
-              <span>Space</span> fire
-            </div>
-            <div>
-              <span>Shift</span> hyperspace
-            </div>
-          </WelcomeUI.Controls>
-          <WelcomeUI.TouchInstructions>
-            Steer / thrust · Hold brake · Tap jump · Auto fire
-          </WelcomeUI.TouchInstructions>
-          {import.meta.env.DEV && (
-            <p>
-              <a href="/games/asteroids/graphics/">Graphics catalog</a>
-            </p>
-          )}
-        </WellcomePanel>
+            <WelcomeUI.LaunchButton
+              type="button"
+              onClick={() => setHasLaunched(true)}
+            >
+              <span data-action-label>Launch</span>
+              <WelcomeUI.Arrow aria-hidden="true">↗</WelcomeUI.Arrow>
+            </WelcomeUI.LaunchButton>
+            <WelcomeUI.Controls>
+              <div>
+                <span>A / D</span> rotate
+              </div>
+              <div>
+                <span>W</span> thrust
+              </div>
+              <div>
+                <span>S</span> brake
+              </div>
+              <div>
+                <span>Space</span> fire
+              </div>
+              <div>
+                <span>Shift</span> hyperspace
+              </div>
+            </WelcomeUI.Controls>
+            <WelcomeUI.TouchInstructions>
+              Steer / thrust · Hold brake · Tap jump · Auto fire
+            </WelcomeUI.TouchInstructions>
+            {import.meta.env.DEV && (
+              <p>
+                <a href="/games/asteroids/graphics/">Graphics catalog</a>
+              </p>
+            )}
+          </WellcomePanel>
+        </WellcomeScreenContentWrapper>
       </UI.LandingWrapper>
     </>
   );

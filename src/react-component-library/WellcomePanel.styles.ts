@@ -69,7 +69,13 @@ export const Title = styled.h1`
   letter-spacing: -0.065em;
   line-height: 0.9;
   text-wrap: wrap;
+  text-transform: uppercase;
   text-shadow: ${rem(7)} ${rem(5)} 0 ${theme.colors.welcomeTitleShadow};
+
+  em {
+    color: ${theme.colors.cyan};
+    font-style: normal;
+  }
 `;
 
 export const Subtitle = styled.p`
