@@ -1,6 +1,6 @@
 import { rem } from 'polished';
 import { styled } from 'styled-components';
-import { mb } from './media-breakpoints';
+import { BREAKPOINTS } from './media-breakpoints';
 import { Card } from './WellcomePanel.styles';
 
 export const WellcomeScreenContentWrapper = styled.div`
@@ -17,8 +17,9 @@ export const WellcomeScreenContentWrapper = styled.div`
     flex-shrink: 0;
     margin-top: ${rem(52)};
 
-    ${mb('compact', { max: true })} {
-      margin-top: ${rem(16)};
+    @media (max-width: ${rem(BREAKPOINTS.compact)}),
+      (max-width: ${rem(BREAKPOINTS.l)}) and (pointer: coarse) {
+      margin-top: clamp(${rem(8)}, calc(10dvh - ${rem(36)}), ${rem(36)});
     }
   }
 `;

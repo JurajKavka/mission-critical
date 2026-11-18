@@ -96,10 +96,10 @@ The shared site shell has a maximum width of `77rem` (`1232px` at the default ro
 - Apply mobile component sizing at the shared compact-screen breakpoint and on coarse-pointer screens up to the shared `l` breakpoint; retain the shell's dimensions at these breakpoints.
 - At the mobile-keyboard breakpoint (coarse pointer and width up to `1024px`), give the shared HUD header bar `8px` of internal padding on the left and right. Keep the screen wrapper's padding at `0 1rem`.
 - Use a vertical flex layout that fills `100dvh`, with an `8px` gap between its main sections. Prevent document scrolling in either direction.
-- Reuse the shared `TopBar` styles on welcome, gameplay, and results screens. The bar is `52px` high on desktop and `48px` on mobile, cannot shrink, and uses flex to center its contents vertically without wrapping.
+- Reuse the shared `TopBar` styles on welcome, gameplay, and results screens. The bar is `52px` high on desktop and `48px` on mobile and cannot shrink. At the compact breakpoint, the Neon Asteroids gameplay bar adds a telemetry row below its breadcrumbs.
 - Allow breadcrumbs within the bar to wrap with `flex-wrap: wrap`; do not truncate breadcrumb text or force its navigation container onto a single line.
 - Keep the bar in normal document flow, with the shared subtle bottom border and a width of `100%` of its container. Do not absolutely position breadcrumbs or reserve space for them using large top padding.
-- Welcome screens show only breadcrumbs in the bar, followed by a content wrapper that fills the remaining height. Use the shared `WellcomePanel`, centered horizontally with a `52px` top margin on desktop and `36px` at the compact breakpoint. Results screens place their report panel directly below the bar.
+- Welcome screens show only breadcrumbs in the bar, followed by a scrollable content wrapper that fills the remaining height. Anchor the shared `WellcomePanel` to the top of the wrapper and center it horizontally. Use a `52px` top margin on desktop. On compact and coarse-pointer screens, scale the margin from `8px` to `36px` with the available viewport height. Results screens place their report panel directly below the bar.
 - During gameplay, keep the HUD, input, and mobile keyboard from shrinking; let the map take the remaining height and shrink as needed. Settings and report panels may scroll internally when their content exceeds the available height.
 
 ### Playfield

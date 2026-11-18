@@ -81,29 +81,29 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
       <UI.GlobalStyles />
       <UI.GameplayStyles />
       <UI.Wrapper>
-        <UI.Playfield>
-          <UI.TopBar>
-            <Breadcrumbs
-              breadcrumbs={[
-                { label: region.name, link: `/games/atlas-rush/${regionId}/` },
-              ]}
+        <UI.TopBar>
+          <Breadcrumbs
+            breadcrumbs={[
+              { label: region.name, link: `/games/atlas-rush/${regionId}/` },
+            ]}
+          />
+          <UI.HudStats>
+            <UI.HudMetric>
+              <span>Identified</span>
+              <strong>
+                {String(guessed.length).padStart(2, '0')}/
+                {String(total).padStart(2, '0')}
+              </strong>
+            </UI.HudMetric>
+            <GameTimer store={store} readySeconds={readySeconds} />
+            <IconButton
+              name="exit"
+              label="End game"
+              onClick={store.getState().pauseGame}
             />
-            <UI.HudStats>
-              <UI.HudMetric>
-                <span>Identified</span>
-                <strong>
-                  {String(guessed.length).padStart(2, '0')}/
-                  {String(total).padStart(2, '0')}
-                </strong>
-              </UI.HudMetric>
-              <GameTimer store={store} readySeconds={readySeconds} />
-              <IconButton
-                name="exit"
-                label="End game"
-                onClick={store.getState().pauseGame}
-              />
-            </UI.HudStats>
-          </UI.TopBar>
+          </UI.HudStats>
+        </UI.TopBar>
+        <UI.Playfield>
           {persistence.initialization === 'ready' &&
             persistence.notice &&
             phase !== 'paused' && (

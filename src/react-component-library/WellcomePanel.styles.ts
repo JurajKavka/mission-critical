@@ -62,7 +62,7 @@ export const Eyebrow = styled.span`
 `;
 
 export const Title = styled.h1`
-  margin: ${rem(13)} 0 ${rem(3)};
+  margin: 0;
   color: ${theme.colors.text};
   font-size: clamp(${rem(43)}, 8vw, ${rem(72)});
   font-weight: 900;

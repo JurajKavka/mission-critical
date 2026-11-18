@@ -129,12 +129,12 @@ export const HudStats = styled.div`
   flex-shrink: 0;
   gap: clamp(${rem(25)}, 5vw, ${rem(70)});
   align-items: center;
-  ${mb('compact', { max: true })} {
-    gap: ${rem(16)};
-  }
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
     justify-content: space-between;
     gap: ${rem(12)};
+  }
+  ${mb('compact', { max: true })} {
+    gap: ${rem(8)};
   }
 `;
 
@@ -157,6 +157,9 @@ export const HudMetric = styled.div`
     letter-spacing: 0.03em;
   }
   ${mb('compact', { max: true })} {
+    span {
+      font-size: ${theme.fontSizes.tiny};
+    }
     strong {
       font-size: ${rem(16)};
     }
@@ -180,6 +183,7 @@ export const Playfield = styled.main`
 `;
 
 export const TopBar = styled.header`
+  position: relative;
   width: 100%;
   min-width: 0;
   height: ${rem(52)};
@@ -197,12 +201,16 @@ export const TopBar = styled.header`
   > nav {
     min-width: 0;
   }
+  > nav > [aria-current='page'] {
+    flex-shrink: 1;
+  }
 
   ${mb('compact', { max: true })} {
     height: ${rem(48)};
   }
   ${mb('l', { max: true, pointer: 'coarse' })} {
     height: ${rem(48)};
+    padding-inline: ${rem(8)};
   }
 `;
 

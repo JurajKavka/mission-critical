@@ -91,67 +91,66 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
   return (
     <S.GameShell>
       <S.GlobalStyles />
-      <S.GameCanvas ref={canvas} aria-label="Neon Asteroids game field" />
-      {phase === 'playing' && (
-        <div className="touch-controls">
-          <AsteroidsTouchControls />
-        </div>
-      )}
-      <S.GameHud>
-        <div className="hud-top">
-          <Breadcrumbs
-            breadcrumbs={[
-              { label: 'Neon Asteroids', link: '/games/asteroids/' },
-            ]}
-          />
-          <div className="stats">
-            <div>
-              Score<strong>{String(hud.score).padStart(6, '0')}</strong>
-            </div>
-            <div>
-              Wave<strong>{String(hud.wave).padStart(2, '0')}</strong>
-            </div>
-            <div>
-              Combo
-              <strong
-                style={{
-                  color:
-                    hud.comboMultiplier > 1
-                      ? COLORS['magenta']
-                      : COLORS['primary-text'],
-                }}
-              >
-                {hud.comboCount
-                  ? `${String(hud.comboCount).padStart(2, '0')} ×${hud.comboMultiplier}`
-                  : '-- ×1'}
-              </strong>
-              <div className="combo-meter">
-                <div
-                  className="combo-fill"
-                  style={{ width: `${hud.comboProgress * 100}%` }}
-                />
-              </div>
-            </div>
-            <div>
-              Velocity<strong>{String(hud.velocity).padStart(3, '0')}</strong>
+      <S.GameHeader>
+        <Breadcrumbs
+          breadcrumbs={[
+            { label: 'Neon Asteroids', link: '/games/asteroids/' },
+          ]}
+        />
+        <S.GameStats>
+          <div>
+            Score<strong>{String(hud.score).padStart(6, '0')}</strong>
+          </div>
+          <div>
+            Wave<strong>{String(hud.wave).padStart(2, '0')}</strong>
+          </div>
+          <div>
+            Combo
+            <strong
+              style={{
+                color:
+                  hud.comboMultiplier > 1
+                    ? COLORS['magenta']
+                    : COLORS['primary-text'],
+              }}
+            >
+              {hud.comboCount
+                ? `${String(hud.comboCount).padStart(2, '0')} ×${hud.comboMultiplier}`
+                : '-- ×1'}
+            </strong>
+            <div className="combo-meter">
+              <div
+                className="combo-fill"
+                style={{ width: `${hud.comboProgress * 100}%` }}
+              />
             </div>
           </div>
-        </div>
-        <div className="lives">
-          Reserve ships
-          <div className="ships" aria-label={`${hud.lives} reserve ships`}>
-            {Array.from({ length: hud.lives }, (_, index) => (
-              <span className="ship-life" key={index} />
-            ))}
+          <div>
+            Velocity<strong>{String(hud.velocity).padStart(3, '0')}</strong>
           </div>
-        </div>
-        <div className={`bonus-status${hud.bonus ? ' active' : ''}`}>
-          {hud.bonus}
-        </div>
-        <div className="hint">
-          A/D rotate · W thrust · S brake · Space/click fire · Shift hyperspace
-        </div>
-      </S.GameHud>
+        </S.GameStats>
+      </S.GameHeader>
+      <S.GameField>
+        <S.GameCanvas ref={canvas} aria-label="Neon Asteroids game field" />
+        <S.GameHud>
+          <div className="lives">
+            Reserve ships
+            <div className="ships" aria-label={`${hud.lives} reserve ships`}>
+              {Array.from({ length: hud.lives }, (_, index) => (
+                <span className="ship-life" key={index} />
+              ))}
+            </div>
+          </div>
+          <div className={`bonus-status${hud.bonus ? ' active' : ''}`}>
+            {hud.bonus}
+          </div>
+          <div className="hint">
+            A/D rotate · W thrust · S brake · Space/click fire · Shift
+            hyperspace
+          </div>
+        </S.GameHud>
+      </S.GameField>
+      {phase === 'playing' && <AsteroidsTouchControls />}
       {isEnded && (
         <ModalDialog labelledBy="asteroids-title">
           <S.GamePanel>
