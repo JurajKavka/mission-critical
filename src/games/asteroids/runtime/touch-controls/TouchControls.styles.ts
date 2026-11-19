@@ -1,5 +1,4 @@
 import { theme } from '../../../../react-component-library/theme';
-import { mb } from '../../../../react-component-library/media-breakpoints';
 import { rem } from 'polished';
 import { styled } from 'styled-components';
 
@@ -29,11 +28,6 @@ export const Controls = styled.div<{ $alwaysVisible: boolean }>`
 
   @media (any-pointer: coarse) {
     display: flex;
-  }
-
-  ${mb('s', { max: true })} {
-    padding-right: max(${rem(6)}, env(safe-area-inset-right));
-    padding-left: max(${rem(6)}, env(safe-area-inset-left));
   }
 `;
 

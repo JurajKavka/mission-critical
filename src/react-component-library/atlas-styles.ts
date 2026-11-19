@@ -3,12 +3,14 @@ import { createGlobalStyle, css, styled } from 'styled-components';
 import { mb } from './media-breakpoints';
 import { theme } from './theme';
 
+const ATLAS_COMMAND_WIDTH = 740;
+
 const SITE_SHELL_STYLES = css`
   box-sizing: border-box;
   width: 100%;
   max-width: ${rem(1024)};
   margin-inline: auto;
-  padding: 0 ${rem(16)};
+  padding: 0 var(--game-wrapper-padding-inline, 0);
   font-size: ${rem(16)};
 `;
 
@@ -16,14 +18,12 @@ export const SiteShell = styled.div`
   ${SITE_SHELL_STYLES}
 `;
 
-const SPACE_BACKGROUND = css`
-  background: radial-gradient(
-    ellipse at 50% 44%,
-    ${theme.colors.spaceCenter},
-    ${theme.colors.spaceMiddle} 45%,
-    ${theme.colors.spaceOuter}
-  );
-`;
+const SPACE_BACKGROUND = `radial-gradient(
+  ellipse at 50% 44%,
+  ${theme.colors.spaceCenter},
+  ${theme.colors.spaceMiddle} 45%,
+  ${theme.colors.spaceOuter}
+)`;
 
 const SCREEN_LAYOUT = css`
   height: 100dvh;
@@ -76,27 +76,18 @@ export const GameplayStyles = createGlobalStyle`
 export const Wrapper = styled(SiteShell)`
   ${SCREEN_LAYOUT}
   position: relative;
-  ${SPACE_BACKGROUND}
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      linear-gradient(${theme.colors.grid} ${rem(1)}, transparent ${rem(1)}),
-      linear-gradient(
-        90deg,
-        ${theme.colors.grid} ${rem(1)},
-        transparent ${rem(1)}
-      );
-    background-size: ${rem(42)} ${rem(42)};
-    mask-image: radial-gradient(ellipse, black, transparent 80%);
-  }
+  background:
+    radial-gradient(ellipse, transparent 45%, ${theme.colors.spaceOuter} 80%),
+    linear-gradient(${theme.colors.grid} ${rem(1)}, transparent ${rem(1)})
+      0 0 / ${rem(42)} ${rem(42)},
+    linear-gradient(90deg, ${theme.colors.grid} ${rem(1)}, transparent ${rem(1)})
+      0 0 / ${rem(42)} ${rem(42)},
+    ${SPACE_BACKGROUND};
 `;
 
 export const LandingWrapper = styled(SiteShell).attrs({ as: 'main' })`
   ${SCREEN_LAYOUT}
-  ${SPACE_BACKGROUND}
+  background: ${SPACE_BACKGROUND};
 
   :focus-visible {
     outline: ${rem(2)} solid ${theme.colors.cyan};
@@ -174,9 +165,11 @@ export const HudMetric = styled.div`
 export const Playfield = styled.main`
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
   min-width: 0;
   min-height: 0;
-  width: min(${rem(740)}, 100%);
+  width: 100%;
+  padding: 0;
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
@@ -184,9 +177,11 @@ export const Playfield = styled.main`
 
 export const TopBar = styled.header`
   position: relative;
+  box-sizing: border-box;
   width: 100%;
   min-width: 0;
   height: ${rem(52)};
+  padding: 0;
   color: ${theme.colors.muted};
   font-size: ${theme.fontSizes.caption};
   letter-spacing: 0.15em;
@@ -210,7 +205,6 @@ export const TopBar = styled.header`
   }
   ${mb('l', { max: true, pointer: 'coarse' })} {
     height: ${rem(48)};
-    padding-inline: ${rem(8)};
   }
 `;
 
@@ -291,7 +285,7 @@ export const Command = styled.footer`
   flex-direction: column;
   gap: ${rem(8)};
   min-width: 0;
-  width: min(${rem(740)}, 100%);
+  width: min(${rem(ATLAS_COMMAND_WIDTH)}, 100%);
   margin: 0 auto;
   padding: ${rem(20)} ${rem(20)} ${rem(16)};
   border: ${rem(1)} solid ${theme.colors.cyanBorder};
@@ -502,7 +496,7 @@ export const Modal = styled.dialog<{ $fullScreen?: boolean }>`
       &[open] {
         ${SITE_SHELL_STYLES}
         ${SCREEN_LAYOUT}
-        ${SPACE_BACKGROUND}
+        background: ${SPACE_BACKGROUND};
         max-height: none;
       }
     `}

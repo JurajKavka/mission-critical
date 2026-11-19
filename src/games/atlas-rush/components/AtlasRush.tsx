@@ -25,6 +25,7 @@ import { ModalDialog } from './ModalDialog';
 import { PauseDialog } from './PauseDialog';
 import { ResultsPanel } from '../../../react-component-library/ResultsPanel';
 import * as UI from '../../../react-component-library/atlas-styles';
+import { AtlasRushLayout } from '../../../react-component-library/game-layouts';
 import { GameTimer } from './GameTimer';
 
 type AtlasRushProps = { regionId: RegionId };
@@ -80,8 +81,8 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
     <>
       <UI.GlobalStyles />
       <UI.GameplayStyles />
-      <UI.Wrapper>
-        <UI.TopBar>
+      <AtlasRushLayout.Wrapper>
+        <AtlasRushLayout.TopBar>
           <Breadcrumbs
             breadcrumbs={[
               { label: region.name, link: `/games/atlas-rush/${regionId}/` },
@@ -102,8 +103,8 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
               onClick={store.getState().pauseGame}
             />
           </UI.HudStats>
-        </UI.TopBar>
-        <UI.Playfield>
+        </AtlasRushLayout.TopBar>
+        <AtlasRushLayout.Playfield>
           {persistence.initialization === 'ready' &&
             persistence.notice &&
             phase !== 'paused' && (
@@ -124,7 +125,7 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
               />
             )}
           </UI.MapSlot>
-        </UI.Playfield>
+        </AtlasRushLayout.Playfield>
         <AnswerInput
           store={store}
           phase={phase}
@@ -188,7 +189,7 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
             />
           </ModalDialog>
         )}
-      </UI.Wrapper>
+      </AtlasRushLayout.Wrapper>
     </>
   );
 };

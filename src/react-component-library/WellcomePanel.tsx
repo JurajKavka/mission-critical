@@ -17,6 +17,7 @@ export const WellcomePanel: React.FC<WellcomePanelProps> = ({
 
   return (
     <UI.Card as="section" aria-labelledby={titleId}>
+      <UI.CardSurface aria-hidden="true" />
       <UI.Title id={titleId}>{title}</UI.Title>
       {subtitle && <UI.Subtitle>{subtitle}</UI.Subtitle>}
       {children}

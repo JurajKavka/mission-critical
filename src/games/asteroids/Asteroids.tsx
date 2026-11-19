@@ -1,8 +1,8 @@
-import { WellcomeScreenContentWrapper } from '../../react-component-library/WellcomeScreenContentWrapper';
 import { useState } from 'react';
 import type * as React from 'react';
 import { Breadcrumbs, WellcomePanel } from '../../react-component-library';
 import * as UI from '../../react-component-library/atlas-styles';
+import { AsteroidsLayout } from '../../react-component-library/game-layouts';
 import * as WelcomeUI from '../../react-component-library/WellcomePanel.styles';
 import { WEAPON_BONUS_DURATION } from './runtime/constants';
 import { AsteroidsGame } from './AsteroidsGame';
@@ -23,15 +23,15 @@ export const Asteroids: React.FC = () => {
   return (
     <>
       <UI.GlobalStyles />
-      <UI.LandingWrapper>
-        <UI.TopBar>
+      <AsteroidsLayout.LandingWrapper>
+        <AsteroidsLayout.TopBar>
           <Breadcrumbs
             breadcrumbs={[
               { label: 'Neon Asteroids', link: '/games/asteroids/' },
             ]}
           />
-        </UI.TopBar>
-        <WellcomeScreenContentWrapper>
+        </AsteroidsLayout.TopBar>
+        <AsteroidsLayout.WelcomeContent>
           <WellcomePanel
             title={
               <>
@@ -84,8 +84,8 @@ export const Asteroids: React.FC = () => {
               </p>
             )}
           </WellcomePanel>
-        </WellcomeScreenContentWrapper>
-      </UI.LandingWrapper>
+        </AsteroidsLayout.WelcomeContent>
+      </AsteroidsLayout.LandingWrapper>
     </>
   );
 };

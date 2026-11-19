@@ -1,7 +1,7 @@
 import { theme } from '../../react-component-library/theme';
 import { createGlobalStyle, styled } from 'styled-components';
 import { rem } from 'polished';
-import { Panel, Playfield } from '../../react-component-library/atlas-styles';
+import { Panel } from '../../react-component-library/atlas-styles';
 import { mb } from '../../react-component-library/media-breakpoints';
 
 export const GlobalStyles = createGlobalStyle`
@@ -166,34 +166,29 @@ export const GameStats = styled.div`
   }
 `;
 
-export const GameField = styled(Playfield)`
-  width: 100%;
-
+export const PlayfieldEdgeGlow = styled.div`
+  display: none;
   ${mb('l', { pointer: 'fine' })} {
-    &::after {
-      --edge-glow: linear-gradient(
-        90deg,
-        transparent,
-        ${theme.colors.cyanFaint} 40%,
-        ${theme.colors.cyanBorderStrong} 50%,
-        ${theme.colors.cyanFaint} 60%,
-        transparent
-      );
-      position: absolute;
-      inset: 0 -${rem(16)};
-      background:
-        var(--edge-glow) left / ${rem(32)} 100% no-repeat,
-        var(--edge-glow) right / ${rem(32)} 100% no-repeat;
-      mask-image: linear-gradient(
-        transparent,
-        black ${rem(18)},
-        black calc(100% - ${rem(18)}),
-        transparent
-      );
-      content: '';
-      opacity: 0.16;
-      pointer-events: none;
-    }
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      ${theme.colors.cyanBorderStrong},
+      ${theme.colors.cyanFaint} ${rem(3)},
+      transparent ${rem(16)},
+      transparent calc(100% - ${rem(16)}),
+      ${theme.colors.cyanFaint} calc(100% - ${rem(3)}),
+      ${theme.colors.cyanBorderStrong}
+    );
+    mask-image: linear-gradient(
+      transparent,
+      black ${rem(18)},
+      black calc(100% - ${rem(18)}),
+      transparent
+    );
+    opacity: 0.16;
+    pointer-events: none;
   }
 `;
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type * as React from 'react';
 import { ActionButton, Breadcrumbs } from '../../react-component-library';
 import * as UI from '../../react-component-library/atlas-styles';
+import { AsteroidsLayout } from '../../react-component-library/game-layouts';
 import { ModalDialog } from '../atlas-rush/components/ModalDialog';
 import {
   createGame,
@@ -89,11 +90,11 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
   const score = preview && phase === 'ready' ? 128400 : hud.score;
 
   return (
-    <UI.Wrapper>
+    <AsteroidsLayout.Wrapper>
       <UI.GlobalStyles />
       <UI.GameplayStyles />
       <S.GlobalStyles />
-      <UI.TopBar>
+      <AsteroidsLayout.TopBar>
         <Breadcrumbs
           breadcrumbs={[
             { label: 'Neon Asteroids', link: '/games/asteroids/' },
@@ -131,9 +132,10 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
             Velocity<strong>{String(hud.velocity).padStart(3, '0')}</strong>
           </div>
         </S.GameStats>
-      </UI.TopBar>
-      <S.GameField>
+      </AsteroidsLayout.TopBar>
+      <AsteroidsLayout.Playfield>
         <S.GameCanvas ref={canvas} aria-label="Neon Asteroids game field" />
+        <S.PlayfieldEdgeGlow aria-hidden="true" />
         <S.GameHud>
           <div className="lives">
             Reserve ships
@@ -152,7 +154,7 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
           </div>
         </S.GameHud>
         {phase === 'playing' && <AsteroidsTouchControls />}
-      </S.GameField>
+      </AsteroidsLayout.Playfield>
       {isEnded && (
         <ModalDialog labelledBy="asteroids-title">
           <S.GamePanel>
@@ -205,6 +207,6 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
           </S.GamePanel>
         </ModalDialog>
       )}
-    </UI.Wrapper>
+    </AsteroidsLayout.Wrapper>
   );
 };

@@ -14,6 +14,7 @@ import { createRandomSeed } from '../infrastructure/browser-url';
 import { getChallengePath } from '../infrastructure/challenge-url';
 import { takeLandingSettings } from '../infrastructure/landing-settings';
 import * as UI from '../../../react-component-library/atlas-styles';
+import { AtlasRushLayout } from '../../../react-component-library/game-layouts';
 
 const REGIONS = [
   regionMetadata.world,
@@ -64,12 +65,12 @@ export const Landing: React.FC = () => {
   return (
     <>
       <UI.GlobalStyles />
-      <UI.LandingWrapper>
-        <UI.TopBar>
+      <AtlasRushLayout.LandingWrapper>
+        <AtlasRushLayout.TopBar>
           <Breadcrumbs
             breadcrumbs={[{ label: 'Atlas Rush', link: '/games/atlas-rush/' }]}
           />
-        </UI.TopBar>
+        </AtlasRushLayout.TopBar>
         <WellcomeScreenContentWrapper>
           <WellcomePanel
             title={
@@ -135,7 +136,7 @@ export const Landing: React.FC = () => {
             </UI.SettingsForm>
           </WellcomePanel>
         </WellcomeScreenContentWrapper>
-      </UI.LandingWrapper>
+      </AtlasRushLayout.LandingWrapper>
     </>
   );
 };

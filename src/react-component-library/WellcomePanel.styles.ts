@@ -28,26 +28,26 @@ export const Card = styled.div`
     0 100%,
     0 ${rem(19)}
   );
+`;
 
-  &::before {
-    position: absolute;
-    z-index: -1;
-    inset: ${rem(1)};
-    background: linear-gradient(
-      145deg,
-      ${theme.colors.welcomeGradientStart},
-      ${theme.colors.welcomeGradientEnd}
-    );
-    clip-path: polygon(
-      ${rem(18.5)} 0,
-      100% 0,
-      100% calc(100% - ${rem(18.5)}),
-      calc(100% - ${rem(18.5)}) 100%,
-      0 100%,
-      0 ${rem(18.5)}
-    );
-    content: '';
-  }
+export const CardSurface = styled.div`
+  position: absolute;
+  z-index: -1;
+  inset: ${rem(1)};
+  background: linear-gradient(
+    145deg,
+    ${theme.colors.welcomeGradientStart},
+    ${theme.colors.welcomeGradientEnd}
+  );
+  clip-path: polygon(
+    ${rem(18.5)} 0,
+    100% 0,
+    100% calc(100% - ${rem(18.5)}),
+    calc(100% - ${rem(18.5)}) 100%,
+    0 100%,
+    0 ${rem(18.5)}
+  );
+  pointer-events: none;
 `;
 
 export const Eyebrow = styled.span`
