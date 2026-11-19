@@ -78,9 +78,13 @@ export const Wrapper = styled(SiteShell)`
   position: relative;
   background:
     radial-gradient(ellipse, transparent 45%, ${theme.colors.spaceOuter} 80%),
-    linear-gradient(${theme.colors.grid} ${rem(1)}, transparent ${rem(1)})
-      0 0 / ${rem(42)} ${rem(42)},
-    linear-gradient(90deg, ${theme.colors.grid} ${rem(1)}, transparent ${rem(1)})
+    linear-gradient(${theme.colors.grid} ${rem(1)}, transparent ${rem(1)}) 0 0 /
+      ${rem(42)} ${rem(42)},
+    linear-gradient(
+        90deg,
+        ${theme.colors.grid} ${rem(1)},
+        transparent ${rem(1)}
+      )
       0 0 / ${rem(42)} ${rem(42)},
     ${SPACE_BACKGROUND};
 `;

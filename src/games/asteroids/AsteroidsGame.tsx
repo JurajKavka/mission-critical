@@ -96,9 +96,7 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
       <S.GlobalStyles />
       <AsteroidsLayout.TopBar>
         <Breadcrumbs
-          breadcrumbs={[
-            { label: 'Neon Asteroids', link: '/games/asteroids/' },
-          ]}
+          breadcrumbs={[{ label: 'Neon Asteroids', link: '/games/asteroids/' }]}
         />
         <S.GameStats>
           <div>
