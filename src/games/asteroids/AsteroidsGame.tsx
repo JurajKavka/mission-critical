@@ -89,9 +89,11 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
   const score = preview && phase === 'ready' ? 128400 : hud.score;
 
   return (
-    <S.GameShell>
+    <UI.Wrapper>
+      <UI.GlobalStyles />
+      <UI.GameplayStyles />
       <S.GlobalStyles />
-      <S.GameHeader>
+      <UI.TopBar>
         <Breadcrumbs
           breadcrumbs={[
             { label: 'Neon Asteroids', link: '/games/asteroids/' },
@@ -129,7 +131,7 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
             Velocity<strong>{String(hud.velocity).padStart(3, '0')}</strong>
           </div>
         </S.GameStats>
-      </S.GameHeader>
+      </UI.TopBar>
       <S.GameField>
         <S.GameCanvas ref={canvas} aria-label="Neon Asteroids game field" />
         <S.GameHud>
@@ -149,8 +151,8 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
             hyperspace
           </div>
         </S.GameHud>
+        {phase === 'playing' && <AsteroidsTouchControls />}
       </S.GameField>
-      {phase === 'playing' && <AsteroidsTouchControls />}
       {isEnded && (
         <ModalDialog labelledBy="asteroids-title">
           <S.GamePanel>
@@ -203,6 +205,6 @@ export const AsteroidsGame: React.FC<AsteroidsGameProps> = ({
           </S.GamePanel>
         </ModalDialog>
       )}
-    </S.GameShell>
+    </UI.Wrapper>
   );
 };

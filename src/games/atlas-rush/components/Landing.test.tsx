@@ -26,7 +26,7 @@ describe('Atlas Rush settings page', () => {
           expect(fieldset).toContain(`name="${inputName}"`);
         });
       });
-      expect(styles).toContain('max-width:77rem;');
+      expect(styles).toContain('max-width:64rem;');
       expect(styles).toContain('padding:0 1rem;');
       expect(styles).toContain('font-size:1rem;');
       expect(styles).toContain('clip-path:polygon(');

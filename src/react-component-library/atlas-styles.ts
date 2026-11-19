@@ -6,7 +6,7 @@ import { theme } from './theme';
 const SITE_SHELL_STYLES = css`
   box-sizing: border-box;
   width: 100%;
-  max-width: ${rem(1232)};
+  max-width: ${rem(1024)};
   margin-inline: auto;
   padding: 0 ${rem(16)};
   font-size: ${rem(16)};

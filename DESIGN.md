@@ -14,7 +14,7 @@ Interfaces should resemble spacecraft telemetry: compact labels, monospaced nume
 
 ### Gameplay remains dominant
 
-The canvas occupies the full viewport. Persistent interface elements sit around its edges and do not intercept pointer events. Modal panels are reserved for starts, endings, upgrades, and other genuine pauses.
+The playfield fills the available space below the shared top bar. Persistent interface elements sit around its edges and do not intercept pointer events. Modal panels are reserved for starts, endings, upgrades, and other genuine pauses.
 
 ### Effects communicate state
 
@@ -86,17 +86,20 @@ Use a compact spacing vocabulary derived from the existing interface:
 - `30–32px`: modal shell and panel padding.
 - `43px`: spacious hero-card padding.
 
-The shared site shell has a maximum width of `77rem` (`1232px` at the default root size), `padding: 0 1rem`, and a base font size of `1rem` on desktop and mobile. Center it horizontally and keep top bars and game content aligned within these shared edges.
+The site shell has a maximum width of `77rem` and the game shell has a maximum width of `64rem`. Center both shells and use `padding: 0 1rem` and a base font size of `1rem` on desktop and mobile. Align the top bar and content to their shell's edges.
 
 ## Layout
 
+- Use [SiteLayout](./src/layouts/SiteLayout.astro) for the scrolling arcade directory with its site header and footer.
+- Use [GameLayout](./src/layouts/GameLayout.astro) for game routes. It provides shared page metadata and transitions. The game island renders the top bar and manages the viewport for setup, play, and results.
+
 ### Screen shell and top bar
 
-- Use the shared site shell for welcome, gameplay, and results screens, with the same maximum width, outer padding, and base font size on desktop and mobile. Use `.site-shell` for the static site and the shared styled `SiteShell` for both games.
+- Use the shared styled `SiteShell` for welcome, gameplay, and results screens in both games. Use `.site-shell` for the static site.
 - Apply mobile component sizing at the shared compact-screen breakpoint and on coarse-pointer screens up to the shared `l` breakpoint; retain the shell's dimensions at these breakpoints.
 - At the mobile-keyboard breakpoint (coarse pointer and width up to `1024px`), give the shared HUD header bar `8px` of internal padding on the left and right. Keep the screen wrapper's padding at `0 1rem`.
 - Use a vertical flex layout that fills `100dvh`, with an `8px` gap between its main sections. Prevent document scrolling in either direction.
-- Reuse the shared `TopBar` styles on welcome, gameplay, and results screens. The bar is `52px` high on desktop and `48px` on mobile and cannot shrink. At the compact breakpoint, the Neon Asteroids gameplay bar adds a telemetry row below its breadcrumbs.
+- Reuse the shared `TopBar` styles on welcome, gameplay, and results screens. The bar is `52px` high on desktop and `48px` on mobile and cannot shrink. At the compact breakpoint, the Neon Asteroids telemetry fits into two rows beside its breadcrumbs.
 - Allow breadcrumbs within the bar to wrap with `flex-wrap: wrap`; do not truncate breadcrumb text or force its navigation container onto a single line.
 - Keep the bar in normal document flow, with the shared subtle bottom border and a width of `100%` of its container. Do not absolutely position breadcrumbs or reserve space for them using large top padding.
 - Welcome screens show only breadcrumbs in the bar, followed by a scrollable content wrapper that fills the remaining height. Anchor the shared `WellcomePanel` to the top of the wrapper and center it horizontally. Use a `52px` top margin on desktop. On compact and coarse-pointer screens, scale the margin from `8px` to `36px` with the available viewport height. Results screens place their report panel directly below the bar.
@@ -104,7 +107,7 @@ The shared site shell has a maximum width of `77rem` (`1232px` at the default ro
 
 ### Playfield
 
-- Fill the viewport with the canvas.
+- Use the shared `Playfield` below the top bar and let it fill the remaining height. The Atlas Rush map area is capped at `740px`. The Neon Asteroids canvas spans the full content width inside the game shell's `1rem` side padding.
 - Hide document overflow.
 - Cap the canvas pixel ratio at `2` to balance sharpness and performance.
 - Use a crosshair cursor when pointer aiming or firing is supported.
@@ -261,7 +264,7 @@ Sound effects should be quiet by default and triggered only after a user gesture
 
 ## New-game checklist
 
-- The canvas fills the viewport and remains the visual focus.
+- The canvas fills the playfield and remains the visual focus.
 - The background uses the shared deep-space foundation.
 - The interface uses the monospaced type system and telemetry hierarchy.
 - Cyan identifies the player or primary action.

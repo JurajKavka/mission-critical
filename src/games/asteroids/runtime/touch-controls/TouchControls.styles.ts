@@ -1,13 +1,14 @@
 import { theme } from '../../../../react-component-library/theme';
+import { mb } from '../../../../react-component-library/media-breakpoints';
 import { rem } from 'polished';
 import { styled } from 'styled-components';
 
 export const Controls = styled.div<{ $alwaysVisible: boolean }>`
-  position: fixed;
+  position: absolute;
   z-index: 1;
   bottom: max(${rem(22)}, env(safe-area-inset-bottom));
   left: 50%;
-  width: min(100%, 1024px);
+  width: min(100%, ${rem(1024)});
   padding-right: max(${rem(22)}, env(safe-area-inset-right));
   padding-left: max(${rem(22)}, env(safe-area-inset-left));
   box-sizing: border-box;
@@ -28,6 +29,11 @@ export const Controls = styled.div<{ $alwaysVisible: boolean }>`
 
   @media (any-pointer: coarse) {
     display: flex;
+  }
+
+  ${mb('s', { max: true })} {
+    padding-right: max(${rem(6)}, env(safe-area-inset-right));
+    padding-left: max(${rem(6)}, env(safe-area-inset-left));
   }
 `;
 
