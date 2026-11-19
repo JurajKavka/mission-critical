@@ -1,39 +1,19 @@
 ---
-import { COLORS } from '../../../styles/colors';
 import { Asteroids } from '../../../games/asteroids/Asteroids';
-import RouteTransition from '../../../components/RouteTransition.astro';
+import GameLayout from '../../../layouts/GameLayout.astro';
 
 const title = 'Neon Asteroids // Mission Critical';
 const description =
   'Pilot a neon starship through asteroid fields, collect weapon cores, and survive waves of hostile UFOs.';
-const canonical = Astro.site
-  ? new URL('/games/asteroids/', Astro.site).href
-  : '/games/asteroids/';
-const image = Astro.site
-  ? new URL('/og-image.png', Astro.site).href
-  : '/og-image.png';
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content={COLORS.void} />
-    <RouteTransition />
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <Asteroids client:only="react">
-      <p slot="fallback" role="status">Loading Neon Asteroids…</p>
-    </Asteroids>
-    <noscript>Enable JavaScript to play Neon Asteroids.</noscript>
-  </body>
-</html>
+<GameLayout
+  title={title}
+  description={description}
+  canonicalPath="/games/asteroids/"
+>
+  <Asteroids client:only="react">
+    <p slot="fallback" role="status">Loading Neon Asteroids…</p>
+  </Asteroids>
+  <noscript>Enable JavaScript to play Neon Asteroids.</noscript>
+</GameLayout>

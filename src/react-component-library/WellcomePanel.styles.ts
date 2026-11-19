@@ -28,26 +28,26 @@ export const Card = styled.div`
     0 100%,
     0 ${rem(19)}
   );
+`;
 
-  &::before {
-    position: absolute;
-    z-index: -1;
-    inset: ${rem(1)};
-    background: linear-gradient(
-      145deg,
-      ${theme.colors.welcomeGradientStart},
-      ${theme.colors.welcomeGradientEnd}
-    );
-    clip-path: polygon(
-      ${rem(18.5)} 0,
-      100% 0,
-      100% calc(100% - ${rem(18.5)}),
-      calc(100% - ${rem(18.5)}) 100%,
-      0 100%,
-      0 ${rem(18.5)}
-    );
-    content: '';
-  }
+export const CardSurface = styled.div`
+  position: absolute;
+  z-index: -1;
+  inset: ${rem(1)};
+  background: linear-gradient(
+    145deg,
+    ${theme.colors.welcomeGradientStart},
+    ${theme.colors.welcomeGradientEnd}
+  );
+  clip-path: polygon(
+    ${rem(18.5)} 0,
+    100% 0,
+    100% calc(100% - ${rem(18.5)}),
+    calc(100% - ${rem(18.5)}) 100%,
+    0 100%,
+    0 ${rem(18.5)}
+  );
+  pointer-events: none;
 `;
 
 export const Eyebrow = styled.span`
@@ -62,14 +62,20 @@ export const Eyebrow = styled.span`
 `;
 
 export const Title = styled.h1`
-  margin: ${rem(13)} 0 ${rem(3)};
+  margin: 0;
   color: ${theme.colors.text};
   font-size: clamp(${rem(43)}, 8vw, ${rem(72)});
   font-weight: 900;
   letter-spacing: -0.065em;
   line-height: 0.9;
   text-wrap: wrap;
+  text-transform: uppercase;
   text-shadow: ${rem(7)} ${rem(5)} 0 ${theme.colors.welcomeTitleShadow};
+
+  em {
+    color: ${theme.colors.cyan};
+    font-style: normal;
+  }
 `;
 
 export const Subtitle = styled.p`

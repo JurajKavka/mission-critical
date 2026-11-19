@@ -26,9 +26,10 @@ describe('Atlas Rush settings page', () => {
           expect(fieldset).toContain(`name="${inputName}"`);
         });
       });
-      expect(styles).toContain('padding:0.5rem 1.5rem;');
-      expect(styles).toContain('padding:0.25rem;');
-      expect(styles).toContain('padding:2rem;');
+      expect(styles).toContain('max-width:64rem;');
+      expect(styles).toContain('--game-wrapper-padding-inline:1rem;');
+      expect(styles).toContain('font-size:1rem;');
+      expect(styles).toContain('clip-path:polygon(');
     } finally {
       sheet.seal();
     }

@@ -47,7 +47,6 @@ export const theme = {
     mapOverlay: withOpacity(COLORS['void'], 0.9),
     welcomeBackdrop: withOpacity(COLORS['void'], 0.91),
     bonusBorder: withOpacity(COLORS['magenta'], 0.36),
-    canvasOutline: withOpacity(COLORS['muted-text'], 0.35),
     secondaryBorder: withOpacity(COLORS['secondary-text'], 0.3),
     welcomeGradientEnd: withOpacity(COLORS['space-blue'], 0.98),
     touchControlSurface: withOpacity(COLORS['nebula-blue'], 0.58),

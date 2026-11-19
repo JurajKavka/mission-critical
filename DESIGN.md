@@ -14,7 +14,7 @@ Interfaces should resemble spacecraft telemetry: compact labels, monospaced nume
 
 ### Gameplay remains dominant
 
-The canvas occupies the full viewport. Persistent interface elements sit around its edges and do not intercept pointer events. Modal panels are reserved for starts, endings, upgrades, and other genuine pauses.
+The playfield fills the available space below the shared top bar. Persistent interface elements sit around its edges and do not intercept pointer events. Modal panels are reserved for starts, endings, upgrades, and other genuine pauses.
 
 ### Effects communicate state
 
@@ -82,29 +82,40 @@ Use a compact spacing vocabulary derived from the existing interface:
 - `4–6px`: relationship between a label and its value or meter.
 - `8–9px`: tightly grouped status elements.
 - `13–18px`: control padding and component gaps.
-- `24px`: desktop horizontal viewport inset and major horizontal gaps.
+- `24px`: major horizontal gaps.
 - `30–32px`: modal shell and panel padding.
 - `43px`: spacious hero-card padding.
 
-The desktop viewport inset is `8px` vertically and `24px` horizontally. Use `4px` on every side on mobile. Keep top bars and game content aligned to these shared edges.
+Center the site shell at a maximum width of `77rem` with `1rem` of side padding. Center both game layouts at a maximum width of `64rem`. The site and game layouts use a base font size of `1rem` on desktop and mobile.
 
 ## Layout
 
+- Use [SiteLayout](./src/layouts/SiteLayout.astro) for the scrolling arcade directory with its site header and footer.
+- Use [GameLayout](./src/layouts/GameLayout.astro) for game routes. It provides shared page metadata and transitions. The game island renders the top bar and manages the viewport for setup, play, and results.
+
+Use the named [game layouts](./src/react-component-library/game-layouts.ts) for the React game screens. The same side spacing applies on desktop and mobile.
+
+| Layout     | Wrapper side padding | Header side padding | Playfield side padding |
+| ---------- | -------------------- | ------------------- | ---------------------- |
+| Asteroids  | 0                    | `1rem`              | 0                      |
+| Atlas Rush | `1rem`               | 0                   | 0                      |
+
+The header uses a direct bottom border. The header border and playfield both span the full content width of their wrapper. Build the game layout and its decorative layers without `::before` or `::after`.
+
 ### Screen shell and top bar
 
-- Use the same outer padding for welcome, gameplay, and results screens: `8px` vertically with `24px` on each side on desktop, and `4px` on every side on mobile.
-- Apply mobile sizing at the shared compact-screen breakpoint and on coarse-pointer screens up to the shared `l` breakpoint.
-- At the mobile-keyboard breakpoint (coarse pointer and width up to `1024px`), give the shared HUD header bar `8px` of internal padding on the left and right. Keep the screen wrapper's padding at `4px` on every side.
+- Use the shared styled `SiteShell` for welcome, gameplay, and results screens in both games. Use `.site-shell` for the static site.
+- Apply mobile component sizing at the shared compact-screen breakpoint and on coarse-pointer screens up to the shared `l` breakpoint; retain the shell's dimensions at these breakpoints.
 - Use a vertical flex layout that fills `100dvh`, with an `8px` gap between its main sections. Prevent document scrolling in either direction.
-- Reuse the shared `TopBar` styles on welcome, gameplay, and results screens. The bar is `52px` high on desktop and `48px` on mobile, cannot shrink, and uses flex to center its contents vertically without wrapping.
+- Reuse the shared `TopBar` styles on welcome, gameplay, and results screens. The bar is `52px` high on desktop and `48px` on mobile and cannot shrink. At the compact breakpoint, the Neon Asteroids telemetry fits into two rows beside its breadcrumbs.
 - Allow breadcrumbs within the bar to wrap with `flex-wrap: wrap`; do not truncate breadcrumb text or force its navigation container onto a single line.
-- Keep the bar in normal document flow, with the shared subtle bottom border and a maximum width of `740px`. Do not absolutely position breadcrumbs or reserve space for them using large top padding.
-- Welcome screens show only breadcrumbs in the bar, followed directly by the settings panel. Results screens place their report panel directly below the bar. Center panels horizontally rather than vertically centering the whole screen.
+- Keep the bar in normal document flow at the full width of its container with a subtle bottom border. Do not absolutely position breadcrumbs or reserve space for them using large top padding.
+- Welcome screens show only breadcrumbs in the bar, followed by a scrollable content wrapper that fills the remaining height. Anchor the shared `WellcomePanel` to the top of the wrapper and center it horizontally. Use a `52px` top margin on desktop. On compact and coarse-pointer screens, scale the margin from `8px` to `36px` with the available viewport height. Results screens place their report panel directly below the bar.
 - During gameplay, keep the HUD, input, and mobile keyboard from shrinking; let the map take the remaining height and shrink as needed. Settings and report panels may scroll internally when their content exceeds the available height.
 
 ### Playfield
 
-- Fill the viewport with the canvas.
+- Use the shared `Playfield` below the top bar and let it fill the remaining height.
 - Hide document overflow.
 - Cap the canvas pixel ratio at `2` to balance sharpness and performance.
 - Use a crosshair cursor when pointer aiming or firing is supported.
@@ -261,7 +272,7 @@ Sound effects should be quiet by default and triggered only after a user gesture
 
 ## New-game checklist
 
-- The canvas fills the viewport and remains the visual focus.
+- The canvas fills the playfield and remains the visual focus.
 - The background uses the shared deep-space foundation.
 - The interface uses the monospaced type system and telemetry hierarchy.
 - Cyan identifies the player or primary action.

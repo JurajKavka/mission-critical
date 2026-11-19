@@ -1,10 +1,11 @@
+import { WellcomeScreenContentWrapper } from '../../../react-component-library/WellcomeScreenContentWrapper';
 import { useEffect, useState } from 'react';
 import type * as React from 'react';
 import { ActionButton } from '../../../react-component-library/ActionButton';
 import { Breadcrumbs } from '../../../react-component-library/Breadcrumbs';
 import { CheckboxButton } from '../../../react-component-library/CheckboxButton';
 import { RadioButton } from '../../../react-component-library/RadioButton';
-import { StartGamePanel } from '../../../react-component-library/StartGamePanel';
+import { WellcomePanel } from '../../../react-component-library/WellcomePanel';
 import { regionMetadata } from '../data/regions';
 import { levels } from '../domain/levels';
 import { DEFAULT_PREFIX_LENGTH } from '../domain/answer-comparison';
@@ -13,6 +14,7 @@ import { createRandomSeed } from '../infrastructure/browser-url';
 import { getChallengePath } from '../infrastructure/challenge-url';
 import { takeLandingSettings } from '../infrastructure/landing-settings';
 import * as UI from '../../../react-component-library/atlas-styles';
+import { AtlasRushLayout } from '../../../react-component-library/game-layouts';
 
 const REGIONS = [
   regionMetadata.world,
@@ -63,77 +65,78 @@ export const Landing: React.FC = () => {
   return (
     <>
       <UI.GlobalStyles />
-      <UI.LandingWrapper>
-        <UI.TopBar>
+      <AtlasRushLayout.LandingWrapper>
+        <AtlasRushLayout.TopBar>
           <Breadcrumbs
             breadcrumbs={[{ label: 'Atlas Rush', link: '/games/atlas-rush/' }]}
           />
-        </UI.TopBar>
-        <StartGamePanel
-          title={
-            <>
-              Atlas <em>Rush</em>
-            </>
-          }
-          subtitle="Identify countries before the clock runs out."
-        >
-          <UI.SettingsForm id="survey-settings" onSubmit={handleSubmit}>
-            <fieldset disabled={!isReady}>
-              <legend>Select a region</legend>
-              <div className="regions">
-                {REGIONS.map((region) => (
+        </AtlasRushLayout.TopBar>
+        <WellcomeScreenContentWrapper>
+          <WellcomePanel
+            title={
+              <>
+                Atlas <em>Rush</em>
+              </>
+            }
+          >
+            <UI.SettingsForm id="survey-settings" onSubmit={handleSubmit}>
+              <fieldset disabled={!isReady}>
+                <legend>Select a region</legend>
+                <div className="regions">
+                  {REGIONS.map((region) => (
+                    <RadioButton
+                      key={region.id}
+                      label={region.name}
+                      name="region"
+                      value={region.id}
+                      checked={regionId === region.id}
+                      onChange={() => setRegionId(region.id)}
+                    />
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset disabled={!isReady}>
+                <legend>Select a level</legend>
+                {levels.map((level) => (
                   <RadioButton
-                    key={region.id}
-                    label={region.name}
-                    name="region"
-                    value={region.id}
-                    checked={regionId === region.id}
-                    onChange={() => setRegionId(region.id)}
+                    key={level.id}
+                    label={level.label}
+                    name="level"
+                    value={level.id}
+                    checked={selectedLevel === level.id}
+                    onChange={() => setSelectedLevel(level.id)}
                   />
                 ))}
-              </div>
-            </fieldset>
-            <fieldset disabled={!isReady}>
-              <legend>Select a level</legend>
-              {levels.map((level) => (
-                <RadioButton
-                  key={level.id}
-                  label={level.label}
-                  name="level"
-                  value={level.id}
-                  checked={selectedLevel === level.id}
-                  onChange={() => setSelectedLevel(level.id)}
+              </fieldset>
+              <fieldset disabled={!isReady}>
+                <legend>Select a mode</legend>
+                <CheckboxButton
+                  label="Learning mode"
+                  name="learning"
+                  checked={isLearning}
+                  onChange={(event) => setIsLearning(event.target.checked)}
                 />
-              ))}
-            </fieldset>
-            <fieldset disabled={!isReady}>
-              <legend>Select a mode</legend>
-              <CheckboxButton
-                label="Learning mode"
-                name="learning"
-                checked={isLearning}
-                onChange={(event) => setIsLearning(event.target.checked)}
-              />
-              <CheckboxButton
-                label="Speed mode"
-                name="speed"
-                checked={isSpeedMode}
-                onChange={(event) => setIsSpeedMode(event.target.checked)}
-              />
-            </fieldset>
-            <div className="start-action">
-              <ActionButton
-                label="Start survey"
-                type="submit"
-                disabled={!isReady}
-              />
-            </div>
-            <noscript>
-              <p>Enable JavaScript to start a survey.</p>
-            </noscript>
-          </UI.SettingsForm>
-        </StartGamePanel>
-      </UI.LandingWrapper>
+                <CheckboxButton
+                  label="Speed mode"
+                  name="speed"
+                  checked={isSpeedMode}
+                  onChange={(event) => setIsSpeedMode(event.target.checked)}
+                />
+              </fieldset>
+              <div className="start-action">
+                <ActionButton
+                  label="Start survey"
+                  type="submit"
+                  disabled={!isReady}
+                />
+              </div>
+              <noscript>
+                <p>Enable JavaScript to start a survey.</p>
+              </noscript>
+            </UI.SettingsForm>
+          </WellcomePanel>
+        </WellcomeScreenContentWrapper>
+      </AtlasRushLayout.LandingWrapper>
     </>
   );
 };
