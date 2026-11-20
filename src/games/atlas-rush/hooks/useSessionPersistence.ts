@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChallengeConfig } from '../domain/types';
+import { getResults } from '../domain/results';
 import {
   createRandomSeed,
   replaceCurrentChallenge,
@@ -8,6 +9,8 @@ import { parseChallengeQuery } from '../infrastructure/challenge-url';
 import { openSessionDatabase } from '../infrastructure/persistence/database';
 import type { SessionDatabase } from '../infrastructure/persistence/database';
 import { createSessionRepository } from '../infrastructure/persistence/session-repository';
+import { createResultsRepository } from '../infrastructure/persistence/results-repository';
+import type { ResultRecord } from '../infrastructure/persistence/results-repository';
 import {
   captureSnapshot,
   getChallengeIdentity,
@@ -17,6 +20,7 @@ import { loadGeography } from '../infrastructure/geography';
 import type { AtlasRushStore } from '../components/types';
 
 type Initialization = 'loading' | 'choose' | 'ready';
+export type ResultSaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 type Controller = {
   continueGame: () => Promise<void>;
   startNew: () => Promise<void>;
@@ -31,6 +35,10 @@ type SessionPersistence = {
   readonly continueGame: () => void;
   readonly startNew: () => void;
   readonly discard: () => Promise<boolean>;
+  readonly waitForSave: () => Promise<void>;
+  readonly attemptId: string | null;
+  readonly resultSaveStatus: ResultSaveStatus;
+  readonly retryResultSave: () => void;
 };
 
 export const useSessionPersistence = (
@@ -41,7 +49,12 @@ export const useSessionPersistence = (
     useState<Initialization>('loading');
   const [notice, setNotice] = useState('');
   const [canContinue, setCanContinue] = useState(false);
+  const [attemptId, setAttemptId] = useState<string | null>(null);
+  const [resultSaveStatus, setResultSaveStatus] =
+    useState<ResultSaveStatus>('idle');
   const controller = useRef<Controller | null>(null);
+  const pendingSave = useRef<Promise<void>>(Promise.resolve());
+  const retrySave = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -52,6 +65,35 @@ export const useSessionPersistence = (
     let queue: Promise<void> = Promise.resolve();
     let saving = false;
     let automaticPause = false;
+    let finalRecord: ResultRecord | null = null;
+    const setSaveStatus = (status: ResultSaveStatus) => {
+      if (!cancelled) {
+        setResultSaveStatus(status);
+      }
+    };
+    const saveMemoryResult = async (record: ResultRecord) => {
+      const opened = await openSessionDatabase();
+      try {
+        await createResultsRepository(opened).save(record);
+      } finally {
+        opened.close();
+      }
+    };
+    const queueResult = (save: () => Promise<boolean>) => {
+      setSaveStatus('saving');
+      queue = queue.then(async () => {
+        try {
+          if (await save()) {
+            setSaveStatus('saved');
+          } else {
+            setSaveStatus('error');
+          }
+        } catch {
+          setSaveStatus('error');
+        }
+      });
+      pendingSave.current = queue;
+    };
     const config = parseChallengeQuery(regionId, window.location.search);
     const key = getChallengeIdentity(config.config);
     const warn = (message: string) => {
@@ -76,6 +118,32 @@ export const useSessionPersistence = (
     const startMemoryGame = () => {
       generation = null;
       if (!cancelled) {
+        const memoryAttemptId = createRandomSeed();
+        setAttemptId(memoryAttemptId);
+        unsubscribe?.();
+        unsubscribe = store.subscribe((state, previous) => {
+          if (
+            previous.session.phase === 'finished' ||
+            state.session.phase !== 'finished'
+          ) {
+            return;
+          }
+          const result = getResults(state.session);
+          if (!result) {
+            return;
+          }
+          const record = {
+            attemptId: memoryAttemptId,
+            finishedAt: Date.now(),
+            result,
+          };
+          const save = async () => {
+            await saveMemoryResult(record);
+            return true;
+          };
+          retrySave.current = () => queueResult(save);
+          queueResult(save);
+        });
         store.getState().startGame(config.config);
         pauseIfHidden();
         setInitialization('ready');
@@ -99,7 +167,7 @@ export const useSessionPersistence = (
           return;
         }
 
-        const setupSaving = (token: string) => {
+        const setupSaving = (token: string, attemptId: string) => {
           generation = token;
           revision = 0;
           saving = true;
@@ -107,14 +175,40 @@ export const useSessionPersistence = (
           unsubscribe = store.subscribe((state, previous) => {
             if (
               state.session === previous.session ||
-              !saving ||
               state.session.phase === 'ready'
             ) {
               return;
             }
             const snapshot = captureSnapshot(state.session);
+            const result = getResults(state.session);
+            if (result && previous.session.phase !== 'finished') {
+              finalRecord = { attemptId, finishedAt: Date.now(), result };
+            }
             revision += 1;
             const nextRevision = revision;
+            if (result && finalRecord) {
+              const record = finalRecord;
+              const save = async () => {
+                const opened = await openSessionDatabase();
+                try {
+                  return await createSessionRepository(opened).finish(
+                    key,
+                    token,
+                    nextRevision,
+                    snapshot,
+                    record,
+                  );
+                } finally {
+                  opened.close();
+                }
+              };
+              retrySave.current = () => queueResult(save);
+              queueResult(save);
+              return;
+            }
+            if (!saving) {
+              return;
+            }
             queue = queue
               .then(async () => {
                 if (!saving) {
@@ -137,6 +231,7 @@ export const useSessionPersistence = (
                 saving = false;
                 warn('Progress could not be saved. Your game can continue.');
               });
+            pendingSave.current = queue;
           });
         };
 
@@ -154,11 +249,16 @@ export const useSessionPersistence = (
             return;
           }
           const token = createRandomSeed();
+          const attemptId =
+            continueSaved && valid && inspected.attemptId
+              ? inspected.attemptId
+              : createRandomSeed();
           const claimed = await repository.claim(
             key,
             expected,
             token,
             continueSaved ? saved : null,
+            attemptId,
           );
           if (cancelled) {
             return;
@@ -178,17 +278,18 @@ export const useSessionPersistence = (
             setInitialization('choose');
             return;
           }
+          setAttemptId(attemptId);
           if (continueSaved && saved) {
             if (!store.getState().restoreGame(saved)) {
               warn('The saved game is invalid. Starting a new game.');
-              setupSaving(token);
+              setupSaving(token, attemptId);
               store.getState().startGame(config.config);
             } else {
-              setupSaving(token);
+              setupSaving(token, attemptId);
               store.getState().resumeGame();
             }
           } else {
-            setupSaving(token);
+            setupSaving(token, attemptId);
             store.getState().startGame(config.config);
           }
           pauseIfHidden();
@@ -200,9 +301,9 @@ export const useSessionPersistence = (
           startNew: () => claim(false),
           fallback: startMemoryGame,
           discard: async () => {
-            saving = false;
             unsubscribe?.();
             await queue;
+            saving = false;
             if (!generation) {
               return true;
             }
@@ -272,6 +373,7 @@ export const useSessionPersistence = (
     return () => {
       cancelled = true;
       controller.current = null;
+      retrySave.current = null;
       document.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('pagehide', handlePageHide);
       unsubscribe?.();
@@ -298,7 +400,16 @@ export const useSessionPersistence = (
     canContinue,
     continueGame: () => run('continueGame'),
     startNew: () => run('startNew'),
-    discard: async () =>
-      controller.current ? controller.current.discard() : true,
+    discard: async () => {
+      if (controller.current) {
+        return controller.current.discard();
+      }
+      await pendingSave.current;
+      return true;
+    },
+    waitForSave: () => pendingSave.current,
+    attemptId,
+    resultSaveStatus,
+    retryResultSave: () => retrySave.current?.(),
   };
 };

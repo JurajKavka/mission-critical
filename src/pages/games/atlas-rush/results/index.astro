@@ -1,0 +1,12 @@
+---
+import { ResultsDashboard } from '../../../../games/atlas-rush/components/ResultsDashboard';
+import GameLayout from '../../../../layouts/GameLayout.astro';
+---
+
+<GameLayout
+  title="My results | Atlas Rush"
+  description="Your Atlas Rush results."
+  canonicalPath="/games/atlas-rush/results/"
+>
+  <ResultsDashboard client:only="react" />
+</GameLayout>

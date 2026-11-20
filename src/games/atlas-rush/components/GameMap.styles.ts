@@ -14,7 +14,6 @@ export const ZoomControls = styled.div`
   ${mb('compact', { max: true })} {
     top: ${rem(5)};
   }
- 
 `;
 
 export const ZoomButton = styled(IconButton)`

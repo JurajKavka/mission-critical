@@ -1,5 +1,6 @@
 import type { SessionDatabase } from './database';
 import type { SessionRecord, SessionSnapshot } from './snapshot';
+import type { ResultRecord } from './results-repository';
 
 export const createSessionRepository = (database: SessionDatabase) => {
   const load = async (key: string): Promise<unknown> => {
@@ -33,6 +34,7 @@ export const createSessionRepository = (database: SessionDatabase) => {
     expected: unknown,
     generation: string,
     snapshot: SessionSnapshot | null,
+    attemptId?: string,
   ): Promise<boolean> =>
     updateRecord(key, (current) => {
       if (JSON.stringify(current) !== JSON.stringify(expected)) {
@@ -42,6 +44,7 @@ export const createSessionRepository = (database: SessionDatabase) => {
         key,
         schemaVersion: 1,
         generation,
+        attemptId: snapshot ? (current?.attemptId ?? attemptId) : attemptId,
         revision: 0,
         updatedAt: Date.now(),
         snapshot,
@@ -67,6 +70,7 @@ export const createSessionRepository = (database: SessionDatabase) => {
         key,
         schemaVersion: 1,
         generation,
+        attemptId: current.attemptId,
         revision,
         updatedAt: Date.now(),
         snapshot,
@@ -92,5 +96,46 @@ export const createSessionRepository = (database: SessionDatabase) => {
       };
     });
 
-  return { load, claim, save, discard };
+  const finish = async (
+    key: string,
+    generation: string,
+    revision: number,
+    snapshot: SessionSnapshot,
+    result: ResultRecord,
+  ): Promise<boolean> => {
+    const transaction = database.transaction(
+      ['sessions', 'results'],
+      'readwrite',
+    );
+    const write = async () => {
+      const sessions = transaction.objectStore('sessions');
+      const results = transaction.objectStore('results');
+      const current = await sessions.get(key);
+      if (
+        !current ||
+        current.generation !== generation ||
+        current.attemptId !== result.attemptId
+      ) {
+        return false;
+      }
+      if (await results.get(result.attemptId)) {
+        return true;
+      }
+      if (!Number.isSafeInteger(revision) || current.revision >= revision) {
+        return false;
+      }
+      await sessions.put({
+        ...current,
+        revision,
+        updatedAt: Date.now(),
+        snapshot,
+      });
+      await results.add(result);
+      return true;
+    };
+    const [saved] = await Promise.all([write(), transaction.done]);
+    return saved;
+  };
+
+  return { load, claim, save, discard, finish };
 };

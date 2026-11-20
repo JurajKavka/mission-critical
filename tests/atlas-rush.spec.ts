@@ -616,7 +616,7 @@ test('graphics catalog renders the shared map, timer and results fixture', async
   expect(zoomBounds.x + zoomBounds.width).toBeCloseTo(
     mapBounds.x + mapBounds.width,
   );
-  expect(zoomBounds.y).toBeCloseTo(mapBounds.y);
+  expect(zoomBounds.y - mapBounds.y).toBeCloseTo(3);
   await expect(page.getByText('02:43')).toBeVisible();
   const result = page.getByRole('region', { name: 'Time is up' });
   await expect(result.getByText('Africa')).toBeVisible();

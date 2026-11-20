@@ -5,6 +5,16 @@ import * as UI from '../../../react-component-library/atlas-styles';
 const FOCUSABLE_ELEMENTS_QUERY =
   'button, [href], input, select, textarea, [tabindex]';
 
+const getTabStops = (dialog: HTMLDialogElement): HTMLElement[] =>
+  Array.from(
+    dialog.querySelectorAll<HTMLElement>(FOCUSABLE_ELEMENTS_QUERY),
+  ).filter(
+    (element) =>
+      element.tabIndex >= 0 &&
+      !element.matches(':disabled') &&
+      element.getClientRects().length > 0,
+  );
+
 type ModalDialogProps = {
   labelledBy: string;
   children: React.ReactNode;
@@ -24,6 +34,7 @@ export const ModalDialog: React.FC<ModalDialogProps> = ({
       return;
     }
     element.showModal();
+    getTabStops(element)[0]?.focus();
     return () => element.close();
   }, []);
 
@@ -36,16 +47,7 @@ export const ModalDialog: React.FC<ModalDialogProps> = ({
     if (event.key !== 'Tab') {
       return;
     }
-    const controls = Array.from(
-      event.currentTarget.querySelectorAll<HTMLElement>(
-        FOCUSABLE_ELEMENTS_QUERY,
-      ),
-    ).filter(
-      (element) =>
-        element.tabIndex >= 0 &&
-        !element.matches(':disabled') &&
-        element.getClientRects().length > 0,
-    );
+    const controls = getTabStops(event.currentTarget);
     const first = controls[0];
     const last = controls.at(-1);
     const active = event.currentTarget.ownerDocument.activeElement;

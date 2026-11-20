@@ -135,11 +135,17 @@ test('results receive focus and keep keyboard navigation inside the report', asy
   const dialog = page.getByRole('dialog', { name: 'Time is up' });
   const replay = dialog.getByRole('button', { name: 'Play again' });
   const settings = dialog.getByRole('button', { name: 'Start over' });
+  const history = dialog.getByRole('link', { name: 'My results' });
+  const displayName = dialog.getByLabel('Display name', { exact: true });
   await expect(replay).toBeFocused();
   await page.keyboard.press('Shift+Tab');
-  await expect(settings).toBeFocused();
+  await expect(history).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(replay).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(settings).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(displayName).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialog).toBeVisible();
 });
