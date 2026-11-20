@@ -19,11 +19,11 @@ import { useSessionPersistence } from '../hooks/useSessionPersistence';
 import { createAtlasRushStore } from '../state/createAtlasRushStore';
 import { selectGuessedIds, selectPhase } from '../state/selectors';
 import { AnswerInput } from './AnswerInput';
+import { AtlasRushResults } from './AtlasRushResults';
 import { GameMap } from './GameMap';
 import { WorldGlobe } from './WorldGlobe';
 import { ModalDialog } from './ModalDialog';
 import { PauseDialog } from './PauseDialog';
-import { ResultsPanel } from '../../../react-component-library/ResultsPanel';
 import * as UI from '../../../react-component-library/atlas-styles';
 import { AtlasRushLayout } from '../../../react-component-library/game-layouts';
 import { GameTimer } from './GameTimer';
@@ -70,7 +70,8 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
     rememberLandingSettings(store.getState().session.config);
     window.location.assign('/games/atlas-rush/');
   };
-  const replay = () => {
+  const replay = async () => {
+    await persistence.waitForSave();
     const next = {
       ...store.getState().session.config,
       seed: createRandomSeed(),
@@ -179,15 +180,19 @@ export const AtlasRush: React.FC<AtlasRushProps> = ({ regionId }) => {
           </ModalDialog>
         )}
         {result && (
-          <ModalDialog labelledBy="results-title" isFullScreen>
-            <ResultsPanel
-              result={result}
-              onPlayAgain={replay}
-              onChangeSettings={() => {
-                void changeSettings();
-              }}
-            />
-          </ModalDialog>
+          <AtlasRushResults
+            result={result}
+            onPlayAgain={() => {
+              void replay();
+            }}
+            attemptId={persistence.attemptId}
+            waitForSave={persistence.waitForSave}
+            saveStatus={persistence.resultSaveStatus}
+            onRetrySave={persistence.retryResultSave}
+            onChangeSettings={() => {
+              void changeSettings();
+            }}
+          />
         )}
       </AtlasRushLayout.Wrapper>
     </>

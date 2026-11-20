@@ -1,7 +1,8 @@
 import type * as React from 'react';
+import { rem } from 'polished';
+import { styled } from 'styled-components';
 
 import { regionMetadata } from '../games/atlas-rush/data/regions';
-import { levels } from '../games/atlas-rush/domain/levels';
 import { formatTime } from '../games/atlas-rush/domain/time';
 import type { GameResults } from '../games/atlas-rush/domain/types';
 import { ActionButton } from './ActionButton';
@@ -11,23 +12,50 @@ import { Actions } from './atlas-styles';
 import { BreadcrumbDivider } from './BreadcrumbDivider';
 import { BreadcrumbsWrapper } from './Breadcrumbs';
 import { AtlasRushLayout } from './game-layouts';
+import { ResultsDetails } from './ResultsDetails';
+import { mb } from './media-breakpoints';
+import { theme } from './theme';
+
+const MissionReport = styled(UI.Panel)`
+  padding: clamp(${rem(16)}, 4vw, ${rem(32)});
+  background: linear-gradient(
+    155deg,
+    ${theme.colors.panelLight},
+    ${theme.colors.panelDark} 46%
+  );
+  border-color: ${theme.colors.cyanBorder};
+  scrollbar-color: ${theme.colors.cyanBorderStrong} ${theme.colors.panelDark};
+
+  h2 {
+    margin-top: 0;
+    line-height: 1;
+  }
+`;
+
+const MissionActions = styled(Actions)`
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+
+  ${mb('xs', { max: true })} {
+    grid-template-columns: minmax(0, 1fr);
+  }
+`;
 
 type ResultsPanelProps = {
   result: GameResults;
   onPlayAgain: () => void;
   onChangeSettings: () => void;
+  children?: React.ReactNode;
 };
 
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   result,
   onPlayAgain,
   onChangeSettings,
+  children,
 }) => {
   const region = regionMetadata[result.config.regionId];
   const targetPlural = region.targetName === 'state' ? 'states' : 'countries';
-  const difficulty =
-    levels.find((level) => level.id === result.config.level)?.label ??
-    result.config.level;
   return (
     <>
       <AtlasRushLayout.TopBar>
@@ -39,7 +67,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
           </span>
         </BreadcrumbsWrapper>
       </AtlasRushLayout.TopBar>
-      <UI.Panel aria-labelledby="results-title">
+      <MissionReport aria-labelledby="results-title">
         <h2 id="results-title">
           {result.finishReason === 'completed'
             ? 'Atlas complete'
@@ -50,41 +78,13 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
             ? `All ${targetPlural} identified in ${formatTime(result.elapsedSeconds)}.`
             : 'Your survey is complete.'}
         </p>
-        <UI.Results>
-          <div>
-            <dt>Region</dt>
-            <dd>{region.name}</dd>
-          </div>
-          <div>
-            <dt>Difficulty</dt>
-            <dd>{difficulty}</dd>
-          </div>
-          <div>
-            <dt>Elapsed</dt>
-            <dd>{formatTime(result.elapsedSeconds)}</dd>
-          </div>
-          <div>
-            <dt>Total</dt>
-            <dd>{result.total}</dd>
-          </div>
-          <div>
-            <dt>Guessed</dt>
-            <dd>{result.correct}</dd>
-          </div>
-          <div>
-            <dt>Not guessed</dt>
-            <dd>{result.notGuessed}</dd>
-          </div>
-          <div>
-            <dt>Coverage</dt>
-            <dd>{result.coverage}%</dd>
-          </div>
-        </UI.Results>
-        <Actions>
+        <ResultsDetails result={result} />
+        <MissionActions>
           <ActionButton label="Play again" onClick={onPlayAgain} />
           <SecondaryButton label="Start over" onClick={onChangeSettings} />
-        </Actions>
-      </UI.Panel>
+        </MissionActions>
+        {children}
+      </MissionReport>
     </>
   );
 };

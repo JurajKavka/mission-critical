@@ -13,6 +13,7 @@ export type SessionRecord = {
   readonly key: string;
   readonly schemaVersion: 1;
   readonly generation: string;
+  readonly attemptId?: string;
   readonly revision: number;
   readonly updatedAt: number;
   readonly snapshot: SessionSnapshot | null;
@@ -53,6 +54,8 @@ export const isValidRecord = (
     value.schemaVersion !== 1 ||
     typeof value.generation !== 'string' ||
     value.generation.length === 0 ||
+    (value.attemptId !== undefined &&
+      (typeof value.attemptId !== 'string' || value.attemptId.length === 0)) ||
     typeof value.revision !== 'number' ||
     !Number.isSafeInteger(value.revision) ||
     value.revision < 0 ||

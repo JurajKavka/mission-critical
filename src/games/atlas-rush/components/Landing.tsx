@@ -130,6 +130,9 @@ export const Landing: React.FC = () => {
                   disabled={!isReady}
                 />
               </div>
+              <p>
+                <a href="/games/atlas-rush/results/">My results</a>
+              </p>
               <noscript>
                 <p>Enable JavaScript to start a survey.</p>
               </noscript>
