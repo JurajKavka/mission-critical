@@ -1,9 +1,10 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import type * as React from 'react';
 import { Tooltip } from '../../../react-component-library';
 import { regionMetadata } from '../data/regions';
 import type { RegionId } from '../domain/types';
+import { useWheelZoom } from '../hooks/useWheelZoom';
 import { loadGeography } from '../infrastructure/geography';
 import type { Geography } from '../infrastructure/geography';
 import {
@@ -13,14 +14,31 @@ import {
   selectPhase,
 } from '../state/selectors';
 import * as UI from '../../../react-component-library/atlas-styles';
-import { ZoomButton } from './GameMap.styles';
-import { getDetailViewBox } from './map-zoom';
+import { ZoomButton, ZoomControls } from './GameMap.styles';
+import {
+  getDetailMapBounds,
+  getWheelMapBounds,
+  parseMapBounds,
+} from './map-zoom';
+import type { MapBounds } from './map-zoom';
 import type { AtlasRushStore } from './types';
 
 type GameMapProps = {
   store: AtlasRushStore;
   regionId: RegionId;
   onReturnFocus: () => void;
+};
+
+type MapZoom = {
+  mode: 'target' | 'wheel';
+  regionId: RegionId;
+  targetId: string;
+  bounds: MapBounds;
+};
+
+type MapLoadResult = {
+  regionId: RegionId;
+  geography: Geography | null;
 };
 
 const ASIA_RUSSIA_CROP_TOP = 13;
@@ -53,29 +71,32 @@ export const GameMap: React.FC<GameMapProps> = ({
   const targetId = useStore(store, selectCurrentTargetId);
   const guessed = useStore(store, selectGuessedIds);
   const learning = useStore(store, selectLearning);
-  const [geography, setGeography] = useState<Geography | null>(null);
+  const [loadResult, setLoadResult] = useState<MapLoadResult | null>(null);
   const [tooltip, setTooltip] = useState<{
     name: string;
     left: number;
     top: number;
   } | null>(null);
-  const [error, setError] = useState(false);
-  const [zoom, setZoom] = useState<{
-    regionId: RegionId;
-    targetId: string;
-    viewBox: string;
-  } | null>(null);
+  const [zoom, setZoom] = useState<MapZoom | null>(null);
   const mapRef = useRef<SVGSVGElement>(null);
   const clipId = useId();
   const isPointerFocusing = useRef(false);
   const region = regionMetadata[regionId];
+  const activeLoad = loadResult?.regionId === regionId ? loadResult : null;
+  const geography = activeLoad?.geography;
   const activeZoom =
     zoom?.regionId === regionId && zoom.targetId === targetId ? zoom : null;
-  const isZoomed = activeZoom !== null;
+  const isTargetZoomed = activeZoom?.mode === 'target';
+  const canZoom = phase === 'playing' && targetId !== null;
+  const fullBounds = useMemo(
+    () => (geography ? parseMapBounds(geography.viewBox) : null),
+    [geography],
+  );
+  const currentBounds = activeZoom?.bounds ?? fullBounds;
 
   useEffect(() => {
     setTooltip(null);
-  }, [targetId, phase]);
+  }, [targetId, phase, currentBounds]);
 
   useEffect(() => {
     setZoom(null);
@@ -83,47 +104,46 @@ export const GameMap: React.FC<GameMapProps> = ({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!isZoomed || !map || !geography) {
+    if (!canZoom || !isTargetZoomed || !map || !fullBounds) {
       return;
     }
     const updateDetailView = () => {
       const target = map.querySelector<SVGPathElement>('[data-target="true"]');
       const { width, height } = map.getBoundingClientRect();
       if (target && width > 0 && height > 0) {
-        const viewBox = getDetailViewBox(
-          geography.viewBox,
+        const bounds = getDetailMapBounds(
+          fullBounds,
           getVisibleTargetBounds(target, regionId, targetId),
           width / height,
         );
         setZoom((previous) => {
           if (
-            !previous ||
+            previous?.mode !== 'target' ||
             previous.regionId !== regionId ||
             previous.targetId !== targetId
           ) {
             return previous;
           }
-          return { ...previous, viewBox };
+          return { ...previous, bounds };
         });
       }
     };
     const observer = new ResizeObserver(updateDetailView);
     observer.observe(map);
     return () => observer.disconnect();
-  }, [geography, isZoomed, regionId, targetId]);
+  }, [canZoom, fullBounds, isTargetZoomed, regionId, targetId]);
 
   useEffect(() => {
     let active = true;
     loadGeography(regionId)
       .then((loaded) => {
         if (active) {
-          setGeography(loaded);
-          setError(false);
+          setLoadResult({ regionId, geography: loaded });
         }
       })
       .catch(() => {
         if (active) {
-          setError(true);
+          setLoadResult({ regionId, geography: null });
         }
       });
     return () => {
@@ -160,6 +180,40 @@ export const GameMap: React.FC<GameMapProps> = ({
     };
   }, []);
 
+  const handleWheelZoom = (factor: number, map: SVGSVGElement) => {
+    if (!canZoom || !fullBounds || targetId === null) {
+      return false;
+    }
+    const target = map.querySelector<SVGPathElement>('[data-target="true"]');
+    const viewport = map.getBoundingClientRect();
+    if (!target || viewport.width <= 0 || viewport.height <= 0) {
+      return false;
+    }
+    const targetBounds = getVisibleTargetBounds(target, regionId, targetId);
+    setZoom((previous) => {
+      const current =
+        previous?.regionId === regionId && previous.targetId === targetId
+          ? previous.bounds
+          : fullBounds;
+      const bounds = getWheelMapBounds(
+        fullBounds,
+        current,
+        viewport,
+        targetBounds,
+        factor,
+      );
+      if (bounds === fullBounds) {
+        return null;
+      }
+      if (previous?.mode === 'wheel' && bounds === previous.bounds) {
+        return previous;
+      }
+      return { mode: 'wheel', regionId, targetId, bounds };
+    });
+    return true;
+  };
+  useWheelZoom(mapRef, canZoom && fullBounds !== null, handleWheelZoom);
+
   const showAtTarget = (name: string, element: SVGPathElement) => {
     const bounds = element.getBoundingClientRect();
     setTooltip({
@@ -168,63 +222,77 @@ export const GameMap: React.FC<GameMapProps> = ({
       top: bounds.top,
     });
   };
-  if (error) {
+  if (activeLoad && !geography) {
     return <p role="alert">Map could not be loaded. Please reload the page.</p>;
   }
-  if (!geography) {
+  if (!geography || !fullBounds || !currentBounds) {
     return <p role="status">Loading map…</p>;
   }
   const canReveal = phase === 'playing' && learning;
-  const currentViewBox = activeZoom?.viewBox ?? geography.viewBox;
-  const [clipX, clipY, clipWidth, clipHeight] = currentViewBox
-    .split(' ')
-    .map(Number);
+  const { x, y, width, height } = currentBounds;
+  const handleResetClick = () => {
+    setZoom(null);
+    onReturnFocus();
+  };
   const handleZoomButtonClick = () => {
-    if (activeZoom) {
-      setZoom(null);
-    } else {
-      const target = mapRef.current?.querySelector<SVGPathElement>(
-        '[data-target="true"]',
-      );
-      const bounds = mapRef.current?.getBoundingClientRect();
-      if (
-        target &&
-        targetId &&
-        bounds &&
-        bounds.width > 0 &&
-        bounds.height > 0
-      ) {
-        setZoom({
-          regionId,
-          targetId,
-          viewBox: getDetailViewBox(
-            geography.viewBox,
-            getVisibleTargetBounds(target, regionId, targetId),
-            bounds.width / bounds.height,
-          ),
-        });
-      }
+    if (isTargetZoomed) {
+      handleResetClick();
+      return;
+    }
+    const target = mapRef.current?.querySelector<SVGPathElement>(
+      '[data-target="true"]',
+    );
+    const viewport = mapRef.current?.getBoundingClientRect();
+    if (
+      target &&
+      targetId &&
+      viewport &&
+      viewport.width > 0 &&
+      viewport.height > 0
+    ) {
+      setZoom({
+        mode: 'target',
+        regionId,
+        targetId,
+        bounds: getDetailMapBounds(
+          fullBounds,
+          getVisibleTargetBounds(target, regionId, targetId),
+          viewport.width / viewport.height,
+        ),
+      });
     }
     onReturnFocus();
   };
   return (
     <>
-      <ZoomButton
-        name={isZoomed ? 'zoom-out' : 'zoom-in'}
-        label={isZoomed ? 'Reset map zoom' : 'Zoom in on highlighted area'}
-        pressed={isZoomed}
-        disabled={phase !== 'playing' || targetId === null}
-        onClick={handleZoomButtonClick}
-      />
+      <ZoomControls>
+        {activeZoom?.mode === 'wheel' && (
+          <ZoomButton
+            name="reset-view"
+            label="Reset map view"
+            disabled={!canZoom}
+            onClick={handleResetClick}
+          />
+        )}
+        <ZoomButton
+          name={isTargetZoomed ? 'zoom-out' : 'zoom-in'}
+          label={
+            isTargetZoomed ? 'Reset map zoom' : 'Zoom in on highlighted area'
+          }
+          pressed={isTargetZoomed}
+          disabled={!canZoom}
+          onClick={handleZoomButtonClick}
+        />
+      </ZoomControls>
       <UI.Map
         ref={mapRef}
-        viewBox={currentViewBox}
+        viewBox={`${x} ${y} ${width} ${height}`}
         role={canReveal ? 'group' : 'img'}
         aria-label={`${region.name} map. ${canReveal ? `Select the highlighted ${region.targetName} to reveal its name.` : `Identify the highlighted ${region.targetName}.`}`}
       >
         <defs>
           <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-            <rect x={clipX} y={clipY} width={clipWidth} height={clipHeight} />
+            <rect x={x} y={y} width={width} height={height} />
           </clipPath>
         </defs>
         <g clipPath={`url(#${clipId})`}>
