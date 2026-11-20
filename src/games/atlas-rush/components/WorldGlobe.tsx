@@ -6,11 +6,13 @@ import * as UI from '../../../react-component-library/atlas-styles';
 import { WORLD_TARGETS } from '../data/world-targets';
 import {
   getGlobeGeometry,
-  GLOBE_RADIUS,
-  GLOBE_ZOOM_SCALE,
+  getGlobeView,
+  getGlobeWheelScale,
 } from '../geometry/globe';
+import type { GlobeZoom } from '../geometry/globe';
 import { simplifyGlobeGeography } from '../geometry/simplify-globe';
 import { useGlobeRotation } from '../hooks/useGlobeRotation';
+import { useWheelZoom } from '../hooks/useWheelZoom';
 import {
   getCountryCenter,
   loadWorldGeography,
@@ -22,7 +24,7 @@ import {
   selectLearning,
   selectPhase,
 } from '../state/selectors';
-import { ZoomButton } from './GameMap.styles';
+import { ZoomButton, ZoomControls } from './GameMap.styles';
 import { Globe } from './WorldGlobe.styles';
 import type { AtlasRushStore } from './types';
 
@@ -30,6 +32,8 @@ type WorldGlobeProps = {
   store: AtlasRushStore;
   onReturnFocus: () => void;
 };
+
+type TargetGlobeZoom = GlobeZoom & { targetId: string };
 
 type TargetTooltip = {
   targetId: string;
@@ -61,7 +65,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   const isLearning = useStore(store, selectLearning);
   const [geography, setGeography] = useState<WorldGeography | null>(null);
   const [hasError, setHasError] = useState(false);
-  const [zoomedTargetId, setZoomedTargetId] = useState<string | null>(null);
+  const [zoom, setZoom] = useState<TargetGlobeZoom | null>(null);
   const [tooltip, setTooltip] = useState<TargetTooltip | null>(null);
   const [aspectRatio, setAspectRatio] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
@@ -76,7 +80,16 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   const clipId = useId();
   const isPlaying = phase === 'playing';
   const canReveal = isPlaying && isLearning;
-  const isZoomed = targetId !== null && zoomedTargetId === targetId;
+  const canZoom = isPlaying && targetId !== null;
+  const activeZoom = zoom?.targetId === targetId ? zoom : null;
+  const isTargetZoomed = activeZoom?.mode === 'target';
+  const {
+    x: viewX,
+    y: viewY,
+    width: viewWidth,
+    height: viewHeight,
+    radius,
+  } = getGlobeView(aspectRatio, activeZoom);
   const currentCountry = geography?.features.find(
     (country) => country.id === targetId,
   );
@@ -84,10 +97,14 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
     () => (currentCountry ? getCountryCenter(currentCountry) : null),
     [currentCountry],
   );
-  const { center, isAnimating, rotateBy } = useGlobeRotation(
-    destination,
-    isPlaying,
-  );
+  const {
+    center,
+    isAnimating,
+    rotateBy,
+    resetCenter,
+    centerOnTarget,
+    stopRotation,
+  } = useGlobeRotation(destination, isPlaying);
   const isMoving = isAnimating || isDragging;
   const simplifiedGeography = useMemo(
     () => (geography && isMobile ? simplifyGlobeGeography(geography) : null),
@@ -101,7 +118,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
     return getGlobeGeometry(
       movingGeography ?? geography,
       center,
-      isZoomed,
+      radius,
       currentCountry,
       isMobile && isMoving,
     );
@@ -109,7 +126,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
     geography,
     simplifiedGeography,
     center,
-    isZoomed,
+    radius,
     currentCountry,
     isMobile,
     isMoving,
@@ -120,8 +137,6 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   const marker = destination && geometry?.projectMarker(destination);
   const hasTargetMarker =
     isPlaying && geometry?.targetArea != null && geometry.targetArea < 45;
-  const viewWidth = isZoomed ? 500 * aspectRatio : 500;
-  const viewX = (500 - viewWidth) / 2;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -148,7 +163,14 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
   }, []);
 
   useEffect(() => {
+    setZoom(null);
+  }, [targetId]);
+
+  useEffect(() => {
     setTooltip(null);
+  }, [targetId, phase, center, radius, viewWidth, viewHeight]);
+
+  useEffect(() => {
     drag.current = null;
     setIsDragging(false);
     if (dragFrame.current !== null) {
@@ -198,8 +220,45 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
     };
   }, [tooltip]);
 
+  useWheelZoom(
+    globeRef,
+    canZoom && geometry !== null && !hasError,
+    (factor) => {
+      if (!canZoom || targetId === null) {
+        return false;
+      }
+      if (factor > 1) {
+        centerOnTarget();
+      } else if (activeZoom) {
+        stopRotation();
+      }
+      setZoom((previous) => {
+        const current = previous?.targetId === targetId ? previous : null;
+        const scale = getGlobeWheelScale(current, aspectRatio, factor);
+        if (scale === 1) {
+          return null;
+        }
+        if (current?.mode === 'wheel' && current.scale === scale) {
+          return current;
+        }
+        return { mode: 'wheel', targetId, scale };
+      });
+      return true;
+    },
+  );
+
+  const handleResetClick = () => {
+    setZoom(null);
+    resetCenter();
+    onReturnFocus();
+  };
   const handleZoomClick = () => {
-    setZoomedTargetId(isZoomed ? null : targetId);
+    if (isTargetZoomed) {
+      setZoom(null);
+    } else if (targetId !== null) {
+      setZoom({ mode: 'target', targetId });
+      resetCenter();
+    }
     onReturnFocus();
   };
   const handlePointerDown = (event: React.PointerEvent<SVGSVGElement>) => {
@@ -237,11 +296,9 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
       event.currentTarget.setPointerCapture(event.pointerId);
     }
     const { width, height } = globeSize.current;
-    const globeHeight = isZoomed ? height : Math.min(width, height);
-    if (globeHeight > 0) {
-      const degreesPerPixel =
-        ((180 / Math.PI) * (500 / globeHeight)) /
-        (GLOBE_RADIUS * (isZoomed ? GLOBE_ZOOM_SCALE : 1));
+    const pixelsPerUnit = Math.min(width / viewWidth, height / viewHeight);
+    if (pixelsPerUnit > 0) {
+      const degreesPerPixel = 180 / (Math.PI * radius * pixelsPerUnit);
       pendingDrag.current.longitude -=
         (event.clientX - activeDrag.lastX) * degreesPerPixel;
       pendingDrag.current.latitude +=
@@ -337,18 +394,32 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
 
   return (
     <>
-      <ZoomButton
-        name={isZoomed ? 'zoom-out' : 'zoom-in'}
-        label={isZoomed ? 'Reset globe zoom' : 'Zoom in on highlighted country'}
-        pressed={isZoomed}
-        disabled={!isPlaying || targetId === null}
-        onClick={handleZoomClick}
-      />
+      <ZoomControls>
+        {activeZoom?.mode === 'wheel' && (
+          <ZoomButton
+            name="reset-view"
+            label="Reset globe view"
+            disabled={!canZoom}
+            onClick={handleResetClick}
+          />
+        )}
+        <ZoomButton
+          name={isTargetZoomed ? 'zoom-out' : 'zoom-in'}
+          label={
+            isTargetZoomed
+              ? 'Reset globe zoom'
+              : 'Zoom in on highlighted country'
+          }
+          pressed={isTargetZoomed}
+          disabled={!canZoom}
+          onClick={handleZoomClick}
+        />
+      </ZoomControls>
       <Globe
         ref={globeRef}
         $draggable={isPlaying}
         $moving={isMoving}
-        viewBox={`${viewX} 0 ${viewWidth} 500`}
+        viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
@@ -364,7 +435,7 @@ export const WorldGlobe: React.FC<WorldGlobeProps> = ({
             <stop className="globe-ocean-edge" offset="100%" />
           </radialGradient>
           <clipPath id={clipId}>
-            <rect x={viewX} width={viewWidth} height="500" />
+            <rect x={viewX} y={viewY} width={viewWidth} height={viewHeight} />
           </clipPath>
         </defs>
         <g clipPath={`url(#${clipId})`}>

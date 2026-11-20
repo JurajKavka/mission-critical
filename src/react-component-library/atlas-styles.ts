@@ -31,7 +31,6 @@ const SCREEN_LAYOUT = css`
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: ${rem(8)};
   overflow: hidden;
 
   > section {
