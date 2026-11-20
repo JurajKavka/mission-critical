@@ -6,7 +6,7 @@ import { IconButton } from '../../../react-component-library';
 export const ZoomControls = styled.div`
   position: absolute;
   z-index: 1;
-  top: ${rem(10)};
+  top: 0;
   right: 0;
   display: flex;
   gap: ${rem(8)};
