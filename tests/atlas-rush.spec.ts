@@ -610,10 +610,13 @@ test('graphics catalog renders the shared map, timer and results fixture', async
   ).toBeVisible();
   const mapBounds = await map.boundingBox();
   const zoomBounds = await zoom.boundingBox();
-  expect((zoomBounds?.x ?? 0) + (zoomBounds?.width ?? 0)).toBeCloseTo(
-    (mapBounds?.x ?? 0) + (mapBounds?.width ?? 0),
+  if (!mapBounds || !zoomBounds) {
+    throw new Error('Map or zoom control bounds are unavailable');
+  }
+  expect(zoomBounds.x + zoomBounds.width).toBeCloseTo(
+    mapBounds.x + mapBounds.width,
   );
-  expect(zoomBounds?.y).toBeGreaterThan(mapBounds?.y ?? 0);
+  expect(zoomBounds.y).toBeCloseTo(mapBounds.y);
   await expect(page.getByText('02:43')).toBeVisible();
   const result = page.getByRole('region', { name: 'Time is up' });
   await expect(result.getByText('Africa')).toBeVisible();
