@@ -10,6 +10,7 @@ import { SecondaryButton } from './SecondaryButton';
 import { Actions } from './atlas-styles';
 import { BreadcrumbDivider } from './BreadcrumbDivider';
 import { BreadcrumbsWrapper } from './Breadcrumbs';
+import { AtlasRushLayout } from './game-layouts';
 
 type ResultsPanelProps = {
   result: GameResults;
@@ -29,7 +30,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
     result.config.level;
   return (
     <>
-      <UI.TopBar>
+      <AtlasRushLayout.TopBar>
         <BreadcrumbsWrapper as="nav" aria-label="Mission report status">
           <span>Mission report</span>
           <BreadcrumbDivider />
@@ -37,7 +38,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
             {result.finishReason === 'completed' ? 'complete' : 'time expired'}
           </span>
         </BreadcrumbsWrapper>
-      </UI.TopBar>
+      </AtlasRushLayout.TopBar>
       <UI.Panel aria-labelledby="results-title">
         <h2 id="results-title">
           {result.finishReason === 'completed'

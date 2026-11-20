@@ -2,37 +2,11 @@ import { theme } from '../../react-component-library/theme';
 import { createGlobalStyle, styled } from 'styled-components';
 import { rem } from 'polished';
 import { Panel } from '../../react-component-library/atlas-styles';
+import { mb } from '../../react-component-library/media-breakpoints';
 
 export const GlobalStyles = createGlobalStyle`
-:root {
-  color-scheme: dark;
-  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
 body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-  background: ${theme.colors.void};
-  color: ${theme.colors['primary-text']};
   user-select: none;
-}
-
-canvas {
-  display: block;
-  width: 100%;
-  max-width: ${rem(1024)};
-  height: 100%;
-  margin: 0 auto;
-  outline: ${rem(1)} solid ${theme.colors.canvasOutline};
-  outline-offset: -${rem(1)};
-  cursor: crosshair;
 }
 
 .touch-instructions {
@@ -59,41 +33,6 @@ canvas {
   .bonus-status {
     bottom: ${rem(180)};
   }
-}
-
-.hud {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  max-width: ${rem(1024)};
-  margin: 0 auto;
-  padding: ${rem(22)};
-  pointer-events: none;
-}
-
-.hud-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: ${rem(24)};
-}
-
-.stats {
-  display: flex;
-  gap: ${rem(28)};
-  color: ${theme.colors.muted};
-  font-size: ${rem(10)};
-  letter-spacing: 0.18em;
-  text-align: right;
-  text-transform: uppercase;
-}
-
-.stats strong {
-  display: block;
-  margin-top: ${rem(4)};
-  color: ${theme.colors.text};
-  font-size: ${rem(20)};
-  letter-spacing: 0.03em;
 }
 
 .combo-meter {
@@ -179,12 +118,95 @@ canvas {
 }
 `;
 
-export const GameCanvas = styled.canvas``;
-export const GameHud = styled.div.attrs({ className: 'hud' })`
-  nav {
-    pointer-events: auto;
+export const GameStats = styled.div`
+  display: flex;
+  flex-shrink: 0;
+  gap: ${rem(28)};
+  color: ${theme.colors.muted};
+  font-size: ${theme.fontSizes.label};
+  letter-spacing: 0.18em;
+  text-align: right;
+
+  strong {
+    display: block;
+    margin-top: ${rem(4)};
+    color: ${theme.colors.text};
+    font-size: ${rem(20)};
+    letter-spacing: 0.03em;
+  }
+
+  ${mb('compact', { max: true })} {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: ${rem(2)} ${rem(8)};
+    font-size: ${theme.fontSizes.tiny};
+    letter-spacing: 0.1em;
+
+    > div {
+      position: relative;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: ${rem(4)};
+      white-space: nowrap;
+    }
+
+    strong {
+      margin-top: 0;
+      font-size: ${theme.fontSizes.body};
+    }
+
+    .combo-meter {
+      position: absolute;
+      right: 0;
+      bottom: -${rem(3)};
+      width: ${rem(52)};
+      margin: 0;
+    }
   }
 `;
+
+export const PlayfieldEdgeGlow = styled.div`
+  display: none;
+  ${mb('l', { pointer: 'fine' })} {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      ${theme.colors.cyanBorderStrong},
+      ${theme.colors.cyanFaint} ${rem(3)},
+      transparent ${rem(16)},
+      transparent calc(100% - ${rem(16)}),
+      ${theme.colors.cyanFaint} calc(100% - ${rem(3)}),
+      ${theme.colors.cyanBorderStrong}
+    );
+    mask-image: linear-gradient(
+      transparent,
+      black ${rem(18)},
+      black calc(100% - ${rem(18)}),
+      transparent
+    );
+    opacity: 0.16;
+    pointer-events: none;
+  }
+`;
+
+export const GameCanvas = styled.canvas`
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+`;
+
+export const GameHud = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+`;
+
 export const ControlsHint = styled.div`
   margin-top: ${rem(24)};
   color: ${theme.colors.secondary};

@@ -3,36 +3,40 @@ import { createGlobalStyle, css, styled } from 'styled-components';
 import { mb } from './media-breakpoints';
 import { theme } from './theme';
 
-const SPACE_BACKGROUND = css`
-  background: radial-gradient(
-    ellipse at 50% 44%,
-    ${theme.colors.spaceCenter},
-    ${theme.colors.spaceMiddle} 45%,
-    ${theme.colors.spaceOuter}
-  );
+const ATLAS_COMMAND_WIDTH = 740;
+
+const SITE_SHELL_STYLES = css`
+  box-sizing: border-box;
+  width: 100%;
+  max-width: ${rem(1024)};
+  margin-inline: auto;
+  padding: 0 var(--game-wrapper-padding-inline, 0);
+  font-size: ${rem(16)};
 `;
+
+export const SiteShell = styled.div`
+  ${SITE_SHELL_STYLES}
+`;
+
+const SPACE_BACKGROUND = `radial-gradient(
+  ellipse at 50% 44%,
+  ${theme.colors.spaceCenter},
+  ${theme.colors.spaceMiddle} 45%,
+  ${theme.colors.spaceOuter}
+)`;
 
 const SCREEN_LAYOUT = css`
   height: 100dvh;
   min-height: 0;
-  width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
   gap: ${rem(8)};
-  padding: ${rem(8)} ${rem(24)};
   overflow: hidden;
 
   > section {
     min-height: 0;
     overflow-y: auto;
-  }
-
-  ${mb('compact', { max: true })} {
-    padding: ${rem(4)};
-  }
-  ${mb('l', { max: true, pointer: 'coarse' })} {
-    padding: ${rem(4)};
   }
 `;
 
@@ -69,30 +73,25 @@ export const GameplayStyles = createGlobalStyle`
   }
 `;
 
-export const Wrapper = styled.div`
+export const Wrapper = styled(SiteShell)`
   ${SCREEN_LAYOUT}
   position: relative;
-  ${SPACE_BACKGROUND}
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      linear-gradient(${theme.colors.grid} ${rem(1)}, transparent ${rem(1)}),
-      linear-gradient(
+  background:
+    radial-gradient(ellipse, transparent 45%, ${theme.colors.spaceOuter} 80%),
+    linear-gradient(${theme.colors.grid} ${rem(1)}, transparent ${rem(1)}) 0 0 /
+      ${rem(42)} ${rem(42)},
+    linear-gradient(
         90deg,
         ${theme.colors.grid} ${rem(1)},
         transparent ${rem(1)}
-      );
-    background-size: ${rem(42)} ${rem(42)};
-    mask-image: radial-gradient(ellipse, black, transparent 80%);
-  }
+      )
+      0 0 / ${rem(42)} ${rem(42)},
+    ${SPACE_BACKGROUND};
 `;
 
-export const LandingWrapper = styled.main`
+export const LandingWrapper = styled(SiteShell).attrs({ as: 'main' })`
   ${SCREEN_LAYOUT}
-  ${SPACE_BACKGROUND}
+  background: ${SPACE_BACKGROUND};
 
   :focus-visible {
     outline: ${rem(2)} solid ${theme.colors.cyan};
@@ -125,12 +124,12 @@ export const HudStats = styled.div`
   flex-shrink: 0;
   gap: clamp(${rem(25)}, 5vw, ${rem(70)});
   align-items: center;
-  ${mb('compact', { max: true })} {
-    gap: ${rem(16)};
-  }
   ${mb('l', { max: true, pointer: 'coarse', maxHeight: 'landscape', orientation: 'landscape' })} {
     justify-content: space-between;
     gap: ${rem(12)};
+  }
+  ${mb('compact', { max: true })} {
+    gap: ${rem(8)};
   }
 `;
 
@@ -153,6 +152,9 @@ export const HudMetric = styled.div`
     letter-spacing: 0.03em;
   }
   ${mb('compact', { max: true })} {
+    span {
+      font-size: ${theme.fontSizes.tiny};
+    }
     strong {
       font-size: ${rem(16)};
     }
@@ -167,19 +169,23 @@ export const HudMetric = styled.div`
 export const Playfield = styled.main`
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
   min-width: 0;
   min-height: 0;
-  width: min(${rem(740)}, 100%);
+  width: 100%;
+  padding: 0;
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
 `;
 
 export const TopBar = styled.header`
-  width: min(${rem(740)}, 100%);
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
   min-width: 0;
-  margin-inline: auto;
   height: ${rem(52)};
+  padding: 0;
   color: ${theme.colors.muted};
   font-size: ${theme.fontSizes.caption};
   letter-spacing: 0.15em;
@@ -194,13 +200,15 @@ export const TopBar = styled.header`
   > nav {
     min-width: 0;
   }
+  > nav > [aria-current='page'] {
+    flex-shrink: 1;
+  }
 
   ${mb('compact', { max: true })} {
     height: ${rem(48)};
   }
   ${mb('l', { max: true, pointer: 'coarse' })} {
     height: ${rem(48)};
-    padding-inline: ${rem(8)};
   }
 `;
 
@@ -281,7 +289,7 @@ export const Command = styled.footer`
   flex-direction: column;
   gap: ${rem(8)};
   min-width: 0;
-  width: min(${rem(740)}, 100%);
+  width: min(${rem(ATLAS_COMMAND_WIDTH)}, 100%);
   margin: 0 auto;
   padding: ${rem(20)} ${rem(20)} ${rem(16)};
   border: ${rem(1)} solid ${theme.colors.cyanBorder};
@@ -432,9 +440,21 @@ export const Panel = styled.section`
 `;
 
 export const SettingsForm = styled.form`
+  text-align: left;
+
   fieldset {
+    display: grid;
+    gap: ${rem(12)};
+    margin: ${rem(24)} 0 ${rem(12)};
     padding: ${rem(15)} 0;
+    border: 0;
+    border-top: ${rem(1)} solid ${theme.colors.cyanFaint};
     text-transform: uppercase;
+  }
+  legend {
+    color: ${theme.colors.muted};
+    font-size: ${theme.fontSizes.label};
+    letter-spacing: 0.12em;
   }
   fieldset + fieldset {
     margin-top: ${rem(12)};
@@ -449,6 +469,9 @@ export const SettingsForm = styled.form`
   .start-action button {
     min-width: ${rem(190)};
     margin-top: ${rem(12)};
+  }
+  .start-action {
+    text-align: center;
   }
   .start-action button:disabled {
     opacity: 0.6;
@@ -475,8 +498,9 @@ export const Modal = styled.dialog<{ $fullScreen?: boolean }>`
       margin: 0;
 
       &[open] {
+        ${SITE_SHELL_STYLES}
         ${SCREEN_LAYOUT}
-        ${SPACE_BACKGROUND}
+        background: ${SPACE_BACKGROUND};
         max-height: none;
       }
     `}

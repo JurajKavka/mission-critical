@@ -1,0 +1,41 @@
+---
+import RouteTransition from '../components/RouteTransition.astro';
+import { COLORS } from '../styles/colors';
+
+type Props = {
+  title: string;
+  description: string;
+  canonicalPath: string;
+};
+
+const SOCIAL_IMAGE_PATH = '/og-image.png';
+const { title, description, canonicalPath } = Astro.props;
+const canonical = Astro.site
+  ? new URL(canonicalPath, Astro.site).href
+  : canonicalPath;
+const image = Astro.site
+  ? new URL(SOCIAL_IMAGE_PATH, Astro.site).href
+  : SOCIAL_IMAGE_PATH;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content={COLORS.void} />
+    <RouteTransition />
+    <slot name="head" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

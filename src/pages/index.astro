@@ -2,12 +2,12 @@
 import GameCard from '../components/GameCard.astro';
 import GameLaunchBar from '../components/GameLaunchBar.astro';
 import { games } from '../data/games';
-import Layout from '../layouts/Layout.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
 
 const missionCount = String(games.length).padStart(2, '0');
 ---
 
-<Layout
+<SiteLayout
   title="Mission Critical — Neon browser arcade"
   description="A growing collection of neon arcade games. Choose a mission and play instantly in your browser."
 >
@@ -88,4 +88,4 @@ const missionCount = String(games.length).padStart(2, '0');
       <span></span>
     </div>
   </section>
-</Layout>
+</SiteLayout>

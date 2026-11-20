@@ -16,8 +16,6 @@
   --violet: var(--color-violet);
   --magenta: var(--color-magenta);
   --green: var(--color-green);
-  --page-inline: clamp(20px, 4vw, 58px);
-  --page-width: 1420px;
 }
 
 *,
@@ -129,10 +127,12 @@ a {
 }
 
 .site-shell {
-  width: min(100%, var(--page-width));
+  width: 100%;
+  max-width: 77rem;
   min-height: 100vh;
   margin-inline: auto;
-  padding-inline: var(--page-inline);
+  padding: 0 1rem;
+  font-size: 1rem;
 }
 
 .site-header {

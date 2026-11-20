@@ -1,43 +1,24 @@
 ---
-import { COLORS } from '../../../styles/colors';
-import RouteTransition from '../../../components/RouteTransition.astro';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { ServerStyleSheet } from 'styled-components';
 import { Landing } from '../../../games/atlas-rush/components/Landing';
+import GameLayout from '../../../layouts/GameLayout.astro';
+
 const title = 'Atlas Rush Geography Game // Mission Critical';
 const description =
   'Identify countries and US states against the clock in Atlas Rush. Choose a region, difficulty and learning mode.';
-const canonical = Astro.site
-  ? new URL('/games/atlas-rush/', Astro.site).href
-  : '/games/atlas-rush/';
-const image = Astro.site
-  ? new URL('/og-image.png', Astro.site).href
-  : '/og-image.png';
 const sheet = new ServerStyleSheet();
 renderToString(sheet.collectStyles(createElement(Landing)));
 const landingStyles = sheet.getStyleTags();
 sheet.seal();
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content={COLORS.void} />
-    <RouteTransition />
-    <Fragment set:html={landingStyles} />
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <Landing client:load />
-  </body>
-</html>
+<GameLayout
+  title={title}
+  description={description}
+  canonicalPath="/games/atlas-rush/"
+>
+  <Fragment slot="head" set:html={landingStyles} />
+  <Landing client:load />
+</GameLayout>
