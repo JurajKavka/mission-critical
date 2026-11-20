@@ -48,6 +48,7 @@ export const Section = styled.section`
 `;
 
 export const MapWrapper = styled.div`
+  position: relative;
   height: min(70vh, ${rem(600)});
   display: flex;
   justify-content: center;

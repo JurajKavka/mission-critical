@@ -1,6 +1,33 @@
 import { expect, test } from '@playwright/test';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expectIdentifiedCount } from './helpers/atlas-rush';
+
+type WheelStep = Pick<
+  WheelEventInit,
+  'clientX' | 'clientY' | 'ctrlKey' | 'deltaMode' | 'deltaX' | 'deltaY'
+>;
+
+const dispatchWheel = (surface: Locator, ...steps: WheelStep[]) =>
+  surface.evaluate((element, wheelSteps) => {
+    const { x, y, width, height } = element.getBoundingClientRect();
+    return wheelSteps.map(
+      (step) =>
+        !element.dispatchEvent(
+          new WheelEvent('wheel', {
+            bubbles: true,
+            cancelable: true,
+            clientX: x + width / 2,
+            clientY: y + height / 2,
+            ...step,
+          }),
+        ),
+    );
+  }, steps);
+
+const getGlobeDiameter = (globe: Locator) =>
+  globe.locator('.globe-ocean').evaluate((ocean: SVGPathElement) => {
+    return ocean.getBBox().width * (ocean.getScreenCTM()?.a ?? 0);
+  });
 
 const waitForSavedCount = async (page: Page, count: number): Promise<void> => {
   await expect
@@ -121,6 +148,209 @@ test('zooms the highlighted area and resets after a correct answer', async ({
   await expect(
     page.getByRole('button', { name: 'Zoom in on highlighted area' }),
   ).toBeVisible();
+});
+
+test('wheel zooms the regional map around the highlighted area and resets the view', async ({
+  page,
+}) => {
+  await page.goto('/games/atlas-rush/asia/?learning=1&seed=Zoom');
+  const map = page.locator('svg[aria-label^="Asia map"]');
+  const input = page.getByLabel('country name');
+  const target = map.getByRole('button', { name: 'Reveal the name' });
+  const zoom = page.getByRole('button', {
+    name: 'Zoom in on highlighted area',
+  });
+  const reset = page.getByRole('button', { name: 'Reset map view' });
+  const fullViewBox = '0 13 120 115';
+  await expect(map).toHaveAttribute('viewBox', fullViewBox);
+  const targetCenter = await target.evaluate((path: SVGPathElement) => {
+    const { x, y, width, height } = path.getBBox();
+    const top = path.dataset.country === 'RUS' ? Math.max(13, y) : y;
+    return { x: x + width / 2, y: (top + y + height) / 2 };
+  });
+  await target.focus();
+  const answer = (await page.getByRole('status').last().textContent()) ?? '';
+  expect(answer).toBeTruthy();
+  await input.focus();
+  const hint = page.getByRole('status').filter({ hasText: answer });
+  await expect(hint).toBeVisible();
+  await expect(reset).toHaveCount(0);
+  expect(
+    await dispatchWheel(map, { deltaY: -120, ctrlKey: true }, { deltaX: -120 }),
+  ).toEqual([false, false]);
+  expect(await dispatchWheel(input, { deltaY: -120 })).toEqual([false]);
+
+  const mapBox = await map.boundingBox();
+  if (!mapBox) {
+    throw new Error('Map bounds are unavailable');
+  }
+  const zoomBox = await zoom.boundingBox();
+  await page.mouse.move(
+    mapBox.x + mapBox.width / 2 + 25,
+    mapBox.y + mapBox.height / 2 - 20,
+  );
+  await page.mouse.wheel(0, -120);
+  await expect(reset).toBeVisible();
+  await expect(input).toBeFocused();
+  await expect(hint).toBeHidden();
+  expect(await zoom.boundingBox()).toEqual(zoomBox);
+  const resetBox = await reset.boundingBox();
+  expect((resetBox?.x ?? 0) + (resetBox?.width ?? 0)).toBeLessThan(
+    zoomBox?.x ?? 0,
+  );
+  expect(resetBox?.y).toBe(zoomBox?.y);
+
+  const viewBox = (await map.getAttribute('viewBox')) ?? '';
+  expect(
+    await dispatchWheel(map, {
+      deltaY: -10000,
+      clientX: mapBox.x + 1,
+      clientY: mapBox.y + 1,
+    }),
+  ).toEqual([true]);
+  await expect(map).not.toHaveAttribute('viewBox', viewBox);
+  const edgeViewBox = (await map.getAttribute('viewBox')) ?? '';
+  const [x, y, width, height] = edgeViewBox.split(' ').map(Number);
+  expect(width).toBeCloseTo(15);
+  expect(x).toBeCloseTo(
+    Math.max(0, Math.min(targetCenter.x - width / 2, 120 - width)),
+  );
+  expect(y).toBeCloseTo(
+    Math.max(13, Math.min(targetCenter.y - height / 2, 128 - height)),
+  );
+  await dispatchWheel(map, { deltaY: -120 });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(map).toHaveAttribute('viewBox', edgeViewBox);
+  const clipBounds = await map
+    .locator('clipPath rect')
+    .evaluate((rect) =>
+      ['x', 'y', 'width', 'height'].map((attribute) =>
+        rect.getAttribute(attribute),
+      ),
+    );
+  expect(clipBounds.join(' ')).toBe(edgeViewBox);
+  await input.fill('not a country');
+  await input.press('Enter');
+  await expect(map).toHaveAttribute('viewBox', edgeViewBox);
+  await page.keyboard.press('Escape');
+  const pause = page.getByRole('dialog', { name: 'End this game?' });
+  await expect(pause).toBeVisible();
+  await expect(
+    page.locator('button[aria-label="Reset map view"]'),
+  ).toBeDisabled();
+  expect(await dispatchWheel(map, { deltaY: 120 })).toEqual([false]);
+  await pause.getByRole('button', { name: 'Continue' }).click();
+  await expect(map).toHaveAttribute('viewBox', edgeViewBox);
+  await reset.press('Enter');
+  await expect(input).toBeFocused();
+  await expect(map).toHaveAttribute('viewBox', fullViewBox);
+
+  await zoom.click();
+  const targetViewBox = (await map.getAttribute('viewBox')) ?? '';
+  await dispatchWheel(
+    map,
+    { deltaY: -3, deltaMode: 1 },
+    { deltaY: -3, deltaMode: 1 },
+  );
+  await expect(reset).toBeVisible();
+  const wheelWidth = Number((await map.getAttribute('viewBox'))?.split(' ')[2]);
+  expect(wheelWidth).toBeCloseTo(
+    Number(targetViewBox.split(' ')[2]) * Math.exp(-0.192),
+  );
+  await zoom.click();
+  await expect(reset).toHaveCount(0);
+  await page.getByRole('button', { name: 'Reset map zoom' }).click();
+  await expect(map).toHaveAttribute('viewBox', fullViewBox);
+  await dispatchWheel(map, { deltaY: -120 });
+  await expect(reset).toBeVisible();
+  await dispatchWheel(map, { deltaY: 3, deltaMode: 2 });
+  await expect(reset).toHaveCount(0);
+  await expect(map).toHaveAttribute('viewBox', fullViewBox);
+
+  await dispatchWheel(map, { deltaY: -120 });
+  await expect(reset).toBeVisible();
+  await input.fill(answer);
+  await expect(map).toHaveAttribute('viewBox', fullViewBox);
+  await expect(reset).toHaveCount(0);
+});
+
+test('zooming in and resetting the globe center the highlighted country', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/games/atlas-rush/world/?learning=1&seed=Touch_capture');
+  await page.addStyleTag({ content: 'astro-dev-toolbar { display: none; }' });
+  const globe = page.getByRole('group', { name: /^World globe/ });
+  const input = page.getByLabel('country name');
+  const target = globe.locator('[data-target="true"]');
+  const zoom = page.getByRole('button', {
+    name: 'Zoom in on highlighted country',
+  });
+  const reset = page.getByRole('button', { name: 'Reset globe view' });
+  const fullViewBox = '0 0 500 500';
+  const dragGlobe = async () => {
+    const before = await target.getAttribute('d');
+    const globeBox = await globe.boundingBox();
+    if (!globeBox) {
+      throw new Error('Globe bounds are unavailable');
+    }
+    const x = globeBox.x + globeBox.width / 2;
+    const y = globeBox.y + globeBox.height / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x + 40, y, { steps: 3 });
+    await page.mouse.up();
+    await expect.poll(() => target.getAttribute('d')).not.toBe(before);
+  };
+  await expect(target).toHaveAttribute('d', /.+/);
+  await input.focus();
+  const fullDiameter = await getGlobeDiameter(globe);
+  const centeredPath = await target.getAttribute('d');
+  await globe.hover();
+  await page.mouse.wheel(0, -120);
+  await expect(reset).toBeVisible();
+  await expect(input).toBeFocused();
+  expect(await getGlobeDiameter(globe)).toBeGreaterThan(fullDiameter);
+  const zoomedPath = await target.getAttribute('d');
+  await dragGlobe();
+
+  await dispatchWheel(globe, { deltaY: 120 });
+  await expect(globe).toHaveAttribute('viewBox', fullViewBox);
+  await expect(reset).toHaveCount(0);
+  await expect(target).not.toHaveAttribute('d', centeredPath ?? '');
+  await dispatchWheel(globe, { deltaY: -120 });
+  await expect(reset).toBeVisible();
+  await expect(target).toHaveAttribute('d', zoomedPath ?? '');
+  await dispatchWheel(globe, { deltaY: -10000 });
+  await expect
+    .poll(async () => (await getGlobeDiameter(globe)) / fullDiameter)
+    .toBeCloseTo(8);
+  await dragGlobe();
+  await reset.click();
+  await expect(input).toBeFocused();
+  await expect(globe).toHaveAttribute('viewBox', fullViewBox);
+  await expect(target).toHaveAttribute('d', centeredPath ?? '');
+  await globe.getByRole('button', { name: 'Reveal the name' }).press('Enter');
+  await expect(page.getByRole('status').last()).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await zoom.click();
+  await expect(globe).not.toHaveAttribute('viewBox', fullViewBox);
+  const targetDiameter = await getGlobeDiameter(globe);
+  await dispatchWheel(globe, { deltaY: -48 });
+  await expect(reset).toBeVisible();
+  expect((await getGlobeDiameter(globe)) / targetDiameter).toBeCloseTo(
+    Math.exp(0.096),
+  );
+  await zoom.click();
+  await expect(reset).toHaveCount(0);
+  await page.getByRole('button', { name: 'Reset globe zoom' }).click();
+  await expect(globe).toHaveAttribute('viewBox', fullViewBox);
+  await dispatchWheel(globe, { deltaY: -120 });
+  await expect(reset).toBeVisible();
+  await page.getByRole('button', { name: 'Skip' }).click();
+  await expect(globe).toHaveAttribute('viewBox', fullViewBox);
+  await expect(reset).toHaveCount(0);
 });
 
 test.describe('mobile keyboard', () => {
@@ -370,6 +600,20 @@ test('graphics catalog renders the shared map, timer and results fixture', async
     'noindex, nofollow',
   );
   await expect(page.locator('path[data-country]')).toHaveCount(54);
+  const map = page.getByRole('img', { name: /^Africa map/ });
+  const zoom = page.getByRole('button', {
+    name: 'Zoom in on highlighted area',
+  });
+  await dispatchWheel(map, { deltaY: -120 });
+  await expect(
+    page.getByRole('button', { name: 'Reset map view' }),
+  ).toBeVisible();
+  const mapBounds = await map.boundingBox();
+  const zoomBounds = await zoom.boundingBox();
+  expect((zoomBounds?.x ?? 0) + (zoomBounds?.width ?? 0)).toBeCloseTo(
+    (mapBounds?.x ?? 0) + (mapBounds?.width ?? 0),
+  );
+  expect(zoomBounds?.y).toBeGreaterThan(mapBounds?.y ?? 0);
   await expect(page.getByText('02:43')).toBeVisible();
   const result = page.getByRole('region', { name: 'Time is up' });
   await expect(result.getByText('Africa')).toBeVisible();
